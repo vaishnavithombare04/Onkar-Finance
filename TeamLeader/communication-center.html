@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Team Communication Center</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Chat layout styling */
+    .inbox-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      height: calc(100vh - 250px);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background-color: var(--color-surface);
+      overflow: hidden;
+    }
+    .thread-list {
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+    }
+    .thread-item {
+      padding: 16px;
+      border-bottom: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .thread-item:hover, .thread-item.active {
+      background-color: var(--color-bg);
+    }
+    .chat-view {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    .chat-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chat-messages {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .msg {
+      max-width: 70%;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+    }
+    .msg-received {
+      background-color: var(--color-bg);
+      align-self: flex-start;
+      border-bottom-left-radius: 0;
+    }
+    .msg-sent {
+      background-color: var(--color-primary);
+      color: #FFFFFF;
+      align-self: flex-end;
+      border-bottom-right-radius: 0;
+    }
+    .chat-input-area {
+      padding: 16px 24px;
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    /* Active channel tabs */
+    .channel-tab {
+      flex: 1;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      border-bottom: 2px solid transparent;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .channel-tab.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+      background-color: var(--color-bg);
+    }
+
+    /* Action icon buttons */
+    .action-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .action-icon-btn i { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Communications Center</h1>
+          <p class="text-secondary" style="font-size: 13px;">Interact with Sales Team A's leads and customers via WhatsApp, SMS, Email or VoIP Call Logs.</p>
+        </div>
+      </div>
+
+      <!-- Channel Selector Tabs -->
+      <div class="card flex" style="padding: 0; flex-direction: row; border-radius: var(--radius-lg); overflow: hidden;">
+        <div class="channel-tab active" onclick="switchChannel('whatsapp')"><i class="lucide-message-circle"></i> WhatsApp</div>
+        <div class="channel-tab" onclick="switchChannel('email')"><i class="lucide-mail"></i> Email</div>
+        <div class="channel-tab" onclick="switchChannel('sms')"><i class="lucide-message-square"></i> SMS</div>
+        <div class="channel-tab" onclick="switchChannel('calls')"><i class="lucide-phone-call"></i> Call Logs</div>
+      </div>
+
+      <!-- Inbox Container -->
+      <div class="inbox-layout">
+        <!-- Thread list -->
+        <div class="thread-list" id="threadList">
+          <div class="thread-item active" onclick="selectThread('Amit Sharma')">
+            <div class="flex justify-between m-b-md">
+              <span class="bold">Amit Sharma</span>
+              <span class="text-muted" style="font-size: 10px;">10:24 AM</span>
+            </div>
+            <p class="text-secondary" style="font-size: 12px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" id="lastMsg-Amit">Checking loan status now.</p>
+          </div>
+          <div class="thread-item" onclick="selectThread('Priya Patel')">
+            <div class="flex justify-between m-b-md">
+              <span class="bold">Priya Patel</span>
+              <span class="text-muted" style="font-size: 10px;">Yesterday</span>
+            </div>
+            <p class="text-secondary" style="font-size: 12px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" id="lastMsg-Priya">HDFC bank statement is uploaded.</p>
+          </div>
+          <div class="thread-item" onclick="selectThread('Rajesh Kumar')">
+            <div class="flex justify-between m-b-md">
+              <span class="bold">Rajesh Kumar</span>
+              <span class="text-muted" style="font-size: 10px;">2 days ago</span>
+            </div>
+            <p class="text-secondary" style="font-size: 12px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;" id="lastMsg-Rajesh">I want a business loan of 15 lakhs.</p>
+          </div>
+        </div>
+
+        <!-- Thread detail or Call logs view -->
+        <div class="chat-view" id="chatView">
+          <div class="chat-header">
+            <div>
+              <h3 class="bold" id="chatTargetName">Amit Sharma</h3>
+              <span class="badge badge-success">Online</span>
+            </div>
+            <div class="flex gap-sm">
+              <button class="btn btn-outline" onclick="showToast('Calling Amit Sharma...', 'success')"><i class="lucide-phone"></i> VoIP Call</button>
+              <button class="btn btn-outline" onclick="showToast('Loading templates list...', 'info')"><i class="lucide-layout-template"></i> Templates</button>
+            </div>
+          </div>
+          
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg msg-received">
+              Hello, I completed uploading my PAN card. When will my eligibility status update?
+              <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right;">10:18 AM</div>
+            </div>
+            <div class="msg msg-sent">
+              Hi Amit! Our Relationship Manager Rahul Verma has verified your document details. We will update you shortly.
+              <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right; color: rgba(255,255,255,0.7)">10:20 AM</div>
+            </div>
+            <div class="msg msg-received">
+              Checking loan status now.
+              <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right;">10:24 AM</div>
+            </div>
+          </div>
+          
+          <div class="chat-input-area" id="chatInputArea">
+            <input type="text" class="form-control" placeholder="Type a message or select a template..." id="chatInputMessage" onkeydown="handleChatKey(event)">
+            <button class="btn btn-primary" onclick="sendMessage()"><i class="lucide-send"></i> Send</button>
+          </div>
+        </div>
+      </div>
+      
+      </div> <!-- End page-content --><div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    let currentChannel = 'whatsapp';
+    let currentThread = 'Amit Sharma';
+
+    const mockMessages = {
+      'Amit Sharma': {
+        whatsapp: [
+          { type: 'received', text: 'Hello, I completed uploading my PAN card. When will my eligibility status update?', time: '10:18 AM' },
+          { type: 'sent', text: 'Hi Amit! Our Relationship Manager Rahul Verma has verified your document details. We will update you shortly.', time: '10:20 AM' },
+          { type: 'received', text: 'Checking loan status now.', time: '10:24 AM' }
+        ],
+        email: [
+          { type: 'received', text: 'Subject: Loan Application Documents Submitted\nHi Priya, I have emailed the verification docs to Rahul.', time: 'Yesterday' }
+        ],
+        sms: [
+          { type: 'sent', text: 'Hi Amit, your lead has been registered at Onkar Finance. File ID: APP-9201.', time: '2 days ago' }
+        ]
+      },
+      'Priya Patel': {
+        whatsapp: [
+          { type: 'received', text: 'Hello, HDFC bank statement is uploaded. Can you verify?', time: 'Yesterday' },
+          { type: 'sent', text: 'Thanks Priya, Kiran Das from my team will check and update in 1 hour.', time: 'Yesterday' }
+        ],
+        email: [
+          { type: 'received', text: 'Subject: Re: Home Loan Quote\nThank you for the quote, interest rate seems reasonable.', time: 'Yesterday' }
+        ],
+        sms: [
+          { type: 'sent', text: 'Welcome to Onkar Finance! Your Relationship Officer is Kiran Das.', time: '3 days ago' }
+        ]
+      },
+      'Rajesh Kumar': {
+        whatsapp: [
+          { type: 'received', text: 'I want a business loan of 15 lakhs.', time: '2 days ago' },
+          { type: 'sent', text: 'Hello Rajesh, Rahul Verma has been assigned to your file. He is reviews the rules criteria.', time: '2 days ago' }
+        ],
+        email: [
+          { type: 'sent', text: 'Subject: Onkar Business Loan Info\nHere is the brochure details as requested.', time: '3 days ago' }
+        ],
+        sms: [
+          { type: 'sent', text: 'OTP for verification is 492102. Valid for 10 minutes.', time: '2 days ago' }
+        ]
+      }
+    };
+
+    window.switchChannel = function(channel) {
+      currentChannel = channel;
+      const tabs = document.querySelectorAll('.channel-tab');
+      tabs.forEach(tab => {
+        const text = tab.textContent.toLowerCase();
+        const match = (channel === 'calls' && text.includes('call')) || text.includes(channel);
+        if (match) {
+          tab.classList.add('active');
+        } else {
+          tab.classList.remove('active');
+        }
+      });
+
+      if (channel === 'calls') {
+        renderCallLogs();
+      } else {
+        restoreChatView();
+      }
+    };
+
+    window.selectThread = function(name) {
+      currentThread = name;
+      const threads = document.querySelectorAll('.thread-item');
+      threads.forEach(t => {
+        if (t.textContent.includes(name)) {
+          t.classList.add('active');
+        } else {
+          t.classList.remove('active');
+        }
+      });
+      
+      // Auto-switch channel back to whatsapp if user was viewing Call Logs when selecting a chat thread
+      if (currentChannel === 'calls') {
+        currentChannel = 'whatsapp';
+        const tabs = document.querySelectorAll('.channel-tab');
+        tabs.forEach(tab => {
+          const text = tab.textContent.toLowerCase();
+          if (text.includes('whatsapp')) {
+            tab.classList.add('active');
+          } else {
+            tab.classList.remove('active');
+          }
+        });
+      }
+      
+      restoreChatView();
+    };
+
+    function restoreChatView() {
+      const chatView = document.getElementById('chatView');
+      const escapedThread = currentThread.replace(/'/g, "\\'");
+      chatView.innerHTML = `
+        <div class="chat-header">
+          <div>
+            <h3 class="bold" id="chatTargetName">${currentThread}</h3>
+            <span class="badge badge-success">Online</span>
+          </div>
+          <div class="flex gap-sm">
+            <button class="btn btn-outline" onclick="showToast('Calling ${escapedThread}...', 'success')"><i class="lucide-phone"></i> VoIP Call</button>
+            <button class="btn btn-outline" onclick="showToast('Loading templates list...', 'info')"><i class="lucide-layout-template"></i> Templates</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+          <!-- Rendered -->
+        </div>
+        <div class="chat-input-area" id="chatInputArea">
+          <input type="text" class="form-control" placeholder="Type a message..." id="chatInputMessage" onkeydown="handleChatKey(event)">
+          <button class="btn btn-primary" onclick="sendMessage()"><i class="lucide-send"></i> Send</button>
+        </div>
+      `;
+
+      const msgsEl = document.getElementById('chatMessages');
+      const threadMsgs = mockMessages[currentThread][currentChannel] || [];
+      msgsEl.innerHTML = threadMsgs.map(m => {
+        const typeClass = m.type === 'received' ? 'msg-received' : 'msg-sent';
+        const styleText = m.type === 'sent' ? 'color: rgba(255,255,255,0.7)' : '';
+        return `
+          <div class="msg ${typeClass}">
+            ${m.text.replace(/\n/g, '<br>')}
+            <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right; ${styleText}">${m.time}</div>
+          </div>
+        `;
+      }).join('');
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.sendMessage = function() {
+      const input = document.getElementById('chatInputMessage');
+      const val = input.value.trim();
+      if (!val) return;
+      
+      const msgs = document.getElementById('chatMessages');
+      msgs.innerHTML += `
+        <div class="msg msg-sent">
+          ${val}
+          <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right; color: rgba(255,255,255,0.7)">Just now</div>
+        </div>
+      `;
+      
+      // Update local cache
+      if (!mockMessages[currentThread][currentChannel]) mockMessages[currentThread][currentChannel] = [];
+      mockMessages[currentThread][currentChannel].push({ type: 'sent', text: val, time: 'Just now' });
+      
+      // Update thread last message summary
+      const safeName = currentThread.split(' ')[0];
+      const summaryEl = document.getElementById('lastMsg-' + safeName);
+      if (summaryEl) summaryEl.textContent = val;
+
+      input.value = '';
+      msgs.scrollTop = msgs.scrollHeight;
+    };
+
+    window.handleChatKey = function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    };
+
+    function renderCallLogs() {
+      const view = document.getElementById('chatView');
+      view.innerHTML = `
+        <div class="chat-header">
+          <h3 class="bold">Regional Call Recordings</h3>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding: 24px;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Call Type</th>
+                <th>Duration</th>
+                <th>Agent</th>
+                <th>Recording Playback</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bold">Amit Sharma</td>
+                <td><span class="badge badge-success"><i class="lucide-arrow-down-left"></i> Inbound</span></td>
+                <td>04:32 min</td>
+                <td>Rahul Verma</td>
+                <td><button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="showToast('Playing recording...', 'success')"><i class="lucide-play"></i> Play</button></td>
+              </tr>
+              <tr>
+                <td class="bold">Priya Patel</td>
+                <td><span class="badge badge-danger"><i class="lucide-arrow-up-right"></i> Outbound</span></td>
+                <td>01:15 min</td>
+                <td>Kiran Das</td>
+                <td><button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="showToast('Playing recording...', 'success')"><i class="lucide-play"></i> Play</button></td>
+              </tr>
+              <tr>
+                <td class="bold">Rajesh Kumar</td>
+                <td><span class="badge badge-success"><i class="lucide-arrow-down-left"></i> Inbound</span></td>
+                <td>06:30 min</td>
+                <td>Rahul Verma</td>
+                <td><button class="btn btn-outline" style="padding:4px 8px; font-size:11px;" onclick="showToast('Playing recording...', 'success')"><i class="lucide-play"></i> Play</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+      if (window.lucide) lucide.createIcons();
+      if (window.initializeLucideIcons) initializeLucideIcons();
+    }
+
+    restoreChatView();
+  }
+  </script>
+
+</body>
+</html>

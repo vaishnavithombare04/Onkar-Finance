@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Finance — Team Customers</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 420px;
+      height: 100%;
+      background-color: var(--color-surface);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+      z-index: 1050;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--color-border);
+    }
+    .drawer-overlay.open {
+      right: 0;
+    }
+    .drawer-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drawer-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .timeline-item {
+      position: relative;
+      padding-left: 24px;
+      padding-bottom: 16px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 16px;
+      width: 2px;
+      height: calc(100% - 10px);
+      background-color: var(--color-border);
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--color-text-secondary);
+    }
+    .empty-state i { width: 48px; height: 48px; opacity: 0.3; margin-bottom: 12px; }
+  </style>
+</head>
+
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+
+      <!-- ══ PAGE CONTENT ══ -->
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+
+        <!-- ── Page Header ── -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Customer Management</h1>
+            <p class="text-secondary" style="font-size: 13px;">View borrower history, check KYC validations, and track active loan portfolios.</p>
+          </div>
+        </div>
+
+        <!-- Search bar -->
+        <div class="card flex align-center justify-between" style="padding: 16px;">
+          <div class="search-bar" style="width: 320px; background-color: var(--color-bg);">
+            <i class="lucide-search"></i>
+            <input type="text" placeholder="Search customers..." id="customerSearch">
+          </div>
+          <div class="flex gap-sm">
+            <select class="form-control" style="width: 200px; padding: 8px 12px;" id="kycFilter">
+              <option value="">All KYC Statuses</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending">Pending</option>
+            </select>
+            <select class="form-control" style="width: 200px; padding: 8px 12px;" id="loanFilter">
+              <option value="">All Loan Statuses</option>
+              <option value="active">Active Loan</option>
+              <option value="closed">No Active Loan</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Table list -->
+        <div class="card" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table" id="customerTable">
+              <thead>
+                <tr>
+                  <th>Customer ID</th>
+                  <th>Name</th>
+                  <th>Email Address</th>
+                  <th>Contact</th>
+                  <th>Active Loans</th>
+                  <th>Branch</th>
+                  <th>KYC Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="customerTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- empty state placeholder -->
+          <div id="emptyState" class="empty-state" style="display:none;">
+            <i class="lucide-search-x"></i>
+            <p class="bold" style="font-size:15px; margin-bottom:4px;">No customers found</p>
+            <p style="font-size:13px;">Try adjusting your search or filters.</p>
+          </div>
+        </div>
+
+      </div><!-- end #page-content -->
+
+      <!-- Footer -->
+      <div data-component="footer"></div>
+
+    </div><!-- end .main-content -->
+  </div><!-- end .admin-layout -->
+
+  <!-- Sliding Details Drawer -->
+  <div id="customerDrawer" class="drawer-overlay">
+    <div class="drawer-header">
+      <h3 class="bold">Customer Profile Details</h3>
+      <i class="lucide-x pointer" onclick="closeDrawer()" style="font-size: 20px;"></i>
+    </div>
+    
+    <div class="drawer-body" id="drawerBody">
+      <!-- injected details -->
+    </div>
+  </div>
+
+  <!-- ══ SCRIPTS ══ -->
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    /* ─────────────── Mock Data ─────────────── */
+    const CUSTOMERS = [
+      {
+        id:           'CUST-4101',
+        name:         'Amit Sharma',
+        contact:      '+91 98765 43210',
+        email:        'amit.sharma@email.com',
+        activeLoans:  1,
+        kycStatus:    'Completed',
+        loanStatus:   'active',
+        lastActivity: 'Jul 12, 2026',
+        creditScore:  762,
+        assignedTo:   'Kiran Das',
+        totalLoans:   2,
+        totalDisbursed: '&#8377;9.5L',
+        kycDocs: ['PAN Card','Aadhaar','ITR-V'],
+        kycPending: [],
+        timeline: [
+          { date:'Jul 14, 2026', text:'Loan disbursed &#8377;5L &#8212; Personal Loan', dot:'green' },
+          { date:'Jul 12, 2026', text:'KYC documents verified by compliance team', dot:'green' },
+          { date:'Jul 10, 2026', text:'Loan application APP-8901 submitted', dot:'blue' },
+          { date:'Jul 8, 2026',  text:'Lead created by Kiran Das', dot:'blue' }
+        ]
+      },
+      {
+        id:           'CUST-4102',
+        name:         'Neha Gupta',
+        contact:      '+91 98123 45678',
+        email:        'neha.gupta@email.com',
+        activeLoans:  1,
+        kycStatus:    'Completed',
+        loanStatus:   'active',
+        lastActivity: 'Jul 13, 2026',
+        creditScore:  710,
+        assignedTo:   'Ravi Menon',
+        totalLoans:   1,
+        totalDisbursed: '&#8377;6.0L',
+        kycDocs: ['PAN Card','Aadhaar','Bank Statement'],
+        kycPending: [],
+        timeline: [
+          { date:'Jul 13, 2026', text:'Loan disbursed &#8377;6L &#8212; Home Loan', dot:'green' },
+          { date:'Jul 11, 2026', text:'KYC verification completed', dot:'green' },
+          { date:'Jul 9, 2026',  text:'Application APP-8905 submitted', dot:'blue' },
+          { date:'Jul 7, 2026',  text:'Lead assigned to Ravi Menon', dot:'blue' }
+        ]
+      },
+      {
+        id:           'CUST-4103',
+        name:         'Vikram Malhotra',
+        contact:      '+91 99112 23344',
+        email:        'vikram.m@email.com',
+        activeLoans:  2,
+        kycStatus:    'Completed',
+        loanStatus:   'active',
+        lastActivity: 'Jul 14, 2026',
+        creditScore:  798,
+        assignedTo:   'Kiran Das',
+        totalLoans:   3,
+        totalDisbursed: '&#8377;18.2L',
+        kycDocs: ['PAN Card','Aadhaar','ITR-V','GST Certificate'],
+        kycPending: [],
+        timeline: [
+          { date:'Jul 14, 2026', text:'Second loan APP-8912 approved &#8212; &#8377;8L Business Loan', dot:'green' },
+          { date:'Jul 10, 2026', text:'Personal loan &#8377;5L disbursed successfully', dot:'green' },
+          { date:'Jul 6, 2026',  text:'KYC documents fully verified', dot:'green' },
+          { date:'Jul 1, 2026',  text:'Account created & first application submitted', dot:'blue' }
+        ]
+      },
+      {
+        id:           'CUST-4104',
+        name:         'Kunal Deshmukh',
+        contact:      '+91 98887 76655',
+        email:        'kunal.d@email.com',
+        activeLoans:  0,
+        kycStatus:    'Pending',
+        loanStatus:   'closed',
+        lastActivity: 'Jul 8, 2026',
+        creditScore:  null,
+        assignedTo:   'Sneha Pillai',
+        totalLoans:   0,
+        totalDisbursed: '&#8212;',
+        kycDocs: ['PAN Card'],
+        kycPending: ['Aadhaar','Bank Statement'],
+        timeline: [
+          { date:'Jul 8, 2026',  text:'KYC reminder sent via SMS', dot:'orange' },
+          { date:'Jul 7, 2026',  text:'Aadhaar document upload pending', dot:'orange' },
+          { date:'Jul 5, 2026',  text:'PAN Card verified successfully', dot:'green' },
+          { date:'Jul 3, 2026',  text:'Lead converted to customer by Sneha Pillai', dot:'blue' }
+        ]
+      },
+      {
+        id:           'CUST-4105',
+        name:         'Rina Shah',
+        contact:      '+91 97766 55443',
+        email:        'rina.shah@email.com',
+        activeLoans:  1,
+        kycStatus:    'Completed',
+        loanStatus:   'active',
+        lastActivity: 'Jul 11, 2026',
+        creditScore:  741,
+        assignedTo:   'Arjun Tiwari',
+        totalLoans:   1,
+        totalDisbursed: '&#8377;4.5L',
+        kycDocs: ['PAN Card','Aadhaar','ITR-V'],
+        kycPending: [],
+        timeline: [
+          { date:'Jul 11, 2026', text:'Loan disbursed &#8377;4.5L &#8212; Personal Loan', dot:'green' },
+          { date:'Jul 9, 2026',  text:'KYC fully verified, application approved', dot:'green' },
+          { date:'Jul 7, 2026',  text:'Application APP-8918 submitted', dot:'blue' },
+          { date:'Jul 4, 2026',  text:'Lead created by Arjun Tiwari', dot:'blue' }
+        ]
+      }
+    ];
+
+    let activeTimelineCust = null;
+
+    /* ─────────────── Render Table ─────────────── */
+    function renderCustomerTable() {
+      const searchVal = document.getElementById('customerSearch').value.toLowerCase().trim();
+      const kycVal    = document.getElementById('kycFilter').value;
+      const loanVal   = document.getElementById('loanFilter').value;
+
+      // Filter by team
+      const teamMembers = ["Rahul Verma", "Kiran Das", "Sunil Mehta", "Priya N."];
+      const filtered = CUSTOMERS.filter(c => {
+        const matchTeam = teamMembers.includes(c.assignedTo);
+        const matchSearch =
+          c.name.toLowerCase().includes(searchVal) ||
+          c.id.toLowerCase().includes(searchVal) ||
+          c.contact.toLowerCase().includes(searchVal) ||
+          c.email.toLowerCase().includes(searchVal);
+
+        const matchKyc = kycVal === '' || c.kycStatus === kycVal;
+
+        const matchLoan =
+          loanVal === '' ||
+          (loanVal === 'active'  && c.activeLoans > 0) ||
+          (loanVal === 'closed'  && c.activeLoans === 0);
+
+        return matchTeam && matchSearch && matchKyc && matchLoan;
+      });
+
+      const tbody = document.getElementById('customerTableBody');
+      const empty = document.getElementById('emptyState');
+      document.getElementById('custCount').textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        empty.style.display = 'block';
+        return;
+      }
+      empty.style.display = 'none';
+
+      tbody.innerHTML = filtered.map(c => {
+        const badgeClass = c.kycStatus === 'Completed' ? 'badge-success' : 'badge-warning';
+        const initials = c.name.split(' ').map(n => n[0]).join('');
+
+        return `
+          <tr>
+            <td class="bold">${c.id}</td>
+            <td>
+              <div class="flex align-center gap-sm">
+                <div class="avatar" style="width: 32px; height: 32px;">${initials}</div>
+                <span class="bold">${c.name}</span>
+              </div>
+            </td>
+            <td>${c.email}</td>
+            <td>${c.contact}</td>
+            <td><span class="badge badge-info">${c.activeLoans} Active</span></td>
+            <td>Mumbai Main</td>
+            <td><span class="badge ${badgeClass}">${c.kycStatus}</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openDrawer('${c.id}')">
+                View Profile
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    /* ─────────────── Details Drawer ─────────────── */
+    window.openDrawer = function(id) {
+      const cust = CUSTOMERS.find(c => c.id === id);
+      if (!cust) return;
+      
+      const drawer = document.getElementById('customerDrawer');
+      const body = document.getElementById('drawerBody');
+      
+      const scoreColor = cust.creditScore
+        ? (cust.creditScore >= 750 ? '#22c55e' : '#f59e0b')
+        : 'var(--color-text-secondary)';
+
+      const initials = cust.name.split(' ').map(n => n[0]).join('');
+
+      body.innerHTML = `
+        <div class="flex align-center gap-md">
+          <div class="avatar" style="width: 56px; height: 56px; font-size: 20px;">${initials}</div>
+          <div>
+            <h4 class="bold" style="font-size: 16px;">${cust.name}</h4>
+            <span class="text-muted" style="font-size: 12px;">ID: ${cust.id}</span>
+          </div>
+        </div>
+        
+        <hr style="border: none; border-top: 1px solid var(--color-border);">
+        
+        <div>
+          <h5 class="bold" style="margin-bottom: 8px;">Contact Information</h5>
+          <div class="flex flex-column gap-sm" style="font-size: 13px;">
+            <div class="flex justify-between"><span class="text-secondary">Email</span><span>${cust.email}</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Phone</span><span>${cust.contact}</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Assigned To</span><span>${cust.assignedTo}</span></div>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="bold" style="margin-bottom: 8px;">Documents Verified (KYC)</h5>
+          <div class="flex gap-sm" style="flex-wrap: wrap;">
+            ${(cust.kycDocs || []).map(d => `<span class="badge badge-success"><i class="lucide-check-check"></i> ${d}</span>`).join(' ')}
+            ${(cust.kycPending || []).map(d => `<span class="badge badge-warning"><i class="lucide-clock"></i> ${d}</span>`).join(' ')}
+          </div>
+        </div>
+
+        <div>
+          <h5 class="bold" style="margin-bottom: 12px;">Timeline Activity</h5>
+          <div>
+            ${(cust.timeline || []).map(ev => `
+              <div class="timeline-item">
+                <span class="bold" style="font-size: 13px; display: block;">${ev.text}</span>
+                <span class="text-muted" style="font-size: 11px;">${ev.date}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      
+      drawer.classList.add('open');
+      if (window.lucide) lucide.createIcons();
+    };
+
+    window.closeDrawer = function() {
+      document.getElementById('customerDrawer').classList.remove('open');
+    };
+
+    /* ─────────────── Listeners ─────────────── */
+    document.getElementById('customerSearch').addEventListener('input', renderCustomerTable);
+    document.getElementById('kycFilter').addEventListener('change', renderCustomerTable);
+    document.getElementById('loanFilter').addEventListener('change', renderCustomerTable);
+
+    /* ─────────────── Topbar Tab Pills ─────────────── */
+    document.querySelectorAll('.topbar .tab-pill').forEach(function(pill, idx) {
+      pill.addEventListener('click', function () {
+        document.querySelectorAll('.topbar .tab-pill').forEach(function(p) { p.classList.remove('active'); });
+        this.classList.add('active');
+        if (idx === 0) {
+          document.getElementById('kycFilter').value = '';
+          document.getElementById('loanFilter').value = '';
+        } else if (idx === 1) {
+          document.getElementById('kycFilter').value = 'Pending';
+          document.getElementById('loanFilter').value = '';
+        } else if (idx === 2) {
+          document.getElementById('kycFilter').value = '';
+          document.getElementById('loanFilter').value = 'active';
+        }
+        renderCustomerTable();
+      });
+    });
+
+    /* ─────────────── Global Search Sync ─────────────── */
+    document.getElementById('globalSearch').addEventListener('input', function () {
+      document.getElementById('customerSearch').value = this.value;
+      renderCustomerTable();
+    });
+
+    /* ─────────────── Initial render ─────────────── */
+    renderCustomerTable();
+  }
+  </script>
+
+
+</body>
+</html>
