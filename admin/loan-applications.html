@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Loan Applications</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Pipeline Stage Stepper Styles */
+    .pipeline-stages {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .stage-card {
+      flex: 1;
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-width: 160px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .stage-card:hover, .stage-card.active {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-card);
+      background-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    .stage-count {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .stage-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stage-card.active .stage-label {
+      color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Loan Applications</h1>
+          <p class="text-secondary" style="font-size: 13px;">Monitor loan processing stages, from submission through disbursement.</p>
+        </div>
+      </div>
+
+      <!-- Pipeline Stepper / Stages Row -->
+      <div class="pipeline-stages">
+        <div class="stage-card active" onclick="filterByStage('')">
+          <div class="stage-label">All Active</div>
+          <div class="stage-count">5</div>
+        </div>
+        <div class="stage-card" onclick="filterByStage('New Lead')">
+          <div class="stage-label">New Lead</div>
+          <div class="stage-count" style="color: var(--color-info);">1</div>
+        </div>
+        <div class="stage-card" onclick="filterByStage('Verification')">
+          <div class="stage-label">Verification</div>
+          <div class="stage-count" style="color: var(--color-warning);">1</div>
+        </div>
+        <div class="stage-card" onclick="filterByStage('Under Process')">
+          <div class="stage-label">Under Process</div>
+          <div class="stage-count" style="color: var(--color-warning);">1</div>
+        </div>
+        <div class="stage-card" onclick="filterByStage('Approved')">
+          <div class="stage-label">Approved</div>
+          <div class="stage-count" style="color: var(--color-success);">1</div>
+        </div>
+        <div class="stage-card" onclick="filterByStage('Disbursed')">
+          <div class="stage-label">Disbursed</div>
+          <div class="stage-count" style="color: var(--color-success);">1</div>
+        </div>
+      </div>
+
+      <!-- Filter actions -->
+      <div class="card flex align-center gap-md" style="padding: 16px;">
+        <div class="search-bar" style="width: 320px; background-color: var(--color-bg);">
+          <i class="lucide-search"></i>
+          <input type="text" placeholder="Search applications..." id="appSearch">
+        </div>
+        <select class="form-control" style="width: 180px; padding: 8px 12px;" id="productFilter">
+          <option value="">All Products</option>
+          <option value="Personal Loan">Personal Loan</option>
+          <option value="Home Loan">Home Loan</option>
+          <option value="Business Loan">Business Loan</option>
+          <option value="Gold Loan">Gold Loan</option>
+          <option value="Vehicle Loan">Vehicle Loan</option>
+        </select>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Applicant</th>
+                <th>Product</th>
+                <th>Requested Amount</th>
+                <th>Officer</th>
+                <th>Current Stage</th>
+                <th>Start Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    let activeStageFilter = '';
+
+    function renderApplications() {
+      const leads = api.getLeads(); // Simulating application files from lead table
+      const tbody = document.getElementById('appTableBody');
+      tbody.innerHTML = '';
+      
+      const searchVal = document.getElementById('appSearch').value.toLowerCase();
+      const productVal = document.getElementById('productFilter').value;
+      
+      leads.forEach(lead => {
+        const matchSearch = lead.name.toLowerCase().includes(searchVal) || lead.id.toLowerCase().includes(searchVal);
+        const matchProduct = productVal === '' || lead.product === productVal;
+        const matchStage = activeStageFilter === '' || lead.status === activeStageFilter;
+        
+        if (matchSearch && matchProduct && matchStage) {
+          let stageBadge = 'badge-info';
+          if (lead.status === 'Disbursed') stageBadge = 'badge-success';
+          if (lead.status === 'Approved') stageBadge = 'badge-success';
+          if (lead.status === 'Verification') stageBadge = 'badge-warning';
+          if (lead.status === 'Under Process') stageBadge = 'badge-warning';
+          
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${lead.id.replace('LD', 'APP')}</td>
+              <td>
+                <span class="bold" style="display: block;">${lead.name}</span>
+                <span class="text-muted" style="font-size: 11px;">${lead.contact}</span>
+              </td>
+              <td>${lead.product}</td>
+              <td class="bold">${formatCurrency(lead.amount)}</td>
+              <td>${lead.assignedTo}</td>
+              <td><span class="badge ${stageBadge}">${lead.status}</span></td>
+              <td>${formatDate(lead.date)}</td>
+              <td>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="location.href='loan-application-detail.html?id=${lead.id}'">
+                  Manage File
+                </button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function filterByStage(stageName) {
+      activeStageFilter = stageName;
+      
+      // highlight active stage card
+      const cards = document.querySelectorAll('.stage-card');
+      cards.forEach(card => {
+        const label = card.querySelector('.stage-label').textContent;
+        if (stageName === '' && label === 'ALL ACTIVE') {
+          card.classList.add('active');
+        } else if (label.toLowerCase() === stageName.toLowerCase()) {
+          card.classList.add('active');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+      
+      renderApplications();
+    }
+
+    document.getElementById('appSearch').addEventListener('keyup', renderApplications);
+    document.getElementById('productFilter').addEventListener('change', renderApplications);
+    
+    renderApplications();
+  }
+  </script>
+</body>
+</html>

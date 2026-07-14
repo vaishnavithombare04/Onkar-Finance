@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Customer Profiles</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Sliding drawer custom styles */
+    .drawer-overlay {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 420px;
+      height: 100%;
+      background-color: var(--color-surface);
+      box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+      z-index: 1050;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid var(--color-border);
+    }
+    .drawer-overlay.open {
+      right: 0;
+    }
+    .drawer-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drawer-body {
+      padding: 24px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .timeline-item {
+      position: relative;
+      padding-left: 24px;
+      padding-bottom: 16px;
+    }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: var(--color-primary);
+    }
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 16px;
+      width: 2px;
+      height: calc(100% - 10px);
+      background-color: var(--color-border);
+    }
+    .timeline-item:last-child::after {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Customer Management</h1>
+          <p class="text-secondary" style="font-size: 13px;">View borrower history, check KYC validations, and track active loan portfolios.</p>
+        </div>
+      </div>
+
+      <!-- Search bar -->
+      <div class="card flex align-center justify-between" style="padding: 16px;">
+        <div class="search-bar" style="width: 320px; background-color: var(--color-bg);">
+          <i class="lucide-search"></i>
+          <input type="text" placeholder="Search customers..." id="customerSearch">
+        </div>
+        <select class="form-control" style="width: 200px; padding: 8px 12px;" id="kycFilter">
+          <option value="">All KYC Statuses</option>
+          <option value="Completed">Completed</option>
+          <option value="Pending">Pending</option>
+        </select>
+      </div>
+
+      <!-- Table list -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table" id="customerTable">
+            <thead>
+              <tr>
+                <th>Customer ID</th>
+                <th>Name</th>
+                <th>Email Address</th>
+                <th>Contact</th>
+                <th>Active Loans</th>
+                <th>Branch</th>
+                <th>KYC Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customerTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- Sliding Details Drawer -->
+  <div id="customerDrawer" class="drawer-overlay">
+    <div class="drawer-header">
+      <h3 class="bold">Customer Profile Details</h3>
+      <i class="lucide-x pointer" onclick="closeDrawer()" style="font-size: 20px;"></i>
+    </div>
+    
+    <div class="drawer-body" id="drawerBody">
+      <!-- Injected details -->
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function renderCustomers() {
+      const customers = api.getDb().customers;
+      const tbody = document.getElementById('customerTableBody');
+      tbody.innerHTML = '';
+      
+      const searchVal = document.getElementById('customerSearch').value.toLowerCase();
+      const kycVal = document.getElementById('kycFilter').value;
+      
+      customers.forEach(cust => {
+        const matchSearch = cust.name.toLowerCase().includes(searchVal) || cust.email.toLowerCase().includes(searchVal) || cust.id.toLowerCase().includes(searchVal);
+        const matchKyc = kycVal === '' || cust.kycStatus === kycVal;
+        
+        if (matchSearch && matchKyc) {
+          const badgeClass = cust.kycStatus === 'Completed' ? 'badge-success' : 'badge-warning';
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${cust.id}</td>
+              <td>
+                <div class="flex align-center gap-sm">
+                  <div class="avatar" style="width: 32px; height: 32px;">${cust.name.split(' ').map(n => n[0]).join('')}</div>
+                  <span class="bold">${cust.name}</span>
+                </div>
+              </td>
+              <td>${cust.email}</td>
+              <td>${cust.contact}</td>
+              <td><span class="badge badge-info">${cust.activeLoans} Active</span></td>
+              <td>${cust.branch}</td>
+              <td><span class="badge ${badgeClass}">${cust.kycStatus}</span></td>
+              <td>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openDrawer('${cust.id}')">
+                  View Profile
+                </button>
+              </td>
+            </tr>
+          `;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openDrawer(id) {
+      const customers = api.getDb().customers;
+      const cust = customers.find(c => c.id === id);
+      if (!cust) return;
+      
+      const drawer = document.getElementById('customerDrawer');
+      const body = document.getElementById('drawerBody');
+      
+      body.innerHTML = `
+        <div class="flex align-center gap-md">
+          <div class="avatar" style="width: 56px; height: 56px; font-size: 20px;">${cust.name.split(' ').map(n => n[0]).join('')}</div>
+          <div>
+            <h4 class="bold" style="font-size: 16px;">${cust.name}</h4>
+            <span class="text-muted" style="font-size: 12px;">ID: ${cust.id}</span>
+          </div>
+        </div>
+        
+        <hr style="border: none; border-top: 1px solid var(--color-border);">
+        
+        <div>
+          <h5 class="bold" style="margin-bottom: 8px;">Contact Information</h5>
+          <div class="flex flex-column gap-sm" style="font-size: 13px;">
+            <div class="flex justify-between"><span class="text-secondary">Email</span><span>${cust.email}</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Phone</span><span>${cust.contact}</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Branch</span><span>${cust.branch}</span></div>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="bold" style="margin-bottom: 8px;">Documents Verified (KYC)</h5>
+          <div class="flex gap-sm">
+            <span class="badge badge-success"><i class="lucide-check-check"></i> PAN Card</span>
+            <span class="badge badge-success"><i class="lucide-check-check"></i> Aadhaar</span>
+            <span class="badge badge-success"><i class="lucide-check-check"></i> ITR V</span>
+          </div>
+        </div>
+
+        <div>
+          <h5 class="bold" style="margin-bottom: 12px;">Timeline Activity</h5>
+          <div>
+            <div class="timeline-item">
+              <span class="bold" style="font-size: 13px; display: block;">ITR & GST returns verified</span>
+              <span class="text-muted" style="font-size: 11px;">13 Jul 2026</span>
+            </div>
+            <div class="timeline-item">
+              <span class="bold" style="font-size: 13px; display: block;">Aadhaar OTP Verified successfully</span>
+              <span class="text-muted" style="font-size: 11px;">11 Jul 2026</span>
+            </div>
+            <div class="timeline-item">
+              <span class="bold" style="font-size: 13px; display: block;">Registration completed</span>
+              <span class="text-muted" style="font-size: 11px;">10 Jul 2026</span>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      drawer.classList.add('open');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeDrawer() {
+      document.getElementById('customerDrawer').classList.remove('open');
+    }
+
+    document.getElementById('customerSearch').addEventListener('keyup', renderCustomers);
+    document.getElementById('kycFilter').addEventListener('change', renderCustomers);
+    
+    renderCustomers();
+  }
+  </script>
+</body>
+</html>

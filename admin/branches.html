@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Branches Setup</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Branches &amp; Regions</h1>
+          <p class="text-secondary" style="font-size: 13px;">Monitor localized performance metrics, branch managers, and regional disbursal goals.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Create branch workflow coming soon', 'info')">
+          <i class="lucide-plus"></i> Register Branch
+        </button>
+      </div>
+
+      <!-- Branch Grid -->
+      <div class="grid grid-3">
+        <!-- Branch Card 1 -->
+        <div class="card flex flex-column gap-md">
+          <div class="flex justify-between align-center">
+            <div>
+              <h3 class="bold" style="font-size: 16px;">Mumbai Main</h3>
+              <span class="text-muted" style="font-size: 12px;">Manager: Rahul Verma</span>
+            </div>
+            <span class="badge badge-success">On Track</span>
+          </div>
+          
+          <hr style="border:none; border-top: 1px solid var(--color-border);">
+          
+          <div class="flex flex-column gap-sm" style="font-size: 13px;">
+            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">12 Employees</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹2.4 Cr</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹2.6 Cr</span></div>
+          </div>
+          
+          <div class="progress-bar-container m-t-md">
+            <div class="progress-bar-fill" style="width: 92%; background-color: var(--color-success)"></div>
+          </div>
+        </div>
+
+        <!-- Branch Card 2 -->
+        <div class="card flex flex-column gap-md">
+          <div class="flex justify-between align-center">
+            <div>
+              <h3 class="bold" style="font-size: 16px;">Delhi Connaught</h3>
+              <span class="text-muted" style="font-size: 12px;">Manager: Siddhi Sen</span>
+            </div>
+            <span class="badge badge-warning">Action Needed</span>
+          </div>
+          
+          <hr style="border:none; border-top: 1px solid var(--color-border);">
+          
+          <div class="flex flex-column gap-sm" style="font-size: 13px;">
+            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">8 Employees</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹1.8 Cr</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹2.4 Cr</span></div>
+          </div>
+          
+          <div class="progress-bar-container m-t-md">
+            <div class="progress-bar-fill" style="width: 75%;"></div>
+          </div>
+        </div>
+
+        <!-- Branch Card 3 -->
+        <div class="card flex flex-column gap-md">
+          <div class="flex justify-between align-center">
+            <div>
+              <h3 class="bold" style="font-size: 16px;">Pune Deccan</h3>
+              <span class="text-muted" style="font-size: 12px;">Manager: Anjali Rao</span>
+            </div>
+            <span class="badge badge-danger">Lagging</span>
+          </div>
+          
+          <hr style="border:none; border-top: 1px solid var(--color-border);">
+          
+          <div class="flex flex-column gap-sm" style="font-size: 13px;">
+            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">4 Employees</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹0.62 Cr</span></div>
+            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹1.2 Cr</span></div>
+          </div>
+          
+          <div class="progress-bar-container m-t-md">
+            <div class="progress-bar-fill" style="width: 50%; background-color: var(--color-danger)"></div>
+          </div>
+        </div>
+      </div>
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Page Not Found</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="flex flex-column align-center justify-between" style="min-height: 100vh; padding: 40px 20px;">
+
+  <div></div> <!-- Top spacer -->
+
+  <div class="flex flex-column align-center gap-md text-center">
+    <div style="background-color: var(--color-danger-bg); color: var(--color-danger); width: 80px; height: 80px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: bold; margin-bottom: 24px;">
+      404
+    </div>
+    <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Lost in Transit</h1>
+    <p class="text-secondary" style="max-width: 460px; font-size: 14px;">The loan record, file page, or administration panel route you are trying to view does not exist or has been relocated.</p>
+    <a href="index.html" class="btn btn-primary m-t-md" style="padding: 12px 24px;"><i class="lucide-home"></i> Back to Workspace Login</a>
+  </div>
+
+  <footer style="font-size: var(--fs-small); color: var(--color-text-muted);">
+    &copy; 2026 Onkar Finance Administration System. All rights reserved.
+  </footer>
+
+  <script src="assets/js/global.js"></script>
+  <script>
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>

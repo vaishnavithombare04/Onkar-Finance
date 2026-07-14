@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Admin Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Dashboard specific mini-chart styles */
+    .dashboard-chart-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 150px;
+      padding-top: 20px;
+    }
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-bar {
+      width: 100%;
+      background-color: var(--color-primary-light);
+      border-radius: var(--radius-sm);
+      transition: height 1s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .chart-bar:hover {
+      background-color: var(--color-primary);
+    }
+    .chart-bar-active {
+      background-color: var(--color-primary);
+    }
+    .chart-label {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+    
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <!-- Greeting Header -->
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Good Morning, Aditya!</h1>
+          <p class="text-secondary" style="font-size: 13px;">Here is what's happening with Onkar Finance today.</p>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-outline" onclick="location.href='reports-analytics.html'">
+            <i class="lucide-download"></i> Export Report
+          </button>
+          <button class="btn btn-primary" onclick="location.href='leads.html'">
+            <i class="lucide-plus"></i> Add New Lead
+          </button>
+        </div>
+      </div>
+      
+      <!-- Metrics row -->
+      <div class="grid grid-4">
+        <!-- Highlighted Card -->
+        <div class="card stat-card stat-card--highlighted">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Total Disbursed</span>
+            <div class="stat-icon"><i class="lucide-banknote"></i></div>
+          </div>
+          <div class="stat-value">₹4.82 Cr</div>
+          <div class="stat-trend"><i class="lucide-trending-up"></i> +12.4% this month</div>
+        </div>
+        
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Total Leads</span>
+            <div class="stat-icon"><i class="lucide-user-plus"></i></div>
+          </div>
+          <div class="stat-value">1,482</div>
+          <div class="stat-trend up"><i class="lucide-trending-up"></i> +8.2% vs last week</div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Active Applications</span>
+            <div class="stat-icon"><i class="lucide-file-text"></i></div>
+          </div>
+          <div class="stat-value">342</div>
+          <div class="stat-trend down"><i class="lucide-trending-down"></i> -2.4% vs last week</div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Conversion Rate</span>
+            <div class="stat-icon"><i class="lucide-percent"></i></div>
+          </div>
+          <div class="stat-value">18.4%</div>
+          <div class="stat-trend up"><i class="lucide-trending-up"></i> +1.5% this month</div>
+        </div>
+      </div>
+
+      <!-- Dashboard Visual Analytics Section -->
+      <div class="grid grid-3">
+        <!-- Monthly Goal Chart -->
+        <div class="card" style="grid-column: span 2;">
+          <div class="card-header">
+            <h3 class="card-title">Disbursement Target Trend</h3>
+            <select class="form-control" style="width: 140px; padding: 6px 12px; border-radius: var(--radius-sm);">
+              <option>Last 6 Months</option>
+              <option>This Year</option>
+            </select>
+          </div>
+          
+          <div class="dashboard-chart-bar">
+            <div class="chart-col">
+              <div class="chart-bar" style="height: 40%;"></div>
+              <span class="chart-label">Feb</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar" style="height: 65%;"></div>
+              <span class="chart-label">Mar</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar" style="height: 55%;"></div>
+              <span class="chart-label">Apr</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar" style="height: 80%;"></div>
+              <span class="chart-label">May</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar chart-bar-active" style="height: 95%;"></div>
+              <span class="chart-label">Jun</span>
+            </div>
+            <div class="chart-col">
+              <div class="chart-bar" style="height: 70%;"></div>
+              <span class="chart-label">Jul</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Target widget gauge -->
+        <div class="card flex flex-column align-center justify-between p-md">
+          <div class="card-title w-full text-center">Goal Completion</div>
+          
+          <div class="radial-gauge">
+            <svg width="120" height="120">
+              <circle class="radial-gauge-bg" cx="60" cy="60" r="50"></circle>
+              <circle class="radial-gauge-fill" cx="60" cy="60" r="50" style="stroke-dashoffset: 78;"></circle> <!-- 75% complete -->
+            </svg>
+            <div class="radial-gauge-text">75%</div>
+          </div>
+          
+          <div class="w-full">
+            <div class="flex justify-between m-b-md" style="font-size: 13px;">
+              <span class="text-secondary">Disbursed Target</span>
+              <span class="bold">₹3.6 Cr / ₹4.8 Cr</span>
+            </div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" style="width: 75%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activities & Mini widgets -->
+      <div class="grid grid-3">
+        <!-- Table for Leads / Applications status -->
+        <div class="card" style="grid-column: span 2;">
+          <div class="card-header">
+            <h3 class="card-title">Recent Activity Log</h3>
+            <a href="loan-applications.html" class="bold" style="font-size: 13px;">View All</a>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Product</th>
+                  <th>Branch</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="bold">Amit Sharma</td>
+                  <td>Personal Loan</td>
+                  <td>Mumbai Main</td>
+                  <td><span class="badge badge-success">Disbursed</span></td>
+                  <td><a href="loan-application-detail.html"><i class="lucide-eye"></i></a></td>
+                </tr>
+                <tr>
+                  <td class="bold">Priya Patel</td>
+                  <td>Home Loan</td>
+                  <td>Delhi Connaught</td>
+                  <td><span class="badge badge-warning">Verification</span></td>
+                  <td><a href="loan-application-detail.html"><i class="lucide-eye"></i></a></td>
+                </tr>
+                <tr>
+                  <td class="bold">Rajesh Kumar</td>
+                  <td>Business Loan</td>
+                  <td>Pune Deccan</td>
+                  <td><span class="badge badge-info">Under Process</span></td>
+                  <td><a href="loan-application-detail.html"><i class="lucide-eye"></i></a></td>
+                </tr>
+                <tr>
+                  <td class="bold">Neha Gupta</td>
+                  <td>Gold Loan</td>
+                  <td>Mumbai Main</td>
+                  <td><span class="badge badge-danger">Rejected</span></td>
+                  <td><a href="loan-application-detail.html"><i class="lucide-eye"></i></a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        
+        <!-- Branch Metrics widget -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Top Branches</h3>
+            <a href="branches.html" class="bold" style="font-size: 13px;">View All</a>
+          </div>
+          <div class="flex flex-column gap-md">
+            <div>
+              <div class="flex justify-between m-b-md">
+                <span class="bold">Mumbai Main</span>
+                <span class="text-secondary">₹2.4 Cr (92%)</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 92%; background-color: var(--color-success)"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between m-b-md">
+                <span class="bold">Delhi Connaught</span>
+                <span class="text-secondary">₹1.8 Cr (75%)</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 75%;"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between m-b-md">
+                <span class="bold">Pune Deccan</span>
+                <span class="text-secondary">₹0.62 Cr (50%)</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 50%; background-color: var(--color-warning)"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End page-content -->
+      
+      <!-- Footer -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+</body>
+</html>

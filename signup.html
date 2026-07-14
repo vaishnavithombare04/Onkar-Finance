@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Create Admin Account</title>
+  <link rel="stylesheet" href="assets/css/global.css">
+  <link rel="stylesheet" href="assets/css/components.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <div class="auth-panel-left">
+      <div class="flex align-center gap-sm">
+        <div class="logo-icon" style="background-color: rgba(255, 255, 255, 0.2); color: #FFF;">O</div>
+        <span class="logo-text" style="color: #FFF;">Onkar Finance</span>
+      </div>
+      
+      <div class="brand-illustration-container">
+        <h1 class="brand-showcase-title">Join Onkar Management Workspace</h1>
+        <p class="text-muted" style="color: rgba(255,255,255,0.7)">Sign up as a customer agent or regional coordinator to reference leads, process loan files, and track commission payout matrices instantly.</p>
+        
+        <div class="flex flex-column gap-md m-t-md">
+          <div class="brand-feature-item">
+            <div class="brand-feature-icon">
+              <i class="lucide-percent"></i>
+            </div>
+            <div>
+              <h4 style="font-weight: 600;">High Commission Rates</h4>
+              <p style="font-size: 12px; opacity: 0.8">Industry leading commission payouts on successful disbursements.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <p style="font-size: 12px; opacity: 0.6;">&copy; 2026 Onkar Finance Group.</p>
+    </div>
+    
+    <div class="auth-panel-right">
+      <div class="auth-card" style="max-width: 480px;">
+        <div class="auth-header">
+          <h2 class="auth-title">Create Account</h2>
+          <p class="auth-subtitle">Register to begin onboarding loan files</p>
+        </div>
+        
+        <form id="signupForm" class="flex flex-column gap-sm">
+          <div class="form-group">
+            <label class="form-label" for="fullname">Full Name</label>
+            <input type="text" id="fullname" class="form-control" placeholder="John Doe">
+            <span class="form-error">Please enter name</span>
+          </div>
+          
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="signupEmail">Email Address</label>
+              <input type="email" id="signupEmail" class="form-control" placeholder="john@example.com">
+              <span class="form-error">Please enter email</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="phone">Phone Number</label>
+              <input type="text" id="phone" class="form-control" placeholder="+91 99999 88888">
+              <span class="form-error">Please enter phone</span>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="roleSelect">Sign Up As</label>
+            <select id="roleSelect" class="form-control">
+              <option value="Customer">Customer (Borrower)</option>
+              <option value="Agent">Agent / DSA Partner</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label" for="signupPassword">Password</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="signupPassword" class="form-control" placeholder="••••••••">
+              <i class="password-toggle-icon lucide-eye"></i>
+            </div>
+            <div class="password-strength-container">
+              <div class="password-strength-bars">
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+                <div class="strength-bar"></div>
+              </div>
+              <div class="strength-text">Too Short</div>
+            </div>
+            <span class="form-error">Invalid password</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" class="form-control" placeholder="••••••••">
+            <span class="form-error">Passwords must match</span>
+          </div>
+          
+          <label class="flex align-center gap-sm pointer m-b-md" style="font-size: 13px;">
+            <input type="checkbox" id="terms" style="accent-color: var(--color-primary);" required>
+            <span>I agree to the <a href="#" class="bold">Terms &amp; Conditions</a></span>
+          </label>
+          
+          <button type="submit" class="btn btn-primary w-full">Create Account</button>
+        </form>
+        
+        <div class="text-center" style="font-size: 13px; color: var(--color-text-secondary);">
+          Already have an account? <a href="index.html" class="bold">Sign In</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP Verification Modal -->
+  <div id="otpModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 400px; text-align: center;">
+      <i class="lucide-x modal-close" onclick="closeModal('otpModal')"></i>
+      <div style="background-color: var(--color-primary-light); width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--color-primary);">
+        <i class="lucide-smartphone" style="width: 32px; height: 32px;"></i>
+      </div>
+      <h3>Phone Verification</h3>
+      <p class="text-secondary" style="font-size: 13px; margin: 8px 0 20px;">We've sent a 4-digit verification code to your registered mobile number.</p>
+      
+      <div class="otp-container">
+        <input type="text" maxlength="1" class="otp-input">
+        <input type="text" maxlength="1" class="otp-input">
+        <input type="text" maxlength="1" class="otp-input">
+        <input type="text" maxlength="1" class="otp-input">
+      </div>
+      
+      <button onclick="verifyOtp()" class="btn btn-primary w-full m-t-md">Verify &amp; Activate</button>
+      <p class="text-muted" style="font-size: 12px; margin-top: 16px;">Didn't get the code? <a href="#" class="bold">Resend OTP</a></p>
+    </div>
+  </div>
+
+  <script src="assets/js/global.js"></script>
+  <script src="assets/js/components.js"></script>
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

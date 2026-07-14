@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Marketing Campaigns</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Wizard steps */
+    .wizard-steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    .wizard-step {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      border-bottom: 3px solid var(--color-border);
+      flex: 1;
+      text-align: center;
+      padding-bottom: 8px;
+    }
+    .wizard-step.active {
+      color: var(--color-primary);
+      border-bottom-color: var(--color-primary);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Marketing Campaigns</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage promotional campaigns, send bulk WhatsApp/SMS notifications, and track analytics.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('createCampaignModal')">
+          <i class="lucide-plus"></i> Create Campaign
+        </button>
+      </div>
+
+      <!-- Campaign list table card -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Campaign Name</th>
+                <th>Channel</th>
+                <th>Status</th>
+                <th>Sent / Delivered</th>
+                <th>Opened / Clicked</th>
+                <th>Launch Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bold">Monsoon Special Home Loan</td>
+                <td><span class="badge badge-success"><i class="lucide-message-circle"></i> WhatsApp</span></td>
+                <td><span class="badge badge-success">Completed</span></td>
+                <td>10,000 / 9,800</td>
+                <td>42% / 15%</td>
+                <td>10 Jul 2026</td>
+                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Stats</button></td>
+              </tr>
+              <tr>
+                <td class="bold">Aadhaar E-Sign Reminder</td>
+                <td><span class="badge badge-info"><i class="lucide-message-square"></i> SMS</span></td>
+                <td><span class="badge badge-success">Completed</span></td>
+                <td>2,400 / 2,350</td>
+                <td>98% / 60%</td>
+                <td>12 Jul 2026</td>
+                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Stats</button></td>
+              </tr>
+              <tr>
+                <td class="bold">Festival Gold Loan Discount</td>
+                <td><span class="badge badge-success"><i class="lucide-message-circle"></i> WhatsApp</span></td>
+                <td><span class="badge badge-warning">Scheduled</span></td>
+                <td>0 / 0</td>
+                <td>0% / 0%</td>
+                <td>20 Jul 2026</td>
+                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Modify</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+  <!-- Create Campaign Stepper Wizard Modal -->
+  <div id="createCampaignModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 550px;">
+      <i class="lucide-x modal-close" onclick="closeModal('createCampaignModal')"></i>
+      <h3>Create New Marketing Campaign</h3>
+      
+      <!-- Stepper status -->
+      <div class="wizard-steps m-t-md">
+        <div class="wizard-step active" id="wStep1">1. Audience</div>
+        <div class="wizard-step" id="wStep2">2. Template</div>
+        <div class="wizard-step" id="wStep3">3. Schedule</div>
+      </div>
+      
+      <!-- Wizard Bodies -->
+      <div id="wBody1" class="wizard-body">
+        <div class="form-group">
+          <label class="form-label">Campaign Name</label>
+          <input type="text" class="form-control" placeholder="Festival Promo Offer 2026">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target Audience Segment</label>
+          <select class="form-control">
+            <option>All Active Borrowers</option>
+            <option>Pending KYC Leads</option>
+            <option>DSAs &amp; External Agents</option>
+            <option>Custom Filter List</option>
+          </select>
+        </div>
+        <button class="btn btn-primary w-full m-t-md" onclick="nextWizardStep(2)">Proceed to Template</button>
+      </div>
+
+      <div id="wBody2" class="wizard-body" style="display: none;">
+        <div class="form-group">
+          <label class="form-label">Choose Message Template</label>
+          <select class="form-control" onchange="previewTemplateText(this)">
+            <option value="Select a pre-approved template...">Select a pre-approved template...</option>
+            <option value="Hello {{name}}, grab your Monsoon Personal Loan at just 8.9%! Click to apply.">Monsoon Offer personal loan</option>
+            <option value="Dear {{name}}, KYC pending for APP-{{id}}. Upload Aadhaar XML file now.">KYC Pending Reminder</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Template Preview</label>
+          <div style="background-color:var(--color-bg); padding:16px; border-radius:var(--radius-md); font-size:13px;" id="templatePreviewBox">
+            Select a template from above...
+          </div>
+        </div>
+        <div class="flex justify-between m-t-md">
+          <button class="btn btn-outline" onclick="nextWizardStep(1)">Back</button>
+          <button class="btn btn-primary" onclick="nextWizardStep(3)">Schedule Campaign</button>
+        </div>
+      </div>
+
+      <div id="wBody3" class="wizard-body" style="display: none;">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label">Send Channel</label>
+            <select class="form-control">
+              <option>WhatsApp API</option>
+              <option>Transactional SMS Gateway</option>
+              <option>Corporate Email Server</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Schedule Time</label>
+            <input type="datetime-local" class="form-control">
+          </div>
+        </div>
+        
+        <div class="flex justify-between m-t-md">
+          <button class="btn btn-outline" onclick="nextWizardStep(2)">Back</button>
+          <button class="btn btn-primary" onclick="submitCampaign()">Launch Campaign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+      
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function nextWizardStep(step) {
+      document.querySelectorAll('.wizard-body').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+      
+      document.getElementById('wBody' + step).style.display = 'block';
+      document.getElementById('wStep' + step).classList.add('active');
+    }
+
+    function previewTemplateText(select) {
+      document.getElementById('templatePreviewBox').textContent = select.value;
+    }
+
+    function submitCampaign() {
+      closeModal('createCampaignModal');
+      showToast('Campaign scheduled successfully!', 'success');
+      nextWizardStep(1);
+    }
+  }
+  </script>
+</body>
+</html>

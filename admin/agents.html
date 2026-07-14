@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — DSAs &amp; Agent Network</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Agent &amp; DSA Partners</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage external sourcing channels, track conversions, and monitor commission allocations.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Agent onboarding flow coming soon!', 'info')">
+          <i class="lucide-user-plus"></i> Onboard New Agent
+        </button>
+      </div>
+
+      <!-- Agent Metrics Row -->
+      <div class="grid grid-3">
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Active Agents</span>
+            <div class="stat-icon"><i class="lucide-shield-user"></i></div>
+          </div>
+          <div class="stat-value">48</div>
+        </div>
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Commission Paid (MTD)</span>
+            <div class="stat-icon"><i class="lucide-banknote"></i></div>
+          </div>
+          <div class="stat-value">₹5,20,000</div>
+        </div>
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">DSA Referrals (MTD)</span>
+            <div class="stat-icon"><i class="lucide-users"></i></div>
+          </div>
+          <div class="stat-value">124</div>
+        </div>
+      </div>
+
+      <!-- Agents Table -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Agent Name</th>
+                <th>Contact</th>
+                <th>Leads Referred</th>
+                <th>Conversion Rate</th>
+                <th>Commission Earned</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="agentTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+  <!-- Commission Report Modal -->
+  <div id="commissionModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('commissionModal')"></i>
+      <h3>DSA Commission Statement</h3>
+      <p class="text-secondary m-b-md" style="font-size: 13px;">Breakdown of payouts for <span class="bold" id="modalAgentName">Suresh Patil</span>.</p>
+      
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>App ID</th>
+              <th>Applicant</th>
+              <th>Sanctioned Amount</th>
+              <th>Payout %</th>
+              <th>Commission</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="bold">APP-8902</td>
+              <td>Amit Sharma</td>
+              <td>₹5,00,000</td>
+              <td>1.2%</td>
+              <td class="bold text-success">₹6,000</td>
+            </tr>
+            <tr>
+              <td class="bold">APP-8906</td>
+              <td>Vikram Malhotra</td>
+              <td>₹8,00,000</td>
+              <td>1.5%</td>
+              <td class="bold text-success">₹12,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="flex justify-end gap-sm m-t-md">
+        <button class="btn btn-outline" onclick="closeModal('commissionModal')">Close Statement</button>
+        <button class="btn btn-primary" onclick="showToast('Processing commission transfer...', 'success')"><i class="lucide-credit-card"></i> Pay Now</button>
+      </div>
+    </div>
+  </div>
+  
+  </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function renderAgents() {
+      const agents = api.getDb().agents;
+      const tbody = document.getElementById('agentTableBody');
+      tbody.innerHTML = '';
+      
+      agents.forEach(agent => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">
+              <div class="flex align-center gap-sm">
+                <div class="avatar" style="width:32px; height:32px;">${agent.name.split(' ').map(n => n[0]).join('')}</div>
+                <span>${agent.name}</span>
+              </div>
+            </td>
+            <td>${agent.contact}</td>
+            <td class="bold">${agent.referred}</td>
+            <td>${agent.conversion}</td>
+            <td class="bold text-success">${formatCurrency(agent.commission)}</td>
+            <td><span class="badge badge-success">${agent.status}</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openCommissionModal('${agent.name}')">
+                Commission Report
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openCommissionModal(name) {
+      document.getElementById('modalAgentName').textContent = name;
+      openModal('commissionModal');
+    }
+    
+    renderAgents();
+  }
+  </script>
+</body>
+</html>

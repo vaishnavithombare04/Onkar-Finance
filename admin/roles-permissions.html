@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Access Control Roles</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .permissions-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      padding: 12px 16px;
+      align-items: center;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .permissions-grid:last-child {
+      border-bottom: none;
+    }
+    .permissions-header {
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      background-color: var(--color-bg);
+      border-radius: var(--radius-sm);
+    }
+    /* Switch toggle styles */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--color-border);
+      transition: .4s;
+      border-radius: 20px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--color-primary);
+    }
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Roles &amp; Permissions Matrix</h1>
+          <p class="text-secondary" style="font-size: 13px;">Define access levels, custom roles, and fine-grained module controls.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Creating custom roles system enabled soon', 'info')">
+          <i class="lucide-shield-plus"></i> Create Custom Role
+        </button>
+      </div>
+
+      <!-- Layout: Roles list on left, Permission accordion on right -->
+      <div class="grid grid-3" style="align-items: start;">
+        <!-- Left: Roles selector -->
+        <div class="flex flex-column gap-sm">
+          <div class="card" style="padding: 16px;">
+            <h4 class="bold m-b-md">System Roles</h4>
+            <div class="flex flex-column gap-sm">
+              <button class="btn btn-primary w-full text-left" style="justify-content: flex-start;" onclick="selectRole('Super Admin')"><i class="lucide-shield"></i> Super Admin</button>
+              <button class="btn btn-outline w-full text-left" style="justify-content: flex-start;" onclick="selectRole('Branch Manager')"><i class="lucide-user-check"></i> Branch Manager</button>
+              <button class="btn btn-outline w-full text-left" style="justify-content: flex-start;" onclick="selectRole('Relationship Manager')"><i class="lucide-users"></i> Relationship Manager</button>
+              <button class="btn btn-outline w-full text-left" style="justify-content: flex-start;" onclick="selectRole('Verification Agent')"><i class="lucide-search"></i> Verification Agent</button>
+              <button class="btn btn-outline w-full text-left" style="justify-content: flex-start;" onclick="selectRole('Partner / DSA')"><i class="lucide-handshake"></i> Partner / DSA</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Permission Accordion Table -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 16px;">
+          <div class="card">
+            <h3 class="card-title m-b-md">Permissions Configurator for: <span id="activeRoleName" class="text-success">Super Admin</span></h3>
+            
+            <div class="permission-accordion open">
+              <div class="permission-accordion-header" onclick="toggleAccordion(this)">
+                <span>CRM &amp; Lead Management</span>
+                <i class="lucide-chevron-down"></i>
+              </div>
+              <div class="permission-accordion-body" style="padding: 0;">
+                <div class="permissions-grid permissions-header">
+                  <span>Module</span><span>View</span><span>Create</span><span>Edit</span><span>Delete</span><span>Export</span>
+                </div>
+                <div class="permissions-grid">
+                  <span>Leads Records</span>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="permissions-grid">
+                  <span>Customer KYC Documents</span>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="permission-accordion">
+              <div class="permission-accordion-header" onclick="toggleAccordion(this)">
+                <span>Loan Processing Engine</span>
+                <i class="lucide-chevron-down"></i>
+              </div>
+              <div class="permission-accordion-body" style="padding: 0;">
+                <div class="permissions-grid permissions-header">
+                  <span>Module</span><span>View</span><span>Create</span><span>Edit</span><span>Delete</span><span>Export</span>
+                </div>
+                <div class="permissions-grid">
+                  <span>Credit Decision Engine</span>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+                <div class="permissions-grid">
+                  <span>Direct Disbursements</span>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Save Changes button -->
+            <div class="flex justify-end m-t-md">
+              <button class="btn btn-primary" onclick="showToast('Access control settings saved successfully!', 'success')"><i class="lucide-save"></i> Save Permissions Matrix</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function selectRole(roleName) {
+      document.getElementById('activeRoleName').textContent = roleName;
+      
+      // highlight active role button
+      const buttons = document.querySelectorAll('.card button');
+      buttons.forEach(btn => {
+        if (btn.textContent.includes(roleName)) {
+          btn.className = 'btn btn-primary w-full text-left';
+        } else {
+          btn.className = 'btn btn-outline w-full text-left';
+        }
+      });
+      showToast('Selected role: ' + roleName, 'info');
+    }
+
+    function toggleAccordion(header) {
+      const accordion = header.closest('.permission-accordion');
+      accordion.classList.toggle('open');
+    }
+  }
+  </script>
+</body>
+</html>

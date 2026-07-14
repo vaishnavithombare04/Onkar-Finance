@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Vendors &amp; Banks</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <div data-component="sidebar"></div>
+    
+    <div class="main-content">
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Banking Partners &amp; API Integrations</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage associated banks, financial products offered, and track sanction ratios.</p>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Add partner dialog coming soon', 'info')">
+          <i class="lucide-plus"></i> Add Banking Partner
+        </button>
+      </div>
+
+      <!-- Partner cards / list -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Bank / Vendor Name</th>
+                <th>Products Offered</th>
+                <th>Applications Routed</th>
+                <th>Sanktion / Approval Rate</th>
+                <th>API Integration Status</th>
+                <th>Support Contact</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bold">HDFC Bank Ltd.</td>
+                <td>Home Loan, Personal Loan</td>
+                <td class="bold">142</td>
+                <td>
+                  <span class="bold">82%</span>
+                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 82%;"></div></div>
+                </td>
+                <td><span class="badge badge-success">API Connected</span></td>
+                <td>hdfc.support@onkar.com</td>
+                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
+              </tr>
+              <tr>
+                <td class="bold">ICICI Bank Ltd.</td>
+                <td>Business Loan, Auto Loan</td>
+                <td class="bold">98</td>
+                <td>
+                  <span class="bold">75%</span>
+                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 75%;"></div></div>
+                </td>
+                <td><span class="badge badge-success">API Connected</span></td>
+                <td>icici.api@onkar.com</td>
+                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
+              </tr>
+              <tr>
+                <td class="bold">State Bank of India (SBI)</td>
+                <td>Agriculture Loan, Home Loan</td>
+                <td class="bold">210</td>
+                <td>
+                  <span class="bold">64%</span>
+                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 64%; background-color: var(--color-warning);"></div></div>
+                </td>
+                <td><span class="badge badge-warning">Manual Routing</span></td>
+                <td>sbi.manual@onkar.com</td>
+                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+</body>
+</html>
