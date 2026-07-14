@@ -55,7 +55,8 @@ const iconMapping = {
   'edit-3': 'pencil-square',
   'arrow-down-left': 'arrow-down-left-circle',
   'arrow-up-right': 'arrow-up-right-circle',
-  'home': 'house'
+  'home': 'house',
+  'more-horizontal': 'three-dots'
 };
 
 function initTheme() {

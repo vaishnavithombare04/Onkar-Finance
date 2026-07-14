@@ -61,14 +61,16 @@ async function loadComponent(selector, path) {
     const html = await response.text();
     element.innerHTML = html;
     
-    // Rewrite URLs dynamically if inside admin folder
+    // Rewrite URLs dynamically if inside admin or branch-manager folder
     const isInsideAdmin = window.location.pathname.includes('/admin/');
-    if (isInsideAdmin) {
+    const isInsideBM = window.location.pathname.includes('/branch-manager/');
+    if (isInsideAdmin || isInsideBM) {
+      const folderPrefix = isInsideAdmin ? 'admin/' : 'branch-manager/';
       element.querySelectorAll('a').forEach(a => {
         const href = a.getAttribute('href');
         if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('javascript:')) {
-          if (href.startsWith('admin/')) {
-            a.setAttribute('href', href.replace('admin/', ''));
+          if (href.startsWith(folderPrefix)) {
+            a.setAttribute('href', href.replace(folderPrefix, ''));
           } else {
             a.setAttribute('href', '../' + href);
           }
@@ -108,40 +110,70 @@ function fallbackComponentRenderer(selector) {
 
   const currentPath = window.location.pathname;
   const isInsideAdmin = currentPath.includes('/admin/');
-  const rootPrefix = isInsideAdmin ? '../' : './';
+  const isInsideBM = currentPath.includes('/branch-manager/');
+  const rootPrefix = (isInsideAdmin || isInsideBM) ? '../' : './';
   const adminPrefix = isInsideAdmin ? '' : 'admin/';
 
   if (selector === '[data-component="sidebar"]') {
-    element.innerHTML = `
-      <div class="sidebar-nav">
-        <div class="sidebar-header">
-          <div class="logo-icon">O</div>
-          <span class="logo-text">Onkar Finance</span>
-        </div>
-        <ul class="sidebar-menu">
-          <li><a href="${rootPrefix}${adminPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}vendors-banks.html" class="nav-item" data-page="vendors"><i class="lucide-landmark"></i><span class="nav-label">Banks Partners</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}branches.html" class="nav-item" data-page="branches"><i class="lucide-git-branch"></i><span class="nav-label">Branches</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}roles-permissions.html" class="nav-item" data-page="roles"><i class="lucide-key-round"></i><span class="nav-label">Permissions</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}marketing-campaigns.html" class="nav-item" data-page="campaigns"><i class="lucide-megaphone"></i><span class="nav-label">Campaigns</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}reports-analytics.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}settings.html" class="nav-item" data-page="settings"><i class="lucide-settings"></i><span class="nav-label">Settings</span></a></li>
-          <li><a href="${rootPrefix}${adminPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
-        </ul>
-        <div class="sidebar-footer">
-          <div class="theme-toggle-btn">
-            <i class="lucide-moon"></i>
-            <span class="theme-text">Dark Mode</span>
+    if (isInsideBM) {
+      element.innerHTML = `
+        <div class="sidebar-nav">
+          <div class="sidebar-header">
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
+            <span class="logo-text">Onkar Finance</span>
+          </div>
+          <ul class="sidebar-menu">
+            <li><a href="${rootPrefix}branch-manager/index.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/applications.html" class="nav-item" data-page="applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/application-detail.html" class="nav-item" data-page="detail"><i class="lucide-info"></i><span class="nav-label">App Detail</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/communication.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/reports.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
+            <li><a href="${rootPrefix}branch-manager/profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">Settings</span></a></li>
+          </ul>
+          <div class="sidebar-footer">
+            <div class="theme-toggle-btn">
+              <i class="lucide-moon"></i>
+              <span class="theme-text">Dark Mode</span>
+            </div>
           </div>
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      element.innerHTML = `
+        <div class="sidebar-nav">
+          <div class="sidebar-header">
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
+            <span class="logo-text">Onkar Finance</span>
+          </div>
+          <ul class="sidebar-menu">
+            <li><a href="${rootPrefix}admin/dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${rootPrefix}admin/leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
+            <li><a href="${rootPrefix}admin/customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
+            <li><a href="${rootPrefix}admin/loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${rootPrefix}admin/employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
+            <li><a href="${rootPrefix}admin/agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
+            <li><a href="${rootPrefix}admin/vendors-banks.html" class="nav-item" data-page="vendors"><i class="lucide-landmark"></i><span class="nav-label">Banks Partners</span></a></li>
+            <li><a href="${rootPrefix}admin/branches.html" class="nav-item" data-page="branches"><i class="lucide-git-branch"></i><span class="nav-label">Branches</span></a></li>
+            <li><a href="${rootPrefix}admin/roles-permissions.html" class="nav-item" data-page="roles"><i class="lucide-key-round"></i><span class="nav-label">Permissions</span></a></li>
+            <li><a href="${rootPrefix}admin/communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
+            <li><a href="${rootPrefix}admin/marketing-campaigns.html" class="nav-item" data-page="campaigns"><i class="lucide-megaphone"></i><span class="nav-label">Campaigns</span></a></li>
+            <li><a href="${rootPrefix}admin/reports-analytics.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
+            <li><a href="${rootPrefix}admin/settings.html" class="nav-item" data-page="settings"><i class="lucide-settings"></i><span class="nav-label">Settings</span></a></li>
+            <li><a href="${rootPrefix}admin/profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
+          </ul>
+          <div class="sidebar-footer">
+            <div class="theme-toggle-btn">
+              <i class="lucide-moon"></i>
+              <span class="theme-text">Dark Mode</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
     const isExpanded = localStorage.getItem('onkar-sidebar-expanded') === '1';
     const sidebarEl = element.querySelector('.sidebar-nav');
     if (sidebarEl) {
@@ -149,6 +181,8 @@ function fallbackComponentRenderer(selector) {
     }
     highlightActiveSidebar();
   } else if (selector === '[data-component="topbar"]') {
+    const avatar = isInsideBM ? 'BM' : 'AD';
+    const name = isInsideBM ? 'Amit D.' : 'Aditya S.';
     element.innerHTML = `
       <div class="topbar">
         <div class="topbar-tabs">
@@ -165,9 +199,9 @@ function fallbackComponentRenderer(selector) {
             <i class="lucide-bell"></i>
             <div class="badge-dot"></div>
           </div>
-          <div class="user-profile" onclick="location.href='${rootPrefix}${adminPrefix}profile.html'">
-            <div class="avatar">AD</div>
-            <div class="text-secondary bold" style="font-size: 13px;">Aditya S.</div>
+          <div class="user-profile" onclick="location.href='${rootPrefix}${isInsideBM ? 'branch-manager/' : 'admin/'}profile.html'">
+            <div class="avatar">${avatar}</div>
+            <div class="text-secondary bold" style="font-size: 13px;">${name}</div>
           </div>
         </div>
       </div>
@@ -241,9 +275,11 @@ function initTabs(containerSelector) {
 // Trigger components setup
 document.addEventListener('DOMContentLoaded', () => {
   const isInsideAdmin = window.location.pathname.includes('/admin/');
-  const rootPrefix = isInsideAdmin ? '../' : './';
+  const isInsideBM = window.location.pathname.includes('/branch-manager/');
+  const rootPrefix = (isInsideAdmin || isInsideBM) ? '../' : './';
+  const sidebarPath = isInsideBM ? `${rootPrefix}components/sidebar-bm.html` : `${rootPrefix}components/sidebar.html`;
 
-  loadComponent('[data-component="sidebar"]', `${rootPrefix}components/sidebar.html`);
+  loadComponent('[data-component="sidebar"]', sidebarPath);
   loadComponent('[data-component="topbar"]', `${rootPrefix}components/topbar.html`);
   loadComponent('[data-component="footer"]', `${rootPrefix}components/footer.html`);
 
