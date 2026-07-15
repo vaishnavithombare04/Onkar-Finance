@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details - Onkar Finance Employee Portal (Employee Portal)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body data-theme="light">
+    <!-- App Header -->
+        <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search branch files, loans, agents...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 280px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Verification request for Amit Sharma', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">New lead &quot;Amit Sharma&quot; registered</span><small class="text-muted d-block mt-1">2 mins ago</small></a></li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Application approved successfully', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Personal Loan APP-8902 is approved</span><small class="text-muted d-block mt-1">1 hour ago</small></a></li>
+                    <li><a class="dropdown-item py-2 text-wrap" href="#" onclick="showToast('File escalated to audit committee', 'warning')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Lead APP-8904 is escalated to audit</span><small class="text-muted d-block mt-1">Yesterday</small></a></li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+                        <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Employee Workspace</span>
+                <a href="index.html" class="sidebar-item">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="leads.html" class="sidebar-item">
+                    <i class="bi bi-funnel"></i> <span>Assigned Leads</span>
+                </a>
+                <a href="customers.html" class="sidebar-item">
+                    <i class="bi bi-people"></i> <span>My Customers</span>
+                </a>
+                <a href="applications.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-medical"></i> <span>My Applications</span>
+                </a>
+                <a href="application-detail.html" class="sidebar-item active">
+                    <i class="bi bi-info-circle"></i> <span>Application Detail</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">Operations</span>
+                <a href="communication.html" class="sidebar-item">
+                    <i class="bi bi-chat-left-text"></i> <span>My Call Center</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="bi bi-gear"></i> <span>My Profile Settings</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-item" id="themeToggleBtn" style="cursor: pointer;">
+                    <i class="bi bi-moon"></i> <span>Dark Mode</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content text-start">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 font-weight-bold mb-0">Underwriting Application File</h1>
+                    <p class="text-muted font-13 mb-0" id="detailSubHeader">Verify OCR documents, fetch CIBIL records, and process approval rules.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" onclick="window.location.href='applications.html'"><i class="bi bi-arrow-left"></i> Back to Board</button>
+                </div>
+            </div>
+
+            <!-- Detail Grid Layout -->
+            <div class="row g-4">
+                <!-- Left Main Section -->
+                <div class="col-lg-8">
+                    <!-- Loan details card -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start border-bottom pb-3 mb-3">
+                                <div>
+                                    <h4 class="fw-800 text-primary mb-1" id="detAppCustomer">Loading...</h4>
+                                    <span class="text-muted font-12">Application ID: <strong id="detAppId">N/A</strong></span>
+                                </div>
+                                <span class="status-badge badge-pending font-12" id="detAppStatusBadge">Pending</span>
+                            </div>
+
+                            <div class="row g-3 font-13 text-secondary">
+                                <div class="col-md-4">
+                                    <span class="d-block text-tertiary font-11 fw-600 text-uppercase mb-1">Loan Product</span>
+                                    <strong id="detAppProduct" class="text-primary">N/A</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="d-block text-tertiary font-11 fw-600 text-uppercase mb-1">Requested Amount</span>
+                                    <strong id="detAppAmount">N/A</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="d-block text-tertiary font-11 fw-600 text-uppercase mb-1">Assigned Executive</span>
+                                    <strong id="detAppExecutive">N/A</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- OCR document checker card -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-1">KYC & Financial Documents Processing</h5>
+                            <p class="text-muted font-11 mb-3">Upload required files and run the OCR Scanning Engine to auto-extract details.</p>
+
+                            <div class="d-flex flex-column gap-3 mb-3">
+                                <!-- Aadhaar -->
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+                                        <div>
+                                            <h6 class="mb-0 font-13 font-weight-600">Aadhaar Card Attachment (KYC)</h6>
+                                            <small class="text-muted">Aadhaar identification proof scan</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="status-aadhaar"><span class="badge bg-secondary font-10">No File</span></span>
+                                        <button class="btn btn-outline-primary btn-xs py-1 px-2 font-10" onclick="simulateUpload('aadhaar')">Upload</button>
+                                    </div>
+                                </div>
+                                <!-- PAN -->
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-image fs-4 text-primary"></i>
+                                        <div>
+                                            <h6 class="mb-0 font-13 font-weight-600">PAN Card Attachment (KYC)</h6>
+                                            <small class="text-muted">Income Tax permanent account number card</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="status-pan"><span class="badge bg-secondary font-10">No File</span></span>
+                                        <button class="btn btn-outline-primary btn-xs py-1 px-2 font-10" onclick="simulateUpload('pan')">Upload</button>
+                                    </div>
+                                </div>
+                                <!-- Bank Statement -->
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-spreadsheet fs-4 text-success"></i>
+                                        <div>
+                                            <h6 class="mb-0 font-13 font-weight-600">Bank Statement / Salary Slips</h6>
+                                            <small class="text-muted">6-month bank credits statement ledger</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="status-bank"><span class="badge bg-secondary font-10">No File</span></span>
+                                        <button class="btn btn-outline-primary btn-xs py-1 px-2 font-10" onclick="simulateUpload('bank')">Upload</button>
+                                    </div>
+                                </div>
+                                <!-- GST Cert -->
+                                <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-check fs-4 text-info"></i>
+                                        <div>
+                                            <h6 class="mb-0 font-13 font-weight-600">GST Registration Certificate (Optional)</h6>
+                                            <small class="text-muted">GSTIN business certification</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="status-gst"><span class="badge bg-secondary font-10">No File</span></span>
+                                        <button class="btn btn-outline-primary btn-xs py-1 px-2 font-10" onclick="simulateUpload('gst')">Upload</button>
+                                    </div>
+                                </div>
+                                <!-- ITR Forms -->
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <i class="bi bi-file-earmark-lock fs-4 text-warning"></i>
+                                        <div>
+                                            <h6 class="mb-0 font-13 font-weight-600">Income Tax Returns (ITR-V) (Optional)</h6>
+                                            <small class="text-muted">Abridged ITR form acknowledgment</small>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span id="status-itr"><span class="badge bg-secondary font-10">No File</span></span>
+                                        <button class="btn btn-outline-primary btn-xs py-1 px-2 font-10" onclick="simulateUpload('itr')">Upload</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary btn-sm w-100" id="btnRunOcr" onclick="runOcrExtractor()"><i class="bi bi-cpu"></i> Scan Uploads & Simulate OCR Extraction</button>
+
+                            <!-- OCR Metadata Panel -->
+                            <div class="mt-4 border rounded p-3 bg-light" id="ocrDetailsPanel" style="display: none;">
+                                <h6 class="font-12 fw-bold text-uppercase text-primary mb-2">OCR Extracted Metadata</h6>
+                                <div class="d-flex flex-column gap-2 font-13 text-secondary">
+                                    <div><strong>Extracted Name:</strong> <span id="extractedName">N/A</span></div>
+                                    <div><strong>Extracted PAN:</strong> <span id="extractedPan" class="text-monospace fw-bold">N/A</span></div>
+                                    <div><strong>Extracted Aadhaar:</strong> <span id="extractedAadhaar" class="text-monospace fw-bold">N/A</span></div>
+                                    <div><strong>Extracted Monthly Income:</strong> <span id="extractedIncome" class="fw-bold text-success">N/A</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Sidebar Underwriting parameters -->
+                <div class="col-lg-4">
+                    <!-- CIBIL checker API widget -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-1">CIBIL Credit Score</h5>
+                            <p class="text-muted font-11 mb-3">API integrations verify CRIF / Experian credit metrics.</p>
+
+                            <div class="text-center py-3 border rounded bg-light mb-3">
+                                <span class="d-block text-tertiary font-11 fw-600 text-uppercase mb-1">Credit Score</span>
+                                <h2 class="mb-1 text-success font-weight-800" id="detCibilScore">748</h2>
+                                <span class="badge bg-success font-10" id="cibilLabel">Excellent Score</span>
+                            </div>
+
+                            <button class="btn btn-primary btn-sm w-100" onclick="fetchCreditScore()"><i class="bi bi-arrow-repeat"></i> Re-fetch Credit Bureau Score</button>
+                        </div>
+                    </div>
+
+                    <!-- Underwriting Rule Engine checklist -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Rules Eligibility Checklist</h5>
+                            
+                            <div class="d-flex flex-column gap-2 font-13 text-secondary">
+                                <div class="d-flex justify-content-between">
+                                    <span>Income Requirement (₹40k+)</span>
+                                    <span class="text-muted fw-bold" id="ruleIncome"><i class="bi bi-clock"></i> Awaiting OCR</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Age Requirement (21-58)</span>
+                                    <span class="text-muted fw-bold" id="ruleAge"><i class="bi bi-clock"></i> Awaiting OCR</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>CIBIL Score (700+)</span>
+                                    <span class="text-muted fw-bold" id="ruleCibil"><i class="bi bi-clock"></i> Awaiting OCR</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>GST Verification</span>
+                                    <span class="text-muted fw-bold" id="ruleGst"><i class="bi bi-clock"></i> Awaiting OCR</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>ITR Tax Compliance</span>
+                                    <span class="text-muted fw-bold" id="ruleItr"><i class="bi bi-clock"></i> Awaiting OCR</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Executive Action Decision buttons -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Workflow Operations</h5>
+                            <button class="btn btn-success btn-sm w-100 mb-2" onclick="processWorkflowAction('Approved')"><i class="bi bi-check-lg"></i> Approve Application</button>
+                            <button class="btn btn-secondary btn-sm w-100 mb-2" onclick="processWorkflowAction('Bank Submission')"><i class="bi bi-bank"></i> Submit to Partner Bank</button>
+                            <button class="btn btn-danger btn-sm w-100" onclick="processWorkflowAction('Rejected')"><i class="bi bi-x-lg"></i> Reject Application</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+
+    <script>
+        let currentAppId = 'APP701';
+        let uploadedFiles = {
+            aadhaar: false,
+            pan: false,
+            bank: false,
+            gst: false,
+            itr: false
+        };
+
+        function simulateUpload(docType) {
+            uploadedFiles[docType] = true;
+            document.getElementById(`status-${docType}`).innerHTML = '<span class="badge bg-success font-10">Uploaded</span>';
+            showToast(`${docType.toUpperCase()} file uploaded successfully!`, 'success');
+        }
+
+        function runOcrExtractor() {
+            if (!uploadedFiles.aadhaar || !uploadedFiles.pan || !uploadedFiles.bank) {
+                showToast("Please upload Aadhaar, PAN, and Bank statements first!", "warning");
+                return;
+            }
+
+            const app = mockDB.applications.find(a => a.id === currentAppId) || { customer: 'Applicant', amount: '₹15L' };
+            showToast("Initializing OCR scanner and document parsers...", "reminder");
+            
+            setTimeout(() => {
+                // Display dynamic OCR metadata panel
+                document.getElementById('ocrDetailsPanel').style.display = 'block';
+                document.getElementById('extractedName').innerText = app.customer;
+                document.getElementById('extractedPan').innerText = 'ABCDE' + Math.floor(1000 + Math.random() * 9000) + 'F';
+                document.getElementById('extractedAadhaar').innerText = '1234-5678-' + Math.floor(1000 + Math.random() * 9000);
+                document.getElementById('extractedIncome').innerText = '₹76,000 / mo';
+
+                // Display Rules pass/fail status
+                document.getElementById('ruleIncome').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Pass</span>';
+                document.getElementById('ruleAge').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Pass</span>';
+                document.getElementById('ruleCibil').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Pass</span>';
+                
+                if (uploadedFiles.gst) {
+                    document.getElementById('ruleGst').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Pass (Valid GSTIN)</span>';
+                } else {
+                    document.getElementById('ruleGst').innerHTML = '<span class="text-secondary fw-bold"><i class="bi bi-dash-circle-fill"></i> Skipped</span>';
+                }
+
+                if (uploadedFiles.itr) {
+                    document.getElementById('ruleItr').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Pass (ITR filed)</span>';
+                } else {
+                    document.getElementById('ruleItr').innerHTML = '<span class="text-secondary fw-bold"><i class="bi bi-dash-circle-fill"></i> Skipped</span>';
+                }
+
+                showToast("OCR scanning completed! Rules checklist updated.", "success");
+                logAudit('Karan Joshi', 'Underwriting', 'OCR Extraction', `Analyzed files for ${currentAppId} and matched customer identities.`);
+            }, 1500);
+        }
+
+        function loadApplicationDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const myApps = mockDB.applications.filter(a => a.assignedTo === 'Karan Joshi');
+            const id = urlParams.get('id') || (myApps.length > 0 ? myApps[0].id : 'APP701');
+            currentAppId = id;
+
+            const app = mockDB.applications.find(a => a.id === id);
+            if (app) {
+                document.getElementById('detAppCustomer').innerText = app.customer;
+                document.getElementById('detAppId').innerText = app.id;
+                document.getElementById('detAppProduct').innerText = app.loanProduct;
+                document.getElementById('detAppAmount').innerText = app.amount;
+                document.getElementById('detAppExecutive').innerText = app.assignedTo;
+                
+                const badge = document.getElementById('detAppStatusBadge');
+                badge.innerText = app.status;
+                badge.className = `status-badge badge-${app.status.toLowerCase().replace(' ', '')}`;
+
+                // Set mock CIBIL score based on applicant name
+                const scoreField = document.getElementById('detCibilScore');
+                const labelField = document.getElementById('cibilLabel');
+                if (app.customer.includes('Ranade')) {
+                    scoreField.innerText = '748';
+                    labelField.innerText = 'Excellent Score';
+                } else if (app.customer.includes('Tambe')) {
+                    scoreField.innerText = '785';
+                    labelField.innerText = 'Excellent Score';
+                } else {
+                    scoreField.innerText = '710';
+                    labelField.innerText = 'Good Score';
+                }
+            } else {
+                showToast("Application not found, showing default file.", "warning");
+            }
+        }
+
+        function fetchCreditScore() {
+            showToast("Calling CIBIL API to retrieve Credit History...", "reminder");
+            setTimeout(() => {
+                showToast("Credit Score updated successfully!", "success");
+            }, 1200);
+        }
+
+        function processWorkflowAction(action) {
+            const app = mockDB.applications.find(a => a.id === currentAppId);
+            if (app) {
+                const old = app.status;
+                app.status = action;
+                saveMockDB();
+                logAudit('Karan Joshi', 'Applications', 'Workflow Transition', `Workflow updated for ${currentAppId} from ${old} to ${action}`);
+                showToast(`Loan application status updated to ${action}`, 'success');
+                setTimeout(() => window.location.href = 'applications.html', 1000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadApplicationDetails);
+    </script>
+</body>
+</html>

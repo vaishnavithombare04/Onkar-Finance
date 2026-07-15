@@ -116,6 +116,39 @@ const defaultOnkarDB = {
             "profession": "Self-Employed (Retailer)",
             "income": "₹1,80,000/mo",
             "activeLoans": "None (Disbursed Closed)"
+        },
+        {
+            "id": "CUST803",
+            "name": "Milind Raje",
+            "phone": "+91 98500 77889",
+            "email": "milind.r@gmail.com",
+            "pan": "MNOPE5678Q",
+            "aadhaar": "5678-1234-9012",
+            "profession": "Salaried (Government Service)",
+            "income": "₹85,000/mo",
+            "activeLoans": "1 (Personal Loan)"
+        },
+        {
+            "id": "CUST804",
+            "name": "Vikram Mane",
+            "phone": "+91 98500 99001",
+            "email": "vikram.m@gmail.com",
+            "pan": "RSTUV3456W",
+            "aadhaar": "3456-9012-7890",
+            "profession": "Business Owner",
+            "income": "₹2,50,000/mo",
+            "activeLoans": "1 (Car Loan)"
+        },
+        {
+            "id": "CUST805",
+            "name": "Shilpa Shinde",
+            "phone": "+91 98500 22334",
+            "email": "shilpa.s@gmail.com",
+            "pan": "DEFGH7890I",
+            "aadhaar": "7890-3456-1234",
+            "profession": "Salaried (Healthcare Staff)",
+            "income": "₹60,000/mo",
+            "activeLoans": "1 (Education Loan)"
         }
     ],
     "applications": [
@@ -298,7 +331,7 @@ const defaultOnkarDB = {
 
 // Initialize Database Storage
 const storedOnkarDB = localStorage.getItem('onkar_mock_db');
-if (!storedOnkarDB) {
+if (!storedOnkarDB || JSON.parse(storedOnkarDB).customers.length < 5) {
     window.mockDB = defaultOnkarDB;
     localStorage.setItem('onkar_mock_db', JSON.stringify(defaultOnkarDB));
 } else {
@@ -442,8 +475,9 @@ function formatLocalDate(date) {
 
 function getActiveDate() {
     let dateStr = localStorage.getItem('onkar_active_date');
-    if (!dateStr) {
-        dateStr = formatLocalDate(new Date());
+    const todayStr = formatLocalDate(new Date());
+    if (!dateStr || dateStr !== todayStr) {
+        dateStr = todayStr;
         localStorage.setItem('onkar_active_date', dateStr);
     }
     const parts = dateStr.split('-');
@@ -728,34 +762,84 @@ function closeModal(id) {
 
 // Notifications dynamic renderer
 function initNotifications() {
+    const bellBtn = document.getElementById('notificationBell');
     const badge = document.getElementById('notifBadge');
     const list = document.getElementById('notificationList');
-    const clearBtn = document.getElementById('clearNotifLink');
+
+    // Force CSS-based alignment to prevent Popper.js from pushing it off-screen
+    if (bellBtn) {
+        bellBtn.setAttribute('data-bs-display', 'static');
+    }
+    
+    // Inject responsive stylesheet patch
+    const patchId = 'notification-responsive-patch';
+    if (!document.getElementById(patchId)) {
+        const styles = `
+            #notificationList {
+                right: 0 !important;
+                left: auto !important;
+                width: 290px !important;
+            }
+            @media (max-width: 576px) {
+                #notificationList.show {
+                    position: fixed !important;
+                    top: 60px !important;
+                    left: 16px !important;
+                    right: 16px !important;
+                    width: calc(100vw - 32px) !important;
+                    max-width: none !important;
+                    z-index: 100000 !important;
+                }
+            }
+        `;
+        const styleEl = document.createElement('style');
+        styleEl.id = patchId;
+        styleEl.innerHTML = styles;
+        document.head.appendChild(styleEl);
+    }
 
     const renderNotifs = () => {
         if (!list) return;
         const notifs = window.mockDB.notifications || [];
         if (notifs.length === 0) {
             if (badge) badge.style.display = 'none';
-            list.innerHTML = `<div class="text-muted text-center py-2 font-11">No new notifications</div>`;
+            list.innerHTML = `
+                <li class="dropdown-header border-bottom pb-2 font-weight-700 text-primary px-3">Notifications</li>
+                <li class="px-3 py-3 text-center text-muted font-11">No new notifications</li>
+            `;
         } else {
-            if (badge) badge.style.display = 'block';
-            list.innerHTML = notifs.map(n => `
-                <div class="d-flex flex-column border-bottom pb-2">
-                    <span class="font-12" style="font-weight: 500; color: var(--text-primary);">${n.message}</span>
-                    <small class="text-muted font-10 mt-1">${n.time}</small>
-                </div>
-            `).join('');
+            if (badge) {
+                badge.style.display = 'block';
+                badge.innerText = notifs.length;
+            }
+            list.innerHTML = `
+                <li class="dropdown-header border-bottom pb-2 font-weight-700 text-primary px-3">Notifications</li>
+                ` + notifs.map(n => `
+                <li class="px-3 py-2 border-bottom dropdown-item-text">
+                    <div class="d-flex flex-column" style="white-space: normal; word-break: break-word;">
+                        <span class="font-12 font-weight-600 text-body" style="line-height: 1.35; display: block;">${n.message}</span>
+                        <small class="text-muted font-10 mt-1 d-block"><i class="bi bi-clock me-1"></i>${n.time}</small>
+                    </div>
+                </li>
+            `).join('') + `
+                <li class="text-center pt-2">
+                    <a href="javascript:void(0);" id="clearNotifLink" class="font-11 text-decoration-none text-danger font-weight-600 d-block py-1">Clear All</a>
+                </li>
+            `;
         }
     };
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.mockDB.notifications = [];
-            window.saveMockDB();
-            renderNotifs();
-            showToast("Notifications cleared", "success");
+    if (list) {
+        list.addEventListener('click', (e) => {
+            const clearBtn = e.target.closest('#clearNotifLink');
+            if (clearBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.mockDB.notifications = [];
+                window.saveMockDB();
+                renderNotifs();
+                showToast("Notifications cleared", "success");
+            }
         });
     }
 
@@ -769,6 +853,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalCalendar();
     initCustomDropdowns();
     initNotifications();
+
+    // Intercept dropdown sign-out clicks globally
+    const dropdownItems = document.querySelectorAll('.dropdown-item');
+    dropdownItems.forEach(item => {
+        if (item.textContent.trim() === 'Sign out') {
+            item.removeAttribute('onclick');
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                showToast('Signed out successfully', 'success');
+                setTimeout(() => {
+                    const isInsideSubfolder = window.location.pathname.includes('/employee/') || window.location.pathname.includes('/branch-manager/');
+                    window.location.href = isInsideSubfolder ? '../index.html' : 'index.html';
+                }, 800);
+            });
+        }
+    });
 });
 
 // Expose globals

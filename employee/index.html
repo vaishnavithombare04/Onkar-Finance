@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Branch Dashboard - Onkar Finance Employee Portal (Employee Portal)</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Chart.js UMD -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body data-theme="light">
+    <!-- App Header -->
+        <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search branch files, loans, agents...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 280px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Verification request for Amit Sharma', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">New lead &quot;Amit Sharma&quot; registered</span><small class="text-muted d-block mt-1">2 mins ago</small></a></li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Application approved successfully', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Personal Loan APP-8902 is approved</span><small class="text-muted d-block mt-1">1 hour ago</small></a></li>
+                    <li><a class="dropdown-item py-2 text-wrap" href="#" onclick="showToast('File escalated to audit committee', 'warning')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Lead APP-8904 is escalated to audit</span><small class="text-muted d-block mt-1">Yesterday</small></a></li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+                        <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Employee Workspace</span>
+                <a href="index.html" class="sidebar-item active">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="leads.html" class="sidebar-item">
+                    <i class="bi bi-funnel"></i> <span>Assigned Leads</span>
+                </a>
+                <a href="customers.html" class="sidebar-item">
+                    <i class="bi bi-people"></i> <span>My Customers</span>
+                </a>
+                <a href="applications.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-medical"></i> <span>My Applications</span>
+                </a>
+                <a href="application-detail.html" class="sidebar-item">
+                    <i class="bi bi-info-circle"></i> <span>Application Detail</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">Operations</span>
+                <a href="communication.html" class="sidebar-item">
+                    <i class="bi bi-chat-left-text"></i> <span>My Call Center</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="bi bi-gear"></i> <span>My Profile Settings</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-item" id="themeToggleBtn" style="cursor: pointer;">
+                    <i class="bi bi-moon"></i> <span>Dark Mode</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 font-weight-bold mb-0">Pune Employee Portal Console</h1>
+                    <p class="text-muted font-13 mb-0">Welcome back, Karan. Manage your assigned leads and track personal targets.</p>
+                </div>
+                <div class="date-badge bg-white border rounded px-3 py-2 text-secondary font-12 font-weight-500" id="serverDateLabel">
+                    <i class="bi bi-calendar3 me-2"></i> Loading Date...
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid (My Performance / Mini Stats) -->
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <span class="kpi-label">Assigned Leads</span>
+                            <h3 class="kpi-value" id="kpiLeads">8</h3>
+                            <span class="kpi-trend text-primary"><i class="bi bi-person-fill"></i> Active Pipeline</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <span class="kpi-label">Conversion Rate</span>
+                            <h3 class="kpi-value" id="kpiConversions">42.8%</h3>
+                            <span class="kpi-trend trend-up"><i class="bi bi-arrow-up-short"></i> +5.2% this week</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <span class="kpi-label">Loans Processed</span>
+                            <h3 class="kpi-value" id="kpiLoans">12 Cases</h3>
+                            <span class="kpi-trend text-success"><i class="bi bi-check-circle-fill"></i> 4 Completed</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card kpi-card">
+                        <div class="card-body">
+                            <span class="kpi-label">Target Progress (₹35L / ₹50L)</span>
+                            <h3 class="kpi-value" id="kpiTarget">70.0%</h3>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar bg-success" id="kpiProgressBar" role="progressbar" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mt-1">
+                <!-- Left Column: Tasks and Notifications -->
+                <div class="col-lg-6">
+                    <!-- Task List Widget -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0"><i class="bi bi-clipboard-check text-primary me-2"></i>📋 My Task List</h5>
+                                <button class="btn btn-outline-primary btn-xs py-1 px-2 font-11" onclick="openModal('addTaskModal')"><i class="bi bi-plus"></i> Add Task</button>
+                            </div>
+                            <div class="d-flex flex-column gap-3" id="employeeTaskList">
+                                <!-- Dynamic task list loaded from state -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scoped Notifications -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="bi bi-bell text-warning me-2"></i>🔔 Scoped Notifications</h5>
+                            <div class="d-flex flex-column gap-3" id="employeeNotifications">
+                                <div class="d-flex align-items-start gap-2 border-bottom pb-2">
+                                    <i class="bi bi-info-circle text-primary mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-13 font-weight-600">New lead assigned: Sanjay Verma</h6>
+                                        <small class="text-muted">Assigned 2 hours ago | Personal loan inquiry</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start gap-2 border-bottom pb-2">
+                                    <i class="bi bi-check-circle text-success mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-13 font-weight-600">Document extraction check success for APP701</h6>
+                                        <small class="text-muted">Aadhaar card details verified via OCR</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-exclamation-triangle text-warning mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-13 font-weight-600">Application APP705 moved to Stage: Verification</h6>
+                                        <small class="text-muted">Awaiting document screening checks</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Target Chart, Scheduler and Actions -->
+                <div class="col-lg-6">
+                    <!-- Target progression chart -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="bi bi-bar-chart text-success me-2"></i>📈 Personal Target progression</h5>
+                            <div style="height: 180px;">
+                                <canvas id="targetChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Scheduler inline calendar card -->
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="bi bi-calendar-event text-primary me-2"></i>📅 Daily Scheduler</h5>
+                            <div class="border rounded p-3 bg-light">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0 font-weight-700 font-13 text-secondary" id="schedulerMonthYear">July 2026</h6>
+                                    <div class="d-flex gap-1">
+                                        <button class="btn btn-outline-secondary btn-xs py-0 px-1" onclick="changeSchedulerMonth(-1)"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="btn btn-outline-secondary btn-xs py-0 px-1" onclick="changeSchedulerMonth(1)"><i class="bi bi-chevron-right"></i></button>
+                                    </div>
+                                </div>
+                                <div class="grid text-center mb-2" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; font-size: 11px;">
+                                    <div class="text-muted fw-bold">Su</div>
+                                    <div class="text-muted fw-bold">Mo</div>
+                                    <div class="text-muted fw-bold">Tu</div>
+                                    <div class="text-muted fw-bold">We</div>
+                                    <div class="text-muted fw-bold">Th</div>
+                                    <div class="text-muted fw-bold">Fr</div>
+                                    <div class="text-muted fw-bold">Sa</div>
+                                </div>
+                                <div id="schedulerGrid" class="text-center" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; font-size: 11px;">
+                                    <!-- Loaded dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="bi bi-lightning-charge text-danger me-2"></i>⚙️ Executive Actions</h5>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <button class="btn btn-outline-primary btn-sm w-100 py-3 d-flex flex-column align-items-center gap-2" onclick="location.href='leads.html'">
+                                        <i class="bi bi-people fs-4"></i>
+                                        <span class="font-weight-600 font-12">Open Assigned Leads</span>
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success btn-sm w-100 py-3 d-flex flex-column align-items-center gap-2" onclick="location.href='communication.html'">
+                                        <i class="bi bi-telephone fs-4"></i>
+                                        <span class="font-weight-600 font-12">Start Calling Clients</span>
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-warning text-dark btn-sm w-100 py-3 d-flex flex-column align-items-center gap-2" onclick="location.href='applications.html'">
+                                        <i class="bi bi-folder-check fs-4"></i>
+                                        <span class="font-weight-600 font-12">Process Applications</span>
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 py-3 d-flex flex-column align-items-center gap-2" onclick="location.href='profile.html'">
+                                        <i class="bi bi-person-gear fs-4"></i>
+                                        <span class="font-weight-600 font-12">My Profile Settings</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Task Modal -->
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content text-start">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">Create New Task</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="addTaskForm" onsubmit="saveNewTask(event)">
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Task Title</label>
+                            <input type="text" id="taskTitleInput" class="form-control" placeholder="e.g. Call client Sneha Tambe" required>
+                        </div>
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Task Category</label>
+                            <select id="taskCategorySelect" class="form-select">
+                                <option value="Call Client">Call Client</option>
+                                <option value="Verify Documents">Verify Documents</option>
+                                <option value="Follow Up">Follow Up</option>
+                                <option value="Operations">Operations</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Short Details</label>
+                            <input type="text" id="taskDetailsInput" class="form-control" placeholder="e.g. Confirm interest in home loan rate" required>
+                        </div>
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Priority Level</label>
+                            <select id="taskPrioritySelect" class="form-select">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Task</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+
+    <!-- Page Specific Script -->
+    <script>
+        const defaultTasks = [
+            { id: 'task1', text: 'Call Abhijit Ranade regarding home loan verification', type: 'Call Client', desc: 'Today\'s call checklist - KYC status update', priority: 'High', completed: false },
+            { id: 'task2', text: 'Verify PAN OCR check results for Shilpa Shinde', type: 'Verify Documents', desc: 'ITR and Salary credits extraction validation', priority: 'Medium', completed: false },
+            { id: 'task3', text: 'Follow up on fresh lead Sanjay Verma', type: 'Follow Up', desc: 'Schedule call to confirm required loan product', priority: 'Low', completed: false }
+        ];
+
+        let displayMonth = new Date().getMonth();
+        let displayYear = new Date().getFullYear();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Personal executive data (Karan Joshi)
+            const myLeads = mockDB.leads.filter(l => l.assignedTo === 'Karan Joshi');
+            const myApps = mockDB.applications.filter(app => app.assignedTo === 'Karan Joshi');
+            const myConversions = myApps.filter(app => app.status === 'Approved' || app.status === 'Disbursed');
+            
+            const totalLeads = myLeads.length || 8;
+            const activeLoans = myApps.length || 3;
+            const approvedConversions = myConversions.length || 2;
+            
+            // Calculate conversion rate dynamically
+            const convRate = ((approvedConversions / totalLeads) * 100).toFixed(1);
+            
+            // Personal targets: Karan has ₹50L target, ₹35L achieved
+            const targetPct = (35.0 / 50.0) * 100;
+
+            document.getElementById('kpiLeads').innerText = totalLeads;
+            document.getElementById('kpiConversions').innerText = convRate + '%';
+            document.getElementById('kpiLoans').innerText = `${activeLoans} Cases`;
+            document.getElementById('kpiTarget').innerText = targetPct.toFixed(1) + '%';
+            document.getElementById('kpiProgressBar').style.width = targetPct.toFixed(1) + '%';
+
+            // Render Task List on load
+            renderTaskList();
+
+            // Render Daily Scheduler Inline Calendar
+            renderSchedulerCalendar();
+
+            // Chart.js - Target Progression Chart for Karan Joshi
+            new Chart(document.getElementById('targetChart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Q1 Target', 'Q1 Achieved', 'Q2 Target', 'Q2 Achieved'],
+                    datasets: [
+                        {
+                            label: 'Karan Joshi Progress (₹ in Lakhs)',
+                            data: [50, 35, 60, 48],
+                            backgroundColor: ['rgba(37, 99, 235, 0.2)', '#2563eb', 'rgba(124, 58, 237, 0.2)', '#7c3aed'],
+                            borderColor: ['#2563eb', '#2563eb', '#7c3aed', '#7c3aed'],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Lakhs (₹)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        // Task List Management
+        function renderTaskList() {
+            const taskList = document.getElementById('employeeTaskList');
+            let tasks = JSON.parse(localStorage.getItem('onkar_employee_tasks'));
+            if (!tasks) {
+                tasks = defaultTasks;
+                localStorage.setItem('onkar_employee_tasks', JSON.stringify(defaultTasks));
+            }
+
+            taskList.innerHTML = tasks.map(t => {
+                const priorityBadge = t.priority === 'High' ? 'bg-danger' : t.priority === 'Medium' ? 'bg-warning text-dark' : 'bg-secondary';
+                const strikeStyle = t.completed ? 'text-decoration: line-through; opacity: 0.5;' : '';
+                return `
+                    <div class="form-check d-flex justify-content-between align-items-center border-bottom pb-2">
+                        <div>
+                            <input class="form-check-input" type="checkbox" id="${t.id}" ${t.completed ? 'checked' : ''} onclick="completeTask('${t.id}', '${t.text.replace(/'/g, "\\'")}')">
+                            <label class="form-check-label font-13 ms-2" for="${t.id}" style="${strikeStyle}">
+                                <strong>${t.type}:</strong> ${t.text}
+                            </label>
+                            <div class="text-muted font-11 ms-2" style="${t.completed ? 'opacity: 0.5;' : ''}">${t.desc}</div>
+                        </div>
+                        <span class="badge ${priorityBadge} font-10">${t.priority}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function completeTask(taskId, desc) {
+            let tasks = JSON.parse(localStorage.getItem('onkar_employee_tasks')) || defaultTasks;
+            const task = tasks.find(t => t.id === taskId);
+            if (task) {
+                const checkbox = document.getElementById(taskId);
+                task.completed = checkbox.checked;
+                localStorage.setItem('onkar_employee_tasks', JSON.stringify(tasks));
+                
+                if (task.completed) {
+                    showToast(`Task completed: "${desc}"`, 'success');
+                    logAudit('Karan Joshi', 'Dashboard', 'Task Complete', `Completed task: ${desc}`);
+                }
+                renderTaskList();
+            }
+        }
+
+        function saveNewTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('taskTitleInput').value;
+            const cat = document.getElementById('taskCategorySelect').value;
+            const details = document.getElementById('taskDetailsInput').value;
+            const prio = document.getElementById('taskPrioritySelect').value;
+
+            const newTaskId = `task-${Date.now()}`;
+            const newTask = {
+                id: newTaskId,
+                text: title,
+                type: cat,
+                desc: details,
+                priority: prio,
+                completed: false
+            };
+
+            let tasks = JSON.parse(localStorage.getItem('onkar_employee_tasks')) || defaultTasks;
+            tasks.push(newTask);
+            localStorage.setItem('onkar_employee_tasks', JSON.stringify(tasks));
+
+            showToast('Task added successfully!', 'success');
+            closeModal('addTaskModal');
+            document.getElementById('addTaskForm').reset();
+            renderTaskList();
+        }
+
+        // Daily Scheduler Inline Calendar
+        function renderSchedulerCalendar() {
+            const grid = document.getElementById('schedulerGrid');
+            const header = document.getElementById('schedulerMonthYear');
+            if (!grid) return;
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            header.innerText = `${monthNames[displayMonth]} ${displayYear}`;
+
+            grid.innerHTML = '';
+            const firstDayIndex = new Date(displayYear, displayMonth, 1).getDay();
+            const totalDays = new Date(displayYear, displayMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                const empty = document.createElement('div');
+                empty.style.padding = '6px';
+                grid.appendChild(empty);
+            }
+
+            const today = new Date();
+            const activeStr = localStorage.getItem('onkar_active_date') || new Date().toISOString().substring(0, 10);
+            const activeParts = activeStr.split('-');
+            const activeDay = parseInt(activeParts[2]);
+            const activeMonth = parseInt(activeParts[1]) - 1;
+            const activeYear = parseInt(activeParts[0]);
+
+            for (let day = 1; day <= totalDays; day++) {
+                const dayBtn = document.createElement('button');
+                dayBtn.className = 'btn btn-xs w-100 border-0 p-1';
+                dayBtn.innerText = day;
+                dayBtn.style.fontSize = '11px';
+                dayBtn.style.borderRadius = '4px';
+
+                // Highlight today and selected
+                const isSelected = (day === activeDay && displayMonth === activeMonth && displayYear === activeYear);
+                const isToday = (day === today.getDate() && displayMonth === today.getMonth() && displayYear === today.getFullYear());
+
+                if (isSelected) {
+                    dayBtn.className = 'btn btn-primary btn-xs w-100 p-1 fw-bold';
+                } else if (isToday) {
+                    dayBtn.className = 'btn btn-outline-primary btn-xs w-100 p-1 fw-bold';
+                } else {
+                    dayBtn.className = 'btn btn-light btn-xs w-100 p-1';
+                }
+
+                dayBtn.addEventListener('click', () => {
+                    const selectedDate = `${displayYear}-${String(displayMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                    localStorage.setItem('onkar_active_date', selectedDate);
+                    
+                    // Update global headers
+                    const labels = document.querySelectorAll('#serverDateLabel, .date-badge');
+                    labels.forEach(lbl => {
+                        const opt = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                        lbl.innerHTML = `<i class="bi bi-calendar3 me-2"></i> ${new Date(displayYear, displayMonth, day).toLocaleDateString('en-US', opt)}`;
+                    });
+
+                    showToast(`System scheduler switched to date: ${selectedDate}`, 'success');
+                    renderSchedulerCalendar();
+                });
+
+                grid.appendChild(dayBtn);
+            }
+        }
+
+        function changeSchedulerMonth(direction) {
+            displayMonth += direction;
+            if (displayMonth < 0) {
+                displayMonth = 11;
+                displayYear--;
+            } else if (displayMonth > 11) {
+                displayMonth = 0;
+                displayYear++;
+            }
+            renderSchedulerCalendar();
+        }
+    </script>
+</body>
+</html>
