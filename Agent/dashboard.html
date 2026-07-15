@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Partner — Agent Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Dashboard specific styles */
+    .dashboard-chart-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 150px;
+      padding-top: 20px;
+    }
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-bar {
+      width: 100%;
+      background-color: var(--color-primary-light);
+      border-radius: var(--radius-sm);
+      transition: height 0.8s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .chart-bar:hover {
+      background-color: var(--color-primary);
+    }
+    .chart-bar-active {
+      background-color: var(--color-primary) !important;
+    }
+    .chart-label {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    /* Radial Gauge */
+    .radial-gauge {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radial-gauge svg {
+      transform: rotate(-90deg);
+    }
+    .radial-gauge-bg {
+      fill: none;
+      stroke: var(--color-border);
+      stroke-width: 8;
+    }
+    .radial-gauge-fill {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 62.8; /* 80% progress */
+      transition: stroke-dashoffset 1s ease;
+    }
+    .radial-gauge-text {
+      position: absolute;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Greetings header -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Welcome back, Rohit!</h1>
+            <p class="text-secondary" style="font-size: 13px;">Here is the performance report for your referred leads and commissions.</p>
+          </div>
+          <button class="btn btn-primary" onclick="location.href='leads.html'">
+            <i class="lucide-plus"></i> New Referral
+          </button>
+        </div>
+
+        <!-- Key Metrics Cards -->
+        <div class="grid grid-4">
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Total Referrals</span>
+              <div class="stat-icon"><i class="lucide-users"></i></div>
+            </div>
+            <div class="stat-value" id="statTotal">15</div>
+            <div class="stat-trend up">
+              <i class="lucide-trending-up"></i> +2 This Month
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Active Pipeline</span>
+              <div class="stat-icon"><i class="lucide-file-text"></i></div>
+            </div>
+            <div class="stat-value" id="statActive">3</div>
+            <div class="stat-trend text-secondary" style="font-weight: 500;">
+              In verification or process
+            </div>
+          </div>
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Conversion Rate</span>
+              <div class="stat-icon"><i class="lucide-percent"></i></div>
+            </div>
+            <div class="stat-value" id="statConversion">80%</div>
+            <div class="stat-trend up">
+              <i class="lucide-trending-up"></i> 12 Disbursed cases
+            </div>
+          </div>
+          <!-- Highlighted Card -->
+          <div class="card stat-card stat-card--highlighted">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Unpaid Earnings</span>
+              <div class="stat-icon"><i class="lucide-banknote"></i></div>
+            </div>
+            <div class="stat-value" id="statUnpaid">₹25,000</div>
+            <div class="stat-trend">
+              <i class="lucide-trending-up"></i> Next payout: 1st August
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts and Targets section -->
+        <div class="grid grid-3">
+          <!-- Monthly referrals Chart -->
+          <div class="card" style="grid-column: span 2;">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Monthly Referrals</h3>
+                <span class="text-secondary" style="font-size: 11px;">Track referred leads over the last 6 months</span>
+              </div>
+            </div>
+            <div class="dashboard-chart-bar">
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 40px;" title="Feb: 2 referrals"></div>
+                <span class="chart-label">Feb</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 60px;" title="Mar: 3 referrals"></div>
+                <span class="chart-label">Mar</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 80px;" title="Apr: 4 referrals"></div>
+                <span class="chart-label">Apr</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 40px;" title="May: 2 referrals"></div>
+                <span class="chart-label">May</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 60px;" title="Jun: 3 referrals"></div>
+                <span class="chart-label">Jun</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar chart-bar-active" style="height: 80px;" title="Jul: 4 referrals"></div>
+                <span class="chart-label bold">Jul</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Circular Radial Target Gauge -->
+          <div class="card flex flex-column gap-md align-center justify-center text-center">
+            <div>
+              <h3 class="bold" style="font-size: 16px;">Monthly Referrals Target</h3>
+              <span class="text-secondary" style="font-size: 11px;">Current Month Goal: 5 Leads</span>
+            </div>
+            <div class="radial-gauge">
+              <svg width="120" height="120">
+                <circle class="radial-gauge-bg" cx="60" cy="60" r="50"></circle>
+                <circle class="radial-gauge-fill" cx="60" cy="60" r="50" id="gaugeCircle"></circle>
+              </svg>
+              <div class="radial-gauge-text" id="gaugePercent">4/5</div>
+            </div>
+            <div>
+              <span class="bold" style="font-size: 14px;">80% Achieved</span>
+              <p class="text-secondary" style="font-size: 11px; margin-top: 4px;">1 more referral to complete monthly target!</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent referred customer stages -->
+        <div class="card flex flex-column gap-md">
+          <div class="flex justify-between align-center">
+            <div>
+              <h3 class="bold" style="font-size: 16px;">Recent Referrals Progress</h3>
+              <span class="text-secondary" style="font-size: 11px;">Monitor live status changes on your referred leads</span>
+            </div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="location.href='leads.html'">View All</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Referral ID</th>
+                  <th>Customer Name</th>
+                  <th>Loan Product</th>
+                  <th>Requested Amount</th>
+                  <th>Current Status</th>
+                  <th>Assigned Officer</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="dashboardActivityTable">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    // Ensure Rohit's leads exist in onkar_db
+    const db = api.getDb();
+    const rohitLeads = db.leads.filter(l => l.referredBy === 'Rohit Patel');
+    
+    // Inject mock referrals if not set
+    if (rohitLeads.length === 0) {
+      const mockReferrals = [
+        { id: "LD-8902", name: "Amit Sharma", contact: "+91 98765 43210", email: "amit.sharma@example.com", source: "Referral", product: "Personal Loan", assignedTo: "Rahul Verma", status: "Disbursed", date: "2026-07-10", amount: 500000, referredBy: "Rohit Patel", commission: 5000, commissionStatus: "Paid" },
+        { id: "LD-8903", name: "Priya Patel", contact: "+91 87654 32109", email: "priya.patel@example.com", source: "Referral", product: "Home Loan", assignedTo: "Sunil Mehta", status: "Verification", date: "2026-07-11", amount: 3500000, referredBy: "Rohit Patel", commission: 35000, commissionStatus: "Processing" },
+        { id: "LD-8904", name: "Rajesh Kumar", contact: "+91 76543 21098", email: "rajesh.k@example.com", source: "Referral", product: "Business Loan", assignedTo: "Rahul Verma", status: "Under Process", date: "2026-07-12", amount: 1500000, referredBy: "Rohit Patel", commission: 15000, commissionStatus: "Pending" },
+        { id: "LD-9021", name: "Kunal Deshmukh", contact: "+91 98887 76655", email: "kunal.d@example.com", source: "Referral", product: "Vehicle Loan", assignedTo: "Kiran Das", status: "New Lead", date: "2026-07-14", amount: 600000, referredBy: "Rohit Patel", commission: 6000, commissionStatus: "Pending" }
+      ];
+      db.leads = [...db.leads, ...mockReferrals];
+      api.saveDb(db);
+    }
+
+    function loadDashboardData() {
+      const db = api.getDb();
+      const myLeads = db.leads.filter(l => l.referredBy === 'Rohit Patel');
+      
+      const total = myLeads.length;
+      const active = myLeads.filter(l => ['New Lead', 'Verification', 'Under Process'].includes(l.status)).length;
+      const disbursedCount = myLeads.filter(l => l.status === 'Disbursed').length;
+      const convRate = total > 0 ? Math.round((disbursedCount / total) * 100) : 0;
+      
+      // Calculate unpaid earnings (Pending or Processing commission)
+      let unpaid = 0;
+      myLeads.forEach(l => {
+        if (l.commission && (l.commissionStatus === 'Pending' || l.commissionStatus === 'Processing')) {
+          unpaid += l.commission;
+        }
+      });
+
+      // Update counters
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statActive').textContent = active;
+      document.getElementById('statConversion').textContent = convRate + '%';
+      document.getElementById('statUnpaid').textContent = formatCurrency(unpaid);
+
+      // Render activities table
+      const tbody = document.getElementById('dashboardActivityTable');
+      tbody.innerHTML = '';
+      myLeads.slice(0, 3).forEach(lead => {
+        let statusBadge = 'badge-info';
+        if (lead.status === 'Disbursed' || lead.status === 'Approved') statusBadge = 'badge-success';
+        if (lead.status === 'Verification' || lead.status === 'Under Process') statusBadge = 'badge-warning';
+        if (lead.status === 'Rejected') statusBadge = 'badge-danger';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">${lead.id.replace('LD', 'REF')}</td>
+            <td class="bold">${lead.name}</td>
+            <td>${lead.product}</td>
+            <td class="bold">${formatCurrency(lead.amount)}</td>
+            <td><span class="badge ${statusBadge}">${lead.status}</span></td>
+            <td>${lead.assignedTo || 'Unassigned'}</td>
+            <td>
+              <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px;" onclick="location.href='lead-detail.html?id=${lead.id}'">
+                Track Progress
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    loadDashboardData();
+  }
+  </script>
+</body>
+</html>

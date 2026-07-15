@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Partner — My Leads</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header Section -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">My Leads</h1>
+            <p class="text-secondary" style="font-size: 13px;">Refer new customers, upload profiles, and track active cases progress.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('newLeadModal')">
+            <i class="lucide-plus-circle"></i> New Referral
+          </button>
+        </div>
+
+        <!-- Filter bar -->
+        <div class="card flex align-center gap-md" style="padding: 16px; flex-wrap: wrap;">
+          <div class="search-bar" style="width: 280px; background-color: var(--color-bg);">
+            <i class="lucide-search"></i>
+            <input type="text" placeholder="Search by customer name or ID..." id="leadSearch">
+          </div>
+          <select class="form-control" style="width: 160px; padding: 8px 12px;" id="productFilter">
+            <option value="">All Products</option>
+            <option>Personal Loan</option>
+            <option>Home Loan</option>
+            <option>Business Loan</option>
+            <option>Gold Loan</option>
+            <option>Vehicle Loan</option>
+          </select>
+          <select class="form-control" style="width: 160px; padding: 8px 12px;" id="statusFilter">
+            <option value="">All Statuses</option>
+            <option>New Lead</option>
+            <option>Verification</option>
+            <option>Under Process</option>
+            <option>Approved</option>
+            <option>Disbursed</option>
+            <option>Rejected</option>
+          </select>
+        </div>
+
+        <!-- Leads Table -->
+        <div class="card" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Referral ID</th>
+                  <th>Customer Name</th>
+                  <th>Contact info</th>
+                  <th>Product Type</th>
+                  <th>Requested Amount</th>
+                  <th>Submission Date</th>
+                  <th>Stage Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="leadsTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- New Referral Modal -->
+  <div class="modal-overlay" id="newLeadModal">
+    <div class="modal-container" style="max-width: 560px;">
+      <i class="lucide-x modal-close" onclick="closeModal('newLeadModal')"></i>
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title bold" style="font-size: 18px;">New Customer Referral</h3>
+          <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Enter customer credentials to register a new loan file</p>
+        </div>
+      </div>
+      <div class="grid grid-2" style="margin-top: 16px; gap: var(--space-sm) var(--space-md);">
+        <div class="form-group">
+          <label class="form-label">Full Name <span class="text-danger">*</span></label>
+          <input type="text" id="addName" class="form-control" placeholder="Applicant full name" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+          <input type="tel" id="addMobile" class="form-control" placeholder="10-digit mobile" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="addEmail" class="form-control" placeholder="e.g. customer@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Loan Product <span class="text-danger">*</span></label>
+          <select id="addProduct" class="form-control" required>
+            <option value="">Select product</option>
+            <option>Personal Loan</option>
+            <option>Home Loan</option>
+            <option>Business Loan</option>
+            <option>Gold Loan</option>
+            <option>Vehicle Loan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
+          <input type="number" id="addAmount" class="form-control" placeholder="e.g. 500000" min="10000" required />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estimated Tenure (Months)</label>
+          <input type="number" id="addTenure" class="form-control" placeholder="e.g. 36" />
+        </div>
+      </div>
+      <div class="form-group" style="margin-top: 10px;">
+        <label class="form-label">Customer Address</label>
+        <textarea id="addAddress" class="form-control" placeholder="Residential address details..." style="min-height: 50px;"></textarea>
+      </div>
+      <div class="modal-actions" style="margin-top: 20px;">
+        <button class="btn btn-outline" onclick="closeModal('newLeadModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitReferral()"><i class="lucide-plus"></i> Submit Referral</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    function renderReferrals() {
+      const db = api.getDb();
+      const myLeads = db.leads.filter(l => l.referredBy === 'Rohit Patel');
+      const tbody = document.getElementById('leadsTableBody');
+      tbody.innerHTML = '';
+      
+      const searchVal = document.getElementById('leadSearch').value.toLowerCase();
+      const productVal = document.getElementById('productFilter').value;
+      const statusVal = document.getElementById('statusFilter').value;
+
+      myLeads.forEach(lead => {
+        const matchesSearch = lead.name.toLowerCase().includes(searchVal) || lead.id.toLowerCase().includes(searchVal);
+        const matchesProduct = productVal === '' || lead.product === productVal;
+        const matchesStatus = statusVal === '' || lead.status === statusVal;
+
+        if (matchesSearch && matchesProduct && matchesStatus) {
+          let statusBadge = 'badge-info';
+          if (lead.status === 'Disbursed' || lead.status === 'Approved') statusBadge = 'badge-success';
+          if (lead.status === 'Verification' || lead.status === 'Under Process') statusBadge = 'badge-warning';
+          if (lead.status === 'Rejected') statusBadge = 'badge-danger';
+
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${lead.id.replace('LD', 'REF')}</td>
+              <td class="bold">${lead.name}</td>
+              <td>
+                <span style="display: block; font-weight: 500;">${lead.contact}</span>
+                <span class="text-secondary" style="font-size: 11px;">${lead.email || 'No email'}</span>
+              </td>
+              <td>${lead.product}</td>
+              <td class="bold">${formatCurrency(lead.amount)}</td>
+              <td>${formatDate(lead.date)}</td>
+              <td><span class="badge ${statusBadge}">${lead.status}</span></td>
+              <td>
+                <div style="display: flex; gap: 8px;">
+                  <button class="btn btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="location.href='lead-detail.html?id=${lead.id}'">
+                    Upload Docs / Track
+                  </button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.submitReferral = function() {
+      const name = document.getElementById('addName').value.trim();
+      const mobile = document.getElementById('addMobile').value.trim();
+      const email = document.getElementById('addEmail').value.trim();
+      const product = document.getElementById('addProduct').value;
+      const amount = parseInt(document.getElementById('addAmount').value, 10);
+      
+      if (!name || !mobile || !product || !amount) {
+        showToast('Please fill all required fields.', 'danger');
+        return;
+      }
+      if (!/^\d{10}$/.test(mobile)) {
+        showToast('Enter a valid 10-digit mobile number.', 'danger');
+        return;
+      }
+
+      const db = api.getDb();
+      const newId = `LD-${Math.floor(1000 + Math.random() * 9000)}`;
+      const newReferral = {
+        id: newId,
+        name: name,
+        contact: '+91 ' + mobile,
+        email: email || 'No email',
+        source: 'Referral',
+        product: product,
+        assignedTo: 'Rahul Verma', // Auto-assign to default manager for review
+        status: 'New Lead',
+        date: new Date().toISOString().split('T')[0],
+        amount: amount,
+        referredBy: 'Rohit Patel',
+        commission: Math.round(amount * 0.01), // 1% commission standard
+        commissionStatus: 'Pending',
+        documents: []
+      };
+
+      db.leads.unshift(newReferral);
+      api.saveDb(db);
+      
+      closeModal('newLeadModal');
+      renderReferrals();
+      showToast(`Referral registered successfully! File ID: ${newId.replace('LD', 'REF')}`, 'success');
+
+      // Reset form
+      ['addName', 'addMobile', 'addEmail', 'addAmount', 'addTenure', 'addAddress'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('addProduct').value = '';
+    };
+
+    function showToast(msg, type = 'success') {
+      const icons = { success: 'lucide-check-circle', danger: 'lucide-alert-circle', info: 'lucide-info' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<i class="${icons[type] || 'lucide-info'}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        toast.style.cssText = 'opacity:0;transform:translateX(30px);transition:.3s;';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    document.getElementById('leadSearch').addEventListener('keyup', renderReferrals);
+    document.getElementById('productFilter').addEventListener('change', renderReferrals);
+    document.getElementById('statusFilter').addEventListener('change', renderReferrals);
+
+    renderReferrals();
+  }
+  </script>
+</body>
+</html>

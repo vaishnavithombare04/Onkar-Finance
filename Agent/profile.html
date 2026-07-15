@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Partner — Profile Settings</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header -->
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">My Profile</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage referral account settings, bank payout details, and security passwords.</p>
+        </div>
+
+        <div class="grid grid-3" style="align-items: start;">
+          <!-- Profile Card Summary -->
+          <div class="card flex flex-column gap-md align-center justify-center text-center" style="height: fit-content; padding: 30px;">
+            <div class="avatar" style="width: 80px; height: 80px; font-size: 32px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden; position: relative; cursor: pointer;" id="profileInitials" onclick="document.getElementById('avatarUpload').click();" title="Click to upload profile picture">RP</div>
+            <input type="file" id="avatarUpload" style="display: none;" accept="image/*" onchange="handleAvatarUpload(event);" />
+            <div style="margin-top: 10px; width: 100%;">
+              <h3 class="bold" style="font-size: 18px;" id="profileCardName">Rohit Patel</h3>
+              <span class="badge badge-success" style="margin-top: 6px; display: inline-block;">External Referral Partner</span>
+            </div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="document.getElementById('avatarUpload').click();"><i class="lucide-camera"></i> Change Photo</button>
+            <div style="border-top: 1px solid var(--color-border); width: 100%; padding-top: 16px; margin-top: 8px;">
+              <div class="flex justify-between" style="font-size: 12.5px; margin-bottom: 8px;">
+                <span class="text-secondary">Partner Code:</span>
+                <span class="bold">AG-551</span>
+              </div>
+              <div class="flex justify-between" style="font-size: 12.5px;">
+                <span class="text-secondary">Referral Tier:</span>
+                <span class="bold" style="color: var(--color-primary)">Gold Partner (1.0%)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile / Bank Account details Form -->
+          <div class="card" style="grid-column: span 2; display: flex; flex-direction: column; gap: var(--space-lg);">
+            <!-- Part 1: Partner coordinates -->
+            <div class="flex flex-column gap-md">
+              <div>
+                <h3 class="bold" style="font-size: 16px;">Personal Coordinates</h3>
+                <span class="text-secondary" style="font-size: 11px;">Update contact details.</span>
+              </div>
+              <div class="grid grid-2" style="gap: var(--space-sm) var(--space-md);">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" id="profName" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="profEmail" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Mobile Number</label>
+                  <input type="tel" id="profContact" class="form-control" />
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: fit-content; margin-top: 8px;" onclick="savePersonalDetails()">Save Profile Changes</button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--color-border);" />
+
+            <!-- Part 2: Bank Payout details -->
+            <div class="flex flex-column gap-md">
+              <div>
+                <h3 class="bold" style="font-size: 16px;">Bank Account for Commission Payouts</h3>
+                <span class="text-secondary" style="font-size: 11px;">Ensure bank details are correct to receive payouts automatically.</span>
+              </div>
+              <div class="grid grid-2" style="gap: var(--space-sm) var(--space-md);">
+                <div class="form-group">
+                  <label class="form-label">Beneficiary Account Name</label>
+                  <input type="text" id="bankName" class="form-control" placeholder="Name as in passbook" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Bank Name</label>
+                  <input type="text" id="bankBank" class="form-control" placeholder="e.g. State Bank of India" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Account Number</label>
+                  <input type="text" id="bankAcc" class="form-control" placeholder="Beneficiary account number" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">IFSC Code</label>
+                  <input type="text" id="bankIfsc" class="form-control" placeholder="11-digit bank IFSC code" />
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: fit-content; margin-top: 8px;" onclick="saveBankDetails()">Save Payout Channels</button>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    // Initialize profile store
+    if (!localStorage.getItem('onkar_agent_profile')) {
+      const defaultProfile = {
+        name: 'Rohit Patel',
+        email: 'rohit.patel@example.com',
+        contact: '+91 95555 44444',
+        bankName: 'Rohit Patel',
+        bankBank: 'State Bank of India',
+        bankAcc: '55210928312',
+        bankIfsc: 'SBIN0004921'
+      };
+      localStorage.setItem('onkar_agent_profile', JSON.stringify(defaultProfile));
+    }
+
+    function getProfile() {
+      return JSON.parse(localStorage.getItem('onkar_agent_profile'));
+    }
+
+    function saveProfile(p) {
+      localStorage.setItem('onkar_agent_profile', JSON.stringify(p));
+    }
+
+    function loadProfile() {
+      const p = getProfile();
+      
+      document.getElementById('profName').value = p.name;
+      document.getElementById('profEmail').value = p.email;
+      document.getElementById('profContact').value = p.contact;
+      
+      document.getElementById('bankName').value = p.bankName;
+      document.getElementById('bankBank').value = p.bankBank;
+      document.getElementById('bankAcc').value = p.bankAcc;
+      document.getElementById('bankIfsc').value = p.bankIfsc;
+
+      // Update card UI
+      document.getElementById('profileCardName').textContent = p.name;
+      const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase();
+      if (p.avatar) {
+        document.getElementById('profileInitials').innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+      } else {
+        document.getElementById('profileInitials').textContent = initials;
+      }
+
+      // Update topbar dynamically
+      if (window.updateTopbarProfile) {
+        window.updateTopbarProfile();
+      }
+    }
+
+    window.savePersonalDetails = function() {
+      const p = getProfile();
+      p.name = document.getElementById('profName').value.trim();
+      p.email = document.getElementById('profEmail').value.trim();
+      p.contact = document.getElementById('profContact').value.trim();
+
+      if (!p.name || !p.email || !p.contact) {
+        showToast('Please fill all profile fields.', 'danger');
+        return;
+      }
+
+      saveProfile(p);
+      loadProfile();
+      showToast('Profile coordinates updated successfully!', 'success');
+    };
+
+    window.saveBankDetails = function() {
+      const p = getProfile();
+      p.bankName = document.getElementById('bankName').value.trim();
+      p.bankBank = document.getElementById('bankBank').value.trim();
+      p.bankAcc = document.getElementById('bankAcc').value.trim();
+      p.bankIfsc = document.getElementById('bankIfsc').value.trim();
+
+      if (!p.bankName || !p.bankBank || !p.bankAcc || !p.bankIfsc) {
+        showToast('Please fill all banking fields.', 'danger');
+        return;
+      }
+
+      saveProfile(p);
+      loadProfile();
+      showToast('Payout bank credentials saved successfully!', 'success');
+    };
+
+    function showToast(msg, type = 'success') {
+      const icons = { success: 'lucide-check-circle', danger: 'lucide-alert-circle', info: 'lucide-info' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<i class="${icons[type] || 'lucide-info'}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        toast.style.cssText = 'opacity:0;transform:translateX(30px);transition:.3s;';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    window.handleAvatarUpload = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file.', 'danger');
+        return;
+      }
+      
+      if (file.size > 1024 * 1024) {
+        showToast('Image size should be less than 1MB.', 'danger');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const p = getProfile();
+        p.avatar = e.target.result;
+        saveProfile(p);
+        loadProfile();
+        showToast('Profile picture updated successfully!', 'success');
+      };
+      reader.readAsDataURL(file);
+    };
+
+    loadProfile();
+  }
+  </script>
+</body>
+</html>

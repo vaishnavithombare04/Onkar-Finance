@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Partner — Commissions Ledger</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header Section -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Commissions &amp; Earnings</h1>
+            <p class="text-secondary" style="font-size: 13px;">Monitor payout states, historical earnings ledger, and referral statements.</p>
+          </div>
+        </div>
+
+        <!-- Commission KPI Cards -->
+        <div class="grid grid-3">
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Total Earnings</span>
+              <div class="stat-icon"><i class="lucide-landmark"></i></div>
+            </div>
+            <div class="stat-value" id="commTotal">₹0</div>
+            <div class="stat-trend up">Cumulative payouts earned</div>
+          </div>
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Disbursed (Paid)</span>
+              <div class="stat-icon"><i class="lucide-check-circle"></i></div>
+            </div>
+            <div class="stat-value" id="commPaid">₹0</div>
+            <div class="stat-trend text-secondary" style="font-weight: 500;">Transferred to bank account</div>
+          </div>
+          <div class="card stat-card stat-card--highlighted">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Pending / Processing</span>
+              <div class="stat-icon"><i class="lucide-loader"></i></div>
+            </div>
+            <div class="stat-value" id="commPending">₹0</div>
+            <div class="stat-trend">Awaiting file disbursement</div>
+          </div>
+        </div>
+
+        <!-- Filter ledger -->
+        <div class="card flex align-center gap-md" style="padding: 16px;">
+          <div class="search-bar" style="width: 300px; background-color: var(--color-bg);">
+            <i class="lucide-search"></i>
+            <input type="text" placeholder="Search customer commissions..." id="commSearch">
+          </div>
+        </div>
+
+        <!-- Commission Ledger Card -->
+        <div class="card" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Referral ID</th>
+                  <th>Client Name</th>
+                  <th>Loan Product</th>
+                  <th>Sanctioned Amount</th>
+                  <th>Payout Rate</th>
+                  <th>Commission Earned</th>
+                  <th>Payout Status</th>
+                  <th>Disbursed Date</th>
+                </tr>
+              </thead>
+              <tbody id="commissionTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    function renderCommissions() {
+      const db = api.getDb();
+      const myLeads = db.leads.filter(l => l.referredBy === 'Rohit Patel');
+      const tbody = document.getElementById('commissionTableBody');
+      tbody.innerHTML = '';
+      
+      const searchVal = document.getElementById('commSearch').value.toLowerCase();
+      
+      let totalEarned = 0;
+      let totalPaid = 0;
+      let totalPending = 0;
+
+      myLeads.forEach(lead => {
+        // Commission values are stored or computed as 1% of the loan amount
+        const commValue = lead.commission || Math.round(lead.amount * 0.01);
+        const status = lead.commissionStatus || 'Pending';
+        
+        totalEarned += commValue;
+        if (status === 'Paid') {
+          totalPaid += commValue;
+        } else {
+          totalPending += commValue;
+        }
+
+        if (lead.name.toLowerCase().includes(searchVal) || lead.id.toLowerCase().includes(searchVal)) {
+          let badge = 'badge-warning';
+          if (status === 'Paid') badge = 'badge-success';
+          if (status === 'Processing') badge = 'badge-info';
+
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${lead.id.replace('LD', 'REF')}</td>
+              <td class="bold">${lead.name}</td>
+              <td>${lead.product}</td>
+              <td class="bold">${formatCurrency(lead.amount)}</td>
+              <td>1.0%</td>
+              <td class="bold" style="color: var(--color-primary)">${formatCurrency(commValue)}</td>
+              <td><span class="badge ${badge}">${status}</span></td>
+              <td>${status === 'Paid' ? formatDate(lead.date) : '—'}</td>
+            </tr>
+          `;
+        }
+      });
+
+      document.getElementById('commTotal').textContent = formatCurrency(totalEarned);
+      document.getElementById('commPaid').textContent = formatCurrency(totalPaid);
+      document.getElementById('commPending').textContent = formatCurrency(totalPending);
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    document.getElementById('commSearch').addEventListener('keyup', renderCommissions);
+
+    renderCommissions();
+  }
+  </script>
+</body>
+</html>
