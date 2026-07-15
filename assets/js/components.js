@@ -186,20 +186,20 @@ function fallbackComponentRenderer(selector) {
     element.innerHTML = `
       <div class="topbar">
         <div class="topbar-tabs">
-          <div class="tab-pill active">Overview</div>
-          <div class="tab-pill">Manage</div>
-          <div class="tab-pill">Audit logs</div>
+          <div class="tab-pill ${currentPath.includes('dashboard') ? 'active' : ''}" onclick="location.href='dashboard.html'" style="cursor: pointer;">Overview</div>
+          <div class="tab-pill ${currentPath.includes('loan-applications') || currentPath.includes('branches') ? 'active' : ''}" onclick="location.href='loan-applications.html'" style="cursor: pointer;">Manage</div>
+          <div class="tab-pill ${currentPath.includes('reports') ? 'active' : ''}" onclick="location.href='reports-analytics.html'" style="cursor: pointer;">Audit logs</div>
         </div>
         <div class="topbar-actions">
           <div class="search-bar">
             <i class="lucide-search"></i>
             <input type="text" placeholder="Search customer, lead, or application..." id="globalSearch">
           </div>
-          <div class="icon-btn">
+          <div class="icon-btn" onclick="if(window.showToast){showToast('No new notifications', 'success');}else{alert('No new notifications');}" style="cursor: pointer;">
             <i class="lucide-bell"></i>
             <div class="badge-dot"></div>
           </div>
-          <div class="user-profile" onclick="location.href='${rootPrefix}${isInsideBM ? 'branch-manager/' : 'admin/'}profile.html'">
+          <div class="user-profile" onclick="location.href='profile.html'" style="cursor: pointer;">
             <div class="avatar">${avatar}</div>
             <div class="text-secondary bold" style="font-size: 13px;">${name}</div>
           </div>

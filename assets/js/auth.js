@@ -26,10 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       if (isValid) {
-        // Simulate Login redirect to admin/dashboard.html
         showToast('Login successful! Redirecting...', 'success');
         setTimeout(() => {
-          window.location.href = 'admin/dashboard.html';
+          const emailLower = email.toLowerCase();
+          if (emailLower.includes('amit.d') || emailLower.includes('manager')) {
+            window.location.href = 'branch-manager/index.html';
+          } else if (emailLower.includes('karan.j') || emailLower.includes('employee') || emailLower.includes('emp')) {
+            window.location.href = 'employee/index.html';
+          } else if (emailLower.includes('customer') || emailLower.includes('cust') || emailLower.includes('client') || emailLower.includes('abhijit.r') || emailLower.includes('milind') || emailLower.includes('sneha')) {
+            window.location.href = 'customer/index.html';
+          } else {
+            window.location.href = 'admin/dashboard.html';
+          }
         }, 1500);
       }
     });

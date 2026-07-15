@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Track Application - Onkar Finance</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search my queries, EMI schedules...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 290px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Customer Portal</span>
+                <a href="index.html" class="sidebar-item">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="apply.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-plus"></i> <span>Apply for Loan</span>
+                </a>
+                <a href="upload-docs.html" class="sidebar-item">
+                    <i class="bi bi-cloud-arrow-up"></i> <span>Upload Documents</span>
+                </a>
+                <a href="track.html" class="sidebar-item active">
+                    <i class="bi bi-geo-alt"></i> <span>Track Application</span>
+                </a>
+                <a href="notifications.html" class="sidebar-item">
+                    <i class="bi bi-bell"></i> <span>Notifications</span>
+                </a>
+                <a href="calculator.html" class="sidebar-item">
+                    <i class="bi bi-calculator"></i> <span>EMI Calculator</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">My Account</span>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="bi bi-person-gear"></i> <span>My Profile</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="btn btn-ghost theme-toggle-btn w-100 text-start text-white opacity-75">
+                    <i class="bi bi-moon me-2"></i> <span class="sidebar-label-text">Dark Mode</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="mb-4">
+                <h1 class="h3 font-weight-bold mb-0 text-dark">Track Application</h1>
+                <p class="text-muted font-13">View detailed Underwriting reviews, credit check scores, and timelines for active applications.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left: Application Details & Timeline -->
+                <div class="col-lg-8">
+                    <!-- Application Card -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 border-bottom pb-2">
+                                <h5 class="card-title fw-bold text-dark font-14 mb-0" id="appSummaryHeader">Application Summary - APP701</h5>
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="font-11 text-secondary font-weight-600 text-nowrap mb-0">Select Application:</label>
+                                    <select class="form-select form-select-sm" id="appSelector" style="width: 200px; font-size: 11px;" onchange="switchApplication(this.value)">
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row g-3 border-bottom pb-3 mb-3 text-start">
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">LOAN CATEGORY</span>
+                                    <strong class="font-13 text-dark" id="appCategoryLabel">Home Loan</strong>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">REQUESTED AMOUNT</span>
+                                    <strong class="font-13 text-dark" id="appAmountLabel">₹15,00,000</strong>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">DATE APPLIED</span>
+                                    <strong class="font-13 text-dark" id="appDateLabel">2026-07-14</strong>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">ASSIGNED EXECUTIVE</span>
+                                    <strong class="font-13 text-dark" id="appExecutiveLabel">Karan Joshi (Pune)</strong>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">CIBIL SCORE RESULT</span>
+                                    <strong class="font-13 text-success" id="appCibilLabel">742 (Good)</strong>
+                                </div>
+                                <div class="col-md-6 col-lg-4">
+                                    <span class="text-secondary font-11 d-block">KYC DOCS CHECK</span>
+                                    <strong class="font-13 text-warning" id="kycSummaryStatus">Pending Re-upload</strong>
+                                </div>
+                            </div>
+
+                            <!-- Live Tracking Stages Timeline -->
+                            <h6 class="fw-bold mb-3 text-dark font-13">Application Stages</h6>
+                            <div id="timelineContainer" class="position-relative ps-4" style="border-left: 2px solid var(--color-border); margin-left: 10px;">
+                                <!-- Stage 5 -->
+                                <div class="mb-4 position-relative">
+                                    <div class="position-absolute bg-white text-muted border rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px;">5</div>
+                                    <h6 class="mb-1 text-muted font-13 font-weight-700">Disbursement Offer</h6>
+                                    <p class="text-muted font-11 mb-0">Loan agreement signing and bank payout dispatch.</p>
+                                </div>
+
+                                <!-- Stage 4 -->
+                                <div class="mb-4 position-relative">
+                                    <div class="position-absolute bg-white text-muted border rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px;">4</div>
+                                    <h6 class="mb-1 text-muted font-13 font-weight-700">Sanction Approval</h6>
+                                    <p class="text-muted font-11 mb-0">Final loan terms sanctioning by credit manager.</p>
+                                </div>
+
+                                <!-- Stage 3 -->
+                                <div class="mb-4 position-relative">
+                                    <div class="position-absolute bg-white text-muted border rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px;">3</div>
+                                    <h6 class="mb-1 text-muted font-13 font-weight-700">Credit Officer Review</h6>
+                                    <p class="text-muted font-11 mb-0">Underwriter evaluation based on ITR filings and salary multipliers.</p>
+                                </div>
+
+                                <!-- Stage 2 -->
+                                <div class="mb-4 position-relative">
+                                    <div class="position-absolute bg-primary text-white border border-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px; font-weight: bold;">2</div>
+                                    <h6 class="mb-1 text-primary font-13 font-weight-700">Document Verification (Active Stage)</h6>
+                                    <p class="text-muted font-11 mb-1">OCR scanning of Aadhaar, PAN, and Bank statement validation.</p>
+                                    <div class="p-2 border rounded bg-warning-subtle text-warning-emphasis font-11" id="trackRemarksBox">
+                                        <i class="bi bi-chat-left-dots-fill me-1"></i> Executive Remark: "Aadhaar and PAN details matched. Bank statements uploaded are cropped. Re-upload requested."
+                                    </div>
+                                </div>
+
+                                <!-- Stage 1 -->
+                                <div class="position-relative">
+                                    <div class="position-absolute bg-success text-white border border-success rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px; font-weight: bold;"><i class="bi bi-check"></i></div>
+                                    <h6 class="mb-1 text-success font-13 font-weight-700">New Application Submitted</h6>
+                                    <p class="text-muted font-11 mb-0">Application registered in Onkar ERP system on 2026-07-14 14:15.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Executive Contact info -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body text-center py-4">
+                            <div class="avatar bg-primary text-white rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center" style="width: 70px; height: 70px; font-size: 24px; font-weight: bold;">
+                                KJ
+                            </div>
+                            <h5 class="fw-bold mb-1 text-dark">Karan Joshi</h5>
+                            <p class="text-muted font-12 mb-3">Branch Case Handler (Pune)</p>
+                            <hr>
+                            <div class="text-start font-12 text-muted">
+                                <p class="mb-2"><i class="bi bi-envelope me-2"></i> karan.j@onkarfinance.com</p>
+                                <p class="mb-0"><i class="bi bi-telephone me-2"></i> +91 95600 78899</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+
+    <script>
+        // Store loaded applications globally
+        window.loadedApps = [];
+
+        function renderTimeline(myApp) {
+            const container = document.getElementById('timelineContainer');
+            if (!container) return;
+
+            const status = myApp.status || 'Verification';
+            const kyc = myApp.kycStatus || 'Pending';
+            
+            const stages = [
+                {
+                    num: 5,
+                    title: "Disbursement Offer",
+                    desc: "Loan agreement signing and bank payout dispatch.",
+                    activeStatuses: ["Disbursed"],
+                    passedStatuses: []
+                },
+                {
+                    num: 4,
+                    title: "Sanction Approval",
+                    desc: "Final loan terms sanctioning by credit manager.",
+                    activeStatuses: ["Approval"],
+                    passedStatuses: ["Disbursed"]
+                },
+                {
+                    num: 3,
+                    title: "Credit Officer Review",
+                    desc: "Underwriter evaluation based on CIBIL and income details.",
+                    activeStatuses: ["Review"],
+                    passedStatuses: ["Approval", "Disbursed"]
+                },
+                {
+                    num: 2,
+                    title: "Document Verification",
+                    desc: "OCR scanning of Aadhaar, PAN, and Bank statement validation.",
+                    activeStatuses: ["Verification"],
+                    passedStatuses: ["Review", "Approval", "Disbursed"]
+                },
+                {
+                    num: 1,
+                    title: "New Application Submitted",
+                    desc: `Application registered in Onkar ERP system on ${myApp.dateApplied || myApp.date || '2026-07-14'}.`,
+                    activeStatuses: [],
+                    passedStatuses: ["Verification", "Review", "Approval", "Disbursed"]
+                }
+            ];
+
+            container.innerHTML = stages.map(stage => {
+                let circleClass = 'bg-white text-muted border';
+                let circleContent = stage.num;
+                let titleClass = 'text-muted';
+                let descClass = 'text-muted';
+                let remarksBox = '';
+
+                const isPassed = stage.passedStatuses.includes(status);
+                const isActive = stage.activeStatuses.includes(status) || (stage.num === 2 && status === 'Verification');
+
+                if (isPassed) {
+                    circleClass = 'bg-success text-white border border-success';
+                    circleContent = '<i class="bi bi-check"></i>';
+                    titleClass = 'text-success';
+                } else if (isActive) {
+                    if (status === 'Rejected') {
+                        circleClass = 'bg-danger text-white border border-danger';
+                        circleContent = '<i class="bi bi-x"></i>';
+                        titleClass = 'text-danger';
+                    } else {
+                        circleClass = 'bg-primary text-white border border-primary';
+                        circleContent = '<b>' + stage.num + '</b>';
+                        titleClass = 'text-primary';
+                    }
+                    
+                    // Add custom remarks to Stage 2 if active
+                    if (stage.num === 2) {
+                        if (kyc === 'Verified') {
+                            remarksBox = `
+                                <div class="p-2 border rounded bg-success-subtle text-success-emphasis font-11 mt-1" id="trackRemarksBox">
+                                    <i class="bi bi-chat-left-dots-fill me-1"></i> Executive Remark: "All documents matched. File moved to Stage 3: Review."
+                                </div>
+                            `;
+                        } else {
+                            remarksBox = `
+                                <div class="p-2 border rounded bg-warning-subtle text-warning-emphasis font-11 mt-1" id="trackRemarksBox">
+                                    <i class="bi bi-chat-left-dots-fill me-1"></i> Executive Remark: "Aadhaar and PAN details matched. Bank statements uploaded are cropped. Re-upload requested."
+                                </div>
+                            `;
+                        }
+                    }
+                }
+
+                return `
+                    <div class="mb-4 position-relative">
+                        <div class="position-absolute rounded-circle d-flex align-items-center justify-content-center ${circleClass}" style="width: 20px; height: 20px; left: -31px; top: 0; font-size: 10px; font-weight: bold;">
+                            ${circleContent}
+                        </div>
+                        <h6 class="mb-1 font-13 font-weight-700 ${titleClass}">${stage.title} ${isActive ? '(Active Stage)' : ''}</h6>
+                        <p class="font-11 mb-0 ${descClass}">${stage.desc}</p>
+                        ${remarksBox}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function showApplicationDetails(myApp) {
+            if (!myApp) return;
+
+            // Update elements
+            document.getElementById('appSummaryHeader').innerText = `Application Summary - ${myApp.id}`;
+            document.getElementById('appCategoryLabel').innerText = myApp.loanProduct || myApp.productName || myApp.product || 'Home Loan';
+            document.getElementById('appAmountLabel').innerText = `₹${parseInt(myApp.amount || myApp.loanAmount || 0).toLocaleString('en-IN')}`;
+            document.getElementById('appDateLabel').innerText = myApp.dateApplied || myApp.appliedDate || myApp.date || '2026-07-14';
+            document.getElementById('appExecutiveLabel').innerText = myApp.assignedTo || myApp.executive || 'Karan Joshi (Pune)';
+            document.getElementById('appCibilLabel').innerText = `${myApp.cibilScore || myApp.cibil || 742} (Good)`;
+            
+            const kycStatusBadge = document.getElementById('kycSummaryStatus');
+            if (kycStatusBadge) {
+                if (myApp.kycStatus === 'Verified') {
+                    kycStatusBadge.innerText = 'Verified';
+                    kycStatusBadge.className = 'font-13 text-success';
+                } else {
+                    kycStatusBadge.innerText = myApp.kycStatus || 'Pending Re-upload';
+                    kycStatusBadge.className = 'font-13 text-warning';
+                }
+            }
+
+            // Render Timeline
+            renderTimeline(myApp);
+        }
+
+        window.switchApplication = (appId) => {
+            const app = window.loadedApps.find(a => a.id === appId);
+            if (app) {
+                showApplicationDetails(app);
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = window.mockDB || { applications: [] };
+            const myApps = db.applications.filter(a => a.customerName === "Abhijit Ranade");
+            
+            if (myApps.length > 0) {
+                window.loadedApps = myApps;
+                
+                // Populate Dropdown
+                const selector = document.getElementById('appSelector');
+                if (selector) {
+                    selector.innerHTML = myApps.map(app => `
+                        <option value="${app.id}">${app.id} - ${app.loanProduct || app.productName || app.product} (₹${parseInt(app.amount || 0).toLocaleString('en-IN')})</option>
+                    `).join('');
+                }
+                
+                // Show default details for first application
+                showApplicationDetails(myApps[0]);
+            }
+        });
+    </script>
+</body>
+</html>
+

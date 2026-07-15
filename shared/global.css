@@ -878,4 +878,9 @@ label, .form-label { color: var(--text-primary) !important; }
     height: 40px;
 }
 
+/* Ensure all dropdown menus display on top of other content layers */
+.dropdown-menu, .dropdown-menu.show {
+    z-index: 100000 !important;
+}
+
 

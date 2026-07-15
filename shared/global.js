@@ -353,7 +353,7 @@ window.logAudit = (user, module, action, details) => {
 // Theme Synchronizer Init
 function initTheme() {
     const themeToggle = document.getElementById('themeToggle');
-    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleBtn = document.getElementById('themeToggleBtn') || document.querySelector('.theme-toggle-btn');
     const getStoredTheme = () => localStorage.getItem('theme');
     const setStoredTheme = theme => localStorage.setItem('theme', theme);
     
@@ -863,7 +863,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 showToast('Signed out successfully', 'success');
                 setTimeout(() => {
-                    const isInsideSubfolder = window.location.pathname.includes('/employee/') || window.location.pathname.includes('/branch-manager/');
+                    const isInsideSubfolder = window.location.pathname.includes('/employee/') || window.location.pathname.includes('/branch-manager/') || window.location.pathname.includes('/customer/');
                     window.location.href = isInsideSubfolder ? '../index.html' : 'index.html';
                 }, 800);
             });
