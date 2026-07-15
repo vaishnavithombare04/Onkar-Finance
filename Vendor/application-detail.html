@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Lending Partner — Application Detail</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header -->
+        <div class="flex justify-between align-center">
+          <div>
+            <div class="flex align-center gap-sm">
+              <a href="applications.html" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" data-nav>
+                <i class="lucide-arrow-left"></i> Back to List
+              </a>
+              <span class="text-secondary" style="font-size: 13px;" id="detailAppId">APP-8902</span>
+            </div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px; margin-top: 8px;" id="detailHeaderName">Review Application</h1>
+          </div>
+          <div id="statusBadgeContainer">
+            <span class="badge" id="appStatusBadge">Pending</span>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="align-items: start;">
+          <!-- Left 2 Cols: Details and Documents -->
+          <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
+            <!-- Applicant Coordinates Card -->
+            <div class="card" style="padding: 24px;">
+              <h3 class="bold" style="font-size: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">Applicant &amp; Credit Profile</h3>
+              <div class="grid grid-2" style="gap: 16px;">
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Applicant Full Name</span>
+                  <span class="bold" id="appDetailName" style="font-size: 14.5px;">—</span>
+                </div>
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Requested Loan Product</span>
+                  <span class="bold" id="appDetailProduct" style="font-size: 14.5px;">—</span>
+                </div>
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Requested Funding Amount</span>
+                  <span class="bold" id="appDetailAmount" style="font-size: 14.5px; color: var(--color-primary);">—</span>
+                </div>
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Submission Timestamp</span>
+                  <span class="bold" id="appDetailDate" style="font-size: 14.5px;">—</span>
+                </div>
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Contact Info</span>
+                  <span class="bold" id="appDetailContact" style="font-size: 14.5px;">—</span>
+                </div>
+                <div>
+                  <span class="text-secondary" style="font-size: 12px; display: block;">Automated Bureau / Credit Score</span>
+                  <span class="bold" id="appDetailCibil" style="font-size: 14.5px;">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Documents Review Card -->
+            <div class="card" style="padding: 24px;">
+              <h3 class="bold" style="font-size: 16px; margin-bottom: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">Submitted Verification Folders</h3>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Document Folder</th>
+                      <th>Document Type</th>
+                      <th>Submission Date</th>
+                      <th>Verification Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detailDocsTableBody">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Col: Credit Decision Actions & Query Panel -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Credit Decision Actions -->
+            <div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+              <h3 class="bold" style="font-size: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">Credit Decision</h3>
+              <p class="text-secondary" style="font-size: 12px;">Update the status of this credit file. Approving or rejecting will notify Onkar Finance core agents immediately.</p>
+              
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 8px;">
+                <button class="btn btn-primary" onclick="updateApplicationDecision('Approved')" style="width: 100%; justify-content: center; background-color: var(--color-success); border-color: var(--color-success);">
+                  <i class="lucide-check-circle"></i> Approve Application
+                </button>
+                <button class="btn btn-primary" onclick="updateApplicationDecision('Rejected')" style="width: 100%; justify-content: center; background-color: var(--color-danger); border-color: var(--color-danger);">
+                  <i class="lucide-x-circle"></i> Reject Application
+                </button>
+              </div>
+            </div>
+
+            <!-- Query Raised Panel -->
+            <div class="card" style="padding: 24px; display: flex; flex-direction: column; gap: 16px;">
+              <h3 class="bold" style="font-size: 16px; border-bottom: 1px solid var(--color-border); padding-bottom: 8px;">Raise Credit Query</h3>
+              <p class="text-secondary" style="font-size: 12px;">Request missing documentation or clarifications. This transitions the file to "Query Raised".</p>
+              
+              <div class="form-group" style="margin-top: 8px;">
+                <label class="form-label">Request Document Type</label>
+                <select id="queryDocType" class="form-control">
+                  <option value="">Select folder to request</option>
+                  <option>PAN Card</option>
+                  <option>Aadhaar Card</option>
+                  <option>Bank Statements (Last 6 Mos)</option>
+                  <option>Salary Slips (Last 3 Mos)</option>
+                  <option>IT Returns (Form 16)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Detailed Clarification Request</label>
+                <textarea id="queryMessage" class="form-control" placeholder="Provide instructions for the agent/applicant on what is missing..." style="height: 100px; resize: none;"></textarea>
+              </div>
+              <button class="btn btn-primary" onclick="submitCreditQuery()" style="width: 100%; justify-content: center;">
+                <i class="lucide-arrow-right"></i> Submit Query &amp; Pause File
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    const params = new URLSearchParams(window.location.search);
+    const leadId = params.get('id') || 'LD-8902';
+    let currentLead = null;
+
+    function initApplicationDetail() {
+      const vendorProfile = JSON.parse(localStorage.getItem('onkar_vendor_profile') || '{}');
+      const bankName = vendorProfile.bankName || 'HDFC Bank Ltd.';
+
+      const db = api.getDb();
+      currentLead = db.leads.find(l => l.id === leadId);
+
+      if (!currentLead || currentLead.sentTo !== bankName) {
+        showToast('Application not found or unauthorized review.', 'danger');
+        return;
+      }
+
+      // Populate Header
+      document.getElementById('detailAppId').textContent = currentLead.id.replace('LD', 'APP');
+      document.getElementById('detailHeaderName').textContent = currentLead.name;
+
+      // Status Badge
+      const badge = document.getElementById('appStatusBadge');
+      badge.textContent = currentLead.status;
+      let badgeClass = 'badge-info';
+      if (currentLead.status === 'Approved' || currentLead.status === 'Disbursed') badgeClass = 'badge-success';
+      else if (currentLead.status === 'Rejected') badgeClass = 'badge-danger';
+      else if (currentLead.status === 'Verification' || currentLead.status === 'Under Process' || currentLead.status === 'Query Raised') badgeClass = 'badge-warning';
+      badge.className = `badge ${badgeClass}`;
+
+      // Coordinates
+      document.getElementById('appDetailName').textContent = currentLead.name;
+      document.getElementById('appDetailProduct').textContent = currentLead.product;
+      document.getElementById('appDetailAmount').textContent = formatCurrency(currentLead.amount);
+      document.getElementById('appDetailDate').textContent = formatDate(currentLead.date);
+      document.getElementById('appDetailContact').textContent = currentLead.contact;
+
+      // Bureau Score Simulator
+      const scoreNum = 680 + (parseInt(currentLead.id.replace(/\D/g, ''), 10) % 120);
+      const cibilEl = document.getElementById('appDetailCibil');
+      cibilEl.textContent = `${scoreNum} (Experian / Equifax)`;
+      if (scoreNum >= 750) cibilEl.style.color = 'var(--color-success)';
+      else if (scoreNum >= 680) cibilEl.style.color = 'var(--color-warning)';
+      else cibilEl.style.color = 'var(--color-danger)';
+
+      // Render Documents
+      renderDocs();
+    }
+
+    function renderDocs() {
+      const tbody = document.getElementById('detailDocsTableBody');
+      tbody.innerHTML = '';
+
+      const docs = currentLead.documents || [];
+
+      if (docs.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted" style="padding: 24px;"><i class="lucide-file" style="font-size:24px; opacity:0.3; display:block; margin-bottom:8px;"></i>No documentation provided. Please raise a query.</td></tr>`;
+        return;
+      }
+
+      docs.forEach(doc => {
+        let badgeClass = 'badge-warning';
+        if (doc.status === 'Completed' || doc.status === 'Verified') badgeClass = 'badge-success';
+        else if (doc.status === 'Rejected') badgeClass = 'badge-danger';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold"><i class="lucide-file" style="margin-right: 6px; font-size: 12px; color: var(--color-primary)"></i> ${doc.fileName}</td>
+            <td>${doc.type}</td>
+            <td>${formatDate(doc.date)}</td>
+            <td><span class="badge ${badgeClass}">${doc.status}</span></td>
+            <td>
+              ${doc.status === 'Verification' ? `
+                <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-success); border-color: var(--color-success); margin-right:4px;" onclick="verifyDocument('${doc.fileName}', 'Verified')">Verify</button>
+                <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-danger); border-color: var(--color-danger);" onclick="verifyDocument('${doc.fileName}', 'Rejected')">Reject</button>
+              ` : `<span class="text-muted" style="font-size:11px;">Checked</span>`}
+            </td>
+          </tr>
+        `;
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.verifyDocument = function(fileName, status) {
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead && lead.documents) {
+        const doc = lead.documents.find(d => d.fileName === fileName);
+        if (doc) {
+          doc.status = status;
+          api.saveDb(db);
+          showToast(`Document marked as ${status}.`, 'success');
+          initApplicationDetail();
+        }
+      }
+    };
+
+    window.updateApplicationDecision = function(status) {
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead) {
+        lead.status = status;
+        api.saveDb(db);
+        showToast(`Application successfully ${status}!`, 'success');
+        initApplicationDetail();
+      }
+    };
+
+    window.submitCreditQuery = function() {
+      const docType = document.getElementById('queryDocType').value;
+      const message = document.getElementById('queryMessage').value.trim();
+
+      if (!docType || !message) {
+        showToast('Please select a document type and enter a query message.', 'danger');
+        return;
+      }
+
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead) {
+        lead.status = 'Query Raised';
+        
+        // Add a placeholder "Pending" document that indicates it's requested
+        if (!lead.documents) lead.documents = [];
+        
+        // Remove existing pending request of same type if any, to avoid duplicates
+        lead.documents = lead.documents.filter(d => !(d.type === docType && d.status === 'Pending'));
+        
+        lead.documents.push({
+          fileName: `Awaiting ${docType} (Requested by lender)`,
+          type: docType,
+          status: 'Pending',
+          date: new Date().toISOString().split('T')[0]
+        });
+
+        api.saveDb(db);
+        showToast(`Query raised for ${docType}. File moved to "Query Raised".`, 'success');
+        
+        // Clear form
+        document.getElementById('queryDocType').value = '';
+        document.getElementById('queryMessage').value = '';
+        
+        initApplicationDetail();
+      }
+    };
+
+    initApplicationDetail();
+  }
+  </script>
+</body>
+</html>

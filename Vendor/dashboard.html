@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Lending Partner — Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;" id="welcomeTitle">Lending Partner Dashboard</h1>
+            <p class="text-secondary" style="font-size: 13px;">Manage applications assigned to your institution, review docs, and update credit decisions.</p>
+          </div>
+        </div>
+
+        <!-- KPI Grid -->
+        <div class="grid grid-4">
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Applications Received</span>
+              <div class="stat-icon"><i class="lucide-file-text"></i></div>
+            </div>
+            <div class="stat-value" id="kpiReceived">0</div>
+            <div class="stat-trend">Total routed cases</div>
+          </div>
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Approval Rate</span>
+              <div class="stat-icon"><i class="lucide-percent"></i></div>
+            </div>
+            <div class="stat-value" id="kpiApprovalRate">0%</div>
+            <div class="stat-trend up" id="kpiApprovalTrend">Sanction ratio</div>
+          </div>
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Pending Reviews</span>
+              <div class="stat-icon"><i class="lucide-clock"></i></div>
+            </div>
+            <div class="stat-value" id="kpiPending">0</div>
+            <div class="stat-trend text-warning">Awaiting credit decisions</div>
+          </div>
+          <div class="card stat-card stat-card--highlighted">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Disbursed Value</span>
+              <div class="stat-icon"><i class="lucide-banknote"></i></div>
+            </div>
+            <div class="stat-value" id="kpiDisbursed">₹0</div>
+            <div class="stat-trend">Total loan volume funded</div>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="align-items: start;">
+          <!-- Recent Received Applications (Spans 2 columns) -->
+          <div class="card" style="grid-column: span 2; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+            <div class="flex justify-between align-center">
+              <h3 class="bold" style="font-size: var(--fs-h3);">Recent Submissions</h3>
+              <a href="applications.html" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" data-nav>View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>App ID</th>
+                    <th>Applicant</th>
+                    <th>Product</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="recentLeadsTable">
+                  <!-- Dynamic render -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Lending metrics & visual bar charts -->
+          <div class="card" style="padding: 20px; display: flex; flex-direction: column; gap: 20px;">
+            <h3 class="bold" style="font-size: var(--fs-h3);">Approval Breakdown</h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 14px;">
+              <div>
+                <div class="flex justify-between" style="font-size: 12px; margin-bottom: 4px;">
+                  <span class="text-secondary">Approved &amp; Disbursed</span>
+                  <span class="bold" id="barApprovedVal">0%</span>
+                </div>
+                <div class="progress-bar-container" style="height: 8px;">
+                  <div class="progress-bar-fill" id="barApprovedFill" style="width: 0%; background-color: var(--color-success);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between" style="font-size: 12px; margin-bottom: 4px;">
+                  <span class="text-secondary">Under Review / Pending</span>
+                  <span class="bold" id="barPendingVal">0%</span>
+                </div>
+                <div class="progress-bar-container" style="height: 8px;">
+                  <div class="progress-bar-fill" id="barPendingFill" style="width: 0%; background-color: var(--color-warning);"></div>
+                </div>
+              </div>
+
+              <div>
+                <div class="flex justify-between" style="font-size: 12px; margin-bottom: 4px;">
+                  <span class="text-secondary">Rejected / Declined</span>
+                  <span class="bold" id="barRejectedVal">0%</span>
+                </div>
+                <div class="progress-bar-container" style="height: 8px;">
+                  <div class="progress-bar-fill" id="barRejectedFill" style="width: 0%; background-color: var(--color-danger);"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div style="border-top: 1px solid var(--color-border); padding-top: 16px; margin-top: 4px; font-size: 12px; color: var(--color-text-secondary);">
+              <i class="lucide-info" style="font-size: 14px; vertical-align: middle; margin-right: 4px; color: var(--color-primary);"></i>
+              Updates synced in real-time with Onkar Finance CRM API core channels.
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    function initDashboard() {
+      const vendorProfile = JSON.parse(localStorage.getItem('onkar_vendor_profile') || '{}');
+      const bankName = vendorProfile.bankName || 'HDFC Bank Ltd.';
+      
+      // Update Title
+      document.getElementById('welcomeTitle').textContent = `${bankName} Portal`;
+
+      const db = api.getDb();
+      // Filter leads sent to this bank only
+      const myLeads = db.leads.filter(l => l.sentTo === bankName);
+
+      // Calculations
+      const total = myLeads.length;
+      const approved = myLeads.filter(l => l.status === 'Approved' || l.status === 'Disbursed').length;
+      const rejected = myLeads.filter(l => l.status === 'Rejected').length;
+      const pending = myLeads.filter(l => l.status === 'New Lead' || l.status === 'Verification' || l.status === 'Under Process' || l.status === 'Query Raised').length;
+
+      const approvalRate = total > 0 ? Math.round((approved / total) * 100) : 0;
+      const pendingRate = total > 0 ? Math.round((pending / total) * 100) : 0;
+      const rejectedRate = total > 0 ? Math.round((rejected / total) * 100) : 0;
+
+      let totalDisbursedAmount = 0;
+      myLeads.forEach(l => {
+        if (l.status === 'Disbursed') {
+          totalDisbursedAmount += l.amount;
+        }
+      });
+
+      // Update KPI text values
+      document.getElementById('kpiReceived').textContent = total;
+      document.getElementById('kpiApprovalRate').textContent = `${approvalRate}%`;
+      document.getElementById('kpiPending').textContent = pending;
+      document.getElementById('kpiDisbursed').textContent = formatCurrency(totalDisbursedAmount);
+
+      // Update Progress Bars
+      document.getElementById('barApprovedVal').textContent = `${approvalRate}%`;
+      document.getElementById('barApprovedFill').style.width = `${approvalRate}%`;
+      
+      document.getElementById('barPendingVal').textContent = `${pendingRate}%`;
+      document.getElementById('barPendingFill').style.width = `${pendingRate}%`;
+
+      document.getElementById('barRejectedVal').textContent = `${rejectedRate}%`;
+      document.getElementById('barRejectedFill').style.width = `${rejectedRate}%`;
+
+      // Render Recent Submissions
+      const tbody = document.getElementById('recentLeadsTable');
+      tbody.innerHTML = '';
+
+      if (myLeads.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted" style="padding: 20px;">No applications assigned yet.</td></tr>`;
+      } else {
+        // Take latest 3
+        const recent = myLeads.slice(0, 3);
+        recent.forEach(lead => {
+          let badgeClass = 'badge-info';
+          if (lead.status === 'Approved' || lead.status === 'Disbursed') badgeClass = 'badge-success';
+          else if (lead.status === 'Rejected') badgeClass = 'badge-danger';
+          else if (lead.status === 'Verification' || lead.status === 'Under Process' || lead.status === 'Query Raised') badgeClass = 'badge-warning';
+
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${lead.id.replace('LD', 'APP')}</td>
+              <td class="bold">${lead.name}</td>
+              <td>${lead.product}</td>
+              <td class="bold">${formatCurrency(lead.amount)}</td>
+              <td><span class="badge ${badgeClass}">${lead.status}</span></td>
+              <td><a href="application-detail.html?id=${lead.id}" class="btn btn-outline" style="padding: 4px 8px; font-size:11px;" data-nav>Review</a></td>
+            </tr>
+          `;
+        });
+      }
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    initDashboard();
+  }
+  </script>
+</body>
+</html>
