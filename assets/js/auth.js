@@ -26,17 +26,11 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       if (isValid) {
-        if (email === 'admin@onkarfinance.com' && password === 'admin123') {
-          // Simulate Login redirect to admin/dashboard.html
-          showToast('Login successful! Redirecting...', 'success');
-          setTimeout(() => {
-            window.location.href = 'admin/dashboard.html';
-          }, 1500);
-        } else {
-          showToast('Invalid credentials! Try: admin@onkarfinance.com / admin123', 'danger');
-          showFieldError('email', 'Check your username or email');
-          showFieldError('password', 'Check your password');
-        }
+        // Simulate Login redirect to admin/dashboard.html
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin/dashboard.html';
+        }, 1500);
       }
     });
   }
@@ -90,9 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!terms) { showToast('You must agree to the Terms & Conditions', 'warning'); isValid = false; }
       
       if (isValid) {
-        // Trigger OTP verification modal
-        openModal('otpModal');
-        initOtpInputs();
+        // Redirect directly to dashboard on successful signup for seamless frontend flow
+        showToast('Account created successfully! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin/dashboard.html';
+        }, 1500);
       }
     });
   }
