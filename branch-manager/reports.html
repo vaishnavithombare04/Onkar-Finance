@@ -3,9 +3,10 @@
 <head>
     <script>
       (function() {
-        const saved = localStorage.getItem('theme');
+        const saved = localStorage.getItem('onkar-theme');
         const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
       })();
     </script>
     <meta charset="UTF-8">
@@ -29,6 +30,11 @@
                 <i class="bi bi-list fs-4"></i>
             </button>
             <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="topbar-tabs d-none d-md-flex ms-4">
+            <div class="tab-pill " onclick="location.href='index.html'">Overview</div>
+            <div class="tab-pill " onclick="location.href='applications.html'">Manage</div>
+            <div class="tab-pill active" onclick="location.href='reports.html'">Audit logs</div>
         </div>
         <div class="header-search d-none d-md-block">
             <i class="bi bi-search header-search-icon"></i>
@@ -106,10 +112,12 @@
                     <i class="bi bi-gear"></i> <span>Profile & Settings</span>
                 </a>
                 <div class="sidebar-divider"></div>
-                <div class="sidebar-item" id="themeToggleBtn" style="cursor: pointer;">
-                    <i class="bi bi-moon"></i> <span>Dark Mode</span>
-                </div>
             </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle-btn" id="themeToggleBtn">
+                    <i class="bi bi-moon"></i> <span class="sidebar-label-text">Dark Mode</span>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->

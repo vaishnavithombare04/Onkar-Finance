@@ -354,8 +354,8 @@ window.logAudit = (user, module, action, details) => {
 function initTheme() {
     const themeToggle = document.getElementById('themeToggle');
     const themeToggleBtn = document.getElementById('themeToggleBtn') || document.querySelector('.theme-toggle-btn');
-    const getStoredTheme = () => localStorage.getItem('theme');
-    const setStoredTheme = theme => localStorage.setItem('theme', theme);
+    const getStoredTheme = () => localStorage.getItem('onkar-theme');
+    const setStoredTheme = theme => localStorage.setItem('onkar-theme', theme);
     
     const getPreferredTheme = () => {
         const stored = getStoredTheme();
@@ -454,12 +454,14 @@ function initSidebar() {
         collapseToggleBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             const isExpanded = sidebar.classList.toggle('sidebar--expanded');
+            document.body.classList.toggle('sidebar--expanded', isExpanded);
             localStorage.setItem('bm-sidebar-expanded', isExpanded ? '1' : '0');
         });
 
         // Restore expanded state on boot (defaults to collapsed if not set)
         if (localStorage.getItem('bm-sidebar-expanded') === '1') {
             sidebar.classList.add('sidebar--expanded');
+            document.body.classList.add('sidebar--expanded');
         }
     }
 }
