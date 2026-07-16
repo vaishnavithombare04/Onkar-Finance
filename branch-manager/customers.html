@@ -3,9 +3,10 @@
 <head>
     <script>
       (function() {
-        const saved = localStorage.getItem('theme');
+        const saved = localStorage.getItem('onkar-theme');
         const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
       })();
     </script>
     <meta charset="UTF-8">
@@ -27,6 +28,11 @@
                 <i class="bi bi-list fs-4"></i>
             </button>
             <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="topbar-tabs d-none d-md-flex ms-4">
+            <div class="tab-pill " onclick="location.href='index.html'">Overview</div>
+            <div class="tab-pill " onclick="location.href='applications.html'">Manage</div>
+            <div class="tab-pill " onclick="location.href='reports.html'">Audit logs</div>
         </div>
         <div class="header-search d-none d-md-block">
             <i class="bi bi-search header-search-icon"></i>
@@ -104,10 +110,12 @@
                     <i class="bi bi-gear"></i> <span>Profile & Settings</span>
                 </a>
                 <div class="sidebar-divider"></div>
-                <div class="sidebar-item" id="themeToggleBtn" style="cursor: pointer;">
-                    <i class="bi bi-moon"></i> <span>Dark Mode</span>
-                </div>
             </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle-btn" id="themeToggleBtn">
+                    <i class="bi bi-moon"></i> <span class="sidebar-label-text">Dark Mode</span>
+                </div>
+            </div>
         </aside>
 
         <!-- Main Content -->
@@ -168,7 +176,7 @@
                             </div>
                             
                             <div id="custActions" class="mt-4" style="display: none;">
-                                <button class="btn btn-secondary btn-sm w-100 mb-2" onclick="showToast('Loading KYC files...', 'success')"><i class="bi bi-file-earmark-lock"></i> View KYC Documents</button>
+                                <button class="btn btn-secondary btn-sm w-100 mb-2" onclick="openKycModal()"><i class="bi bi-file-earmark-lock"></i> View KYC Documents</button>
                                 <button class="btn btn-danger btn-sm w-100" onclick="deleteCustomer()"><i class="bi bi-trash"></i> Delete Account</button>
                             </div>
                         </div>
@@ -187,7 +195,7 @@
                     <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form id="createCustForm" onsubmit="createNewCustomer(event)">
-                    <div class="modal-body d-flex flex-column gap-3">
+                    <div class="modal-body d-flex flex-column gap-3 text-start">
                         <div>
                             <label class="form-label font-12 font-weight-600">Customer Full Name</label>
                             <input type="text" name="name" class="form-control" placeholder="e.g. Abhijit Ranade" required>
@@ -228,6 +236,56 @@
                         <button type="submit" class="btn btn-primary">Save Profile</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- KYC Documents Modal -->
+    <div class="modal fade" id="kycDocsModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold" id="kycModalTitle">KYC Document Repository</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p class="text-muted font-11 mb-3">Stored compliance files verified via OCR rules check.</p>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-file-earmark-pdf fs-4 text-danger"></i>
+                                <div>
+                                    <h6 class="mb-0 font-13 font-weight-600">Aadhaar Card Scan</h6>
+                                    <small class="text-muted">Aadhaar verified via OTP check</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-xs py-1 px-2 font-11" onclick="showToast('Opening Aadhaar Card PDF preview...', 'success')">View</button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-file-earmark-image fs-4 text-primary"></i>
+                                <div>
+                                    <h6 class="mb-0 font-13 font-weight-600">PAN Card Image</h6>
+                                    <small class="text-muted">PAN details matched and validated</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-xs py-1 px-2 font-11" onclick="showToast('Opening PAN Card Image preview...', 'success')">View</button>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="bi bi-file-earmark-spreadsheet fs-4 text-success"></i>
+                                <div>
+                                    <h6 class="mb-0 font-13 font-weight-600">Bank Credits Statement</h6>
+                                    <small class="text-muted">6-month salary ledger PDF</small>
+                                </div>
+                            </div>
+                            <button class="btn btn-outline-primary btn-xs py-1 px-2 font-11" onclick="showToast('Opening Bank Statement spreadsheet preview...', 'success')">View</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -280,6 +338,15 @@
                 <div><strong>Active Loans:</strong> <span class="text-secondary">${loansText}</span></div>
             `;
             document.getElementById('custActions').style.display = 'block';
+        }
+
+        function openKycModal() {
+            const cust = mockDB.customers.find(c => c.id === selectedCustId);
+            if (cust) {
+                document.getElementById('kycModalTitle').innerText = `KYC Document Repository - ${cust.name}`;
+                const kycModal = new bootstrap.Modal(document.getElementById('kycDocsModal'));
+                kycModal.show();
+            }
         }
 
         function createNewCustomer(e) {

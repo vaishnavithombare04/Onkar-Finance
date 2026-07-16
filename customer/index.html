@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('onkar-theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard - Onkar Finance</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="topbar-tabs d-none d-md-flex ms-4">
+            <div class="tab-pill active" onclick="location.href='index.html'">Overview</div>
+            <div class="tab-pill " onclick="location.href='apply.html'">Apply</div>
+            <div class="tab-pill " onclick="location.href='track.html'">Track Status</div>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search my queries, EMI schedules...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 290px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Customer Portal</span>
+                <a href="index.html" class="sidebar-item active">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="apply.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-plus"></i> <span>Apply for Loan</span>
+                </a>
+                <a href="upload-docs.html" class="sidebar-item">
+                    <i class="bi bi-cloud-arrow-up"></i> <span>Upload Documents</span>
+                </a>
+                <a href="track.html" class="sidebar-item">
+                    <i class="bi bi-geo-alt"></i> <span>Track Application</span>
+                </a>
+                <a href="notifications.html" class="sidebar-item">
+                    <i class="bi bi-bell"></i> <span>Notifications</span>
+                </a>
+                <a href="calculator.html" class="sidebar-item">
+                    <i class="bi bi-calculator"></i> <span>EMI Calculator</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">My Account</span>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="bi bi-person-gear"></i> <span>My Profile</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle-btn" id="themeToggleBtn">
+                    <i class="bi bi-moon"></i> <span class="sidebar-label-text">Dark Mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 font-weight-bold mb-0">Welcome, Abhijit Ranade</h1>
+                    <p class="text-muted font-13 mb-0">Manage your active applications, calculate EMIs, and submit KYC documents.</p>
+                </div>
+                <div class="date-badge bg-white border rounded px-3 py-2 text-secondary font-12 font-weight-500" id="serverDateLabel">
+                    <i class="bi bi-calendar3 me-2"></i> Loading Date...
+                </div>
+            </div>
+
+            <!-- KPI Mini Stats Widgets -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6 col-lg-3">
+                    <div class="card p-3 border-0 bg-primary text-white shadow-sm">
+                        <span class="d-block font-11 opacity-75 font-weight-600">ACTIVE APPLICATIONS</span>
+                        <h3 class="mb-0 font-weight-800" id="statActiveApps">1</h3>
+                        <span class="font-10 opacity-75"><i class="bi bi-info-circle"></i> File is in verification stage</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card p-3 border-0 bg-white shadow-sm text-dark">
+                        <span class="d-block font-11 text-secondary font-weight-600">TOTAL APPROVED LIMIT</span>
+                        <h3 class="mb-0 font-weight-800 text-success">₹15,00,000</h3>
+                        <span class="text-muted font-10"><i class="bi bi-check-circle-fill text-success"></i> Home Loan offer active</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card p-3 border-0 bg-white shadow-sm text-dark">
+                        <span class="d-block font-11 text-secondary font-weight-600">PENDING DOCUMENTS</span>
+                        <h3 class="mb-0 font-weight-800 text-danger" id="statPendingDocs">1</h3>
+                        <span class="text-danger font-10" id="pendingDocsDesc"><i class="bi bi-exclamation-triangle-fill"></i> Bank statement re-upload</span>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="card p-3 border-0 bg-white shadow-sm text-dark">
+                        <span class="d-block font-11 text-secondary font-weight-600">NEXT DUE EMI</span>
+                        <h3 class="mb-0 font-weight-800 text-primary">₹12,450</h3>
+                        <span class="text-muted font-10"><i class="bi bi-calendar-check"></i> Due on 05-Aug-2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left: Application Status & Recent Activity -->
+                <div class="col-lg-8">
+                    <!-- Loan Status Timeline Widget -->
+                    <div class="card mb-4 shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0 font-weight-700 text-dark"><i class="bi bi-geo-alt text-primary me-2"></i> Application Status Tracking</h5>
+                                <span class="badge bg-warning text-dark px-2 py-1 font-11" id="trackFileBadge">File: APP701</span>
+                            </div>
+                            
+                            <!-- Tracking Timeline -->
+                            <div class="mb-4">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-success" id="trackProgressBar" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="d-flex justify-content-between mt-2 font-11 text-muted">
+                                    <span class="text-success font-weight-600">Applied</span>
+                                    <span class="text-primary font-weight-600">Verification</span>
+                                    <span>Review</span>
+                                    <span>Approval</span>
+                                    <span>Disbursement</span>
+                                </div>
+                            </div>
+
+                            <div class="p-3 border rounded bg-light mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <h6 class="mb-1 fw-bold text-dark font-13">Current Stage: Document Verification</h6>
+                                    <small class="text-muted">Updated: 1 hour ago</small>
+                                </div>
+                                <p class="text-muted font-12 mb-0">Underwriting executive **Karan Joshi** is reviewing your uploaded bank statements. There is a query regarding the June salary credit transaction.</p>
+                            </div>
+
+                            <div class="text-end">
+                                <button class="btn btn-primary btn-sm px-3 font-12" onclick="location.href='track.html'">Full Timeline Detail</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity Logs -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3 font-weight-700 text-dark"><i class="bi bi-activity text-success me-2"></i> Recent Activity</h5>
+                            <div class="d-flex flex-column gap-3">
+                                <div class="d-flex align-items-start gap-2 border-bottom pb-2">
+                                    <i class="bi bi-cloud-arrow-up text-primary mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-12 font-weight-600 text-dark">Uploaded Aadhaar Card & PAN Card</h6>
+                                        <small class="text-muted">Yesterday at 15:42 | OCR Verification success</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start gap-2 border-bottom pb-2">
+                                    <i class="bi bi-clipboard-check text-success mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-12 font-weight-600 text-dark">Loan Application Form Submitted</h6>
+                                        <small class="text-muted">Yesterday at 14:15 | File: APP701 (Home Loan, ₹15L)</small>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-start gap-2">
+                                    <i class="bi bi-shield-check text-warning mt-1"></i>
+                                    <div>
+                                        <h6 class="mb-0 font-12 font-weight-600 text-dark">OTP Verification Completed</h6>
+                                        <small class="text-muted">Yesterday at 14:02 | Mobile check via +91 98500 11223</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Action Cards & Alerts -->
+                <div class="col-lg-4">
+                    <!-- Pending Document Alert Box -->
+                    <div class="card mb-4 border-danger shadow-sm bg-danger-subtle text-danger" id="kycAlertCard">
+                        <div class="card-body">
+                            <h6 class="font-weight-700 mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> Action Required</h6>
+                            <p class="font-12 mb-3">Your uploaded Bank Statement is cropped. Please upload a clear PDF of your latest 3-month bank statement to resume review.</p>
+                            <button class="btn btn-danger btn-sm w-100 font-12 font-weight-600" onclick="location.href='upload-docs.html'">Upload Document Now</button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Customer Portal Shortcuts -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3 font-weight-700 text-dark"><i class="bi bi-lightning-charge text-warning me-2"></i> Quick Actions</h5>
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-outline-primary btn-sm text-start py-2 font-12 w-100" onclick="location.href='apply.html'">
+                                    <i class="bi bi-file-earmark-plus-fill me-2"></i> Apply for a New Loan
+                                </button>
+                                <button class="btn btn-outline-success btn-sm text-start py-2 font-12 w-100" onclick="location.href='calculator.html'">
+                                    <i class="bi bi-calculator-fill me-2"></i> Estimate EMIs & Eligibility
+                                </button>
+                                <button class="btn btn-outline-secondary btn-sm text-start py-2 font-12 w-100" onclick="location.href='profile.html'">
+                                    <i class="bi bi-person-circle me-2"></i> Update Contact Details
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const db = window.mockDB || { applications: [] };
+            const myApps = db.applications.filter(a => a.customerName === "Abhijit Ranade");
+            
+            const activeApps = myApps.filter(a => a.status !== 'Approved' && a.status !== 'Rejected' && a.status !== 'Disbursed');
+            const activeAppsCount = activeApps.length;
+            const pendingDocsCount = myApps.filter(a => a.kycStatus === 'Pending' || a.kycStatus === 'Pending Re-upload').length;
+            
+            document.getElementById('statActiveApps').innerText = activeAppsCount || 0;
+            document.getElementById('statPendingDocs').innerText = pendingDocsCount || 0;
+            
+            // Update pending docs warning text dynamically
+            const pendingDesc = document.getElementById('pendingDocsDesc');
+            if (pendingDesc) {
+                if (pendingDocsCount === 0) {
+                    pendingDesc.className = 'text-success font-10';
+                    pendingDesc.innerHTML = `<i class="bi bi-check-circle-fill"></i> All documents uploaded`;
+                } else {
+                    pendingDesc.className = 'text-danger font-10';
+                    pendingDesc.innerHTML = `<i class="bi bi-exclamation-triangle-fill"></i> Bank statement re-upload`;
+                }
+            }
+
+            // Get most recent active application to show in tracking widget
+            if (myApps.length > 0) {
+                const latestApp = myApps[0];
+                const badge = document.getElementById('trackFileBadge');
+                if (badge) badge.innerText = `File: ${latestApp.id}`;
+
+                // Update progress bar based on status
+                const progressBar = document.getElementById('trackProgressBar');
+                if (progressBar) {
+                    const status = latestApp.status || 'Verification';
+                    let progressWidth = '15%';
+                    let barColor = 'bg-warning';
+                    
+                    if (status === 'Verification') {
+                        progressWidth = '40%';
+                        barColor = 'bg-warning';
+                    } else if (status === 'Review') {
+                        progressWidth = '70%';
+                        barColor = 'bg-primary';
+                    } else if (status === 'Approval') {
+                        progressWidth = '90%';
+                        barColor = 'bg-info';
+                    } else if (status === 'Approved' || status === 'Disbursed') {
+                        progressWidth = '100%';
+                        barColor = 'bg-success';
+                    } else if (status === 'Rejected') {
+                        progressWidth = '100%';
+                        barColor = 'bg-danger';
+                    }
+                    progressBar.style.width = progressWidth;
+                    progressBar.className = `progress-bar ${barColor}`;
+                }
+
+                // Check if bank statement got verified for APP701
+                const bankApp = myApps.find(a => a.id === 'APP701');
+                if (bankApp && bankApp.kycStatus === 'Verified') {
+                    const kycAlert = document.getElementById('kycAlertCard');
+                    if (kycAlert) kycAlert.style.display = 'none';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+

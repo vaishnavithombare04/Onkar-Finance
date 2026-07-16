@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('onkar-theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - Onkar Finance</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body>
+    <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="topbar-tabs d-none d-md-flex ms-4">
+            <div class="tab-pill " onclick="location.href='index.html'">Overview</div>
+            <div class="tab-pill " onclick="location.href='apply.html'">Apply</div>
+            <div class="tab-pill " onclick="location.href='track.html'">Track Status</div>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search my queries, EMI schedules...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 290px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Customer Portal</span>
+                <a href="index.html" class="sidebar-item">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="apply.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-plus"></i> <span>Apply for Loan</span>
+                </a>
+                <a href="upload-docs.html" class="sidebar-item">
+                    <i class="bi bi-cloud-arrow-up"></i> <span>Upload Documents</span>
+                </a>
+                <a href="track.html" class="sidebar-item">
+                    <i class="bi bi-geo-alt"></i> <span>Track Application</span>
+                </a>
+                <a href="notifications.html" class="sidebar-item">
+                    <i class="bi bi-bell"></i> <span>Notifications</span>
+                </a>
+                <a href="calculator.html" class="sidebar-item">
+                    <i class="bi bi-calculator"></i> <span>EMI Calculator</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">My Account</span>
+                <a href="profile.html" class="sidebar-item active">
+                    <i class="bi bi-person-gear"></i> <span>My Profile</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="theme-toggle-btn" id="themeToggleBtn">
+                    <i class="bi bi-moon"></i> <span class="sidebar-label-text">Dark Mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="mb-4">
+                <h1 class="h3 font-weight-bold mb-0 text-dark">Profile Settings</h1>
+                <p class="text-muted font-13">Manage your account information, credentials, and review current KYC verification status badges.</p>
+            </div>
+
+            <div class="row g-4">
+                <!-- Left: Profile and Password change -->
+                <div class="col-lg-8">
+                    <!-- Personal info -->
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3 text-dark font-14"><i class="bi bi-person-check text-primary me-2"></i> Account Details</h5>
+                            
+                            <form id="profileDetailsForm" onsubmit="saveProfileDetails(event)">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">Full Name</label>
+                                        <input type="text" class="form-control" value="Abhijit Ranade" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">Username / Registered Email</label>
+                                        <input type="email" class="form-control" value="abhijit.r@gmail.com" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">Mobile Number</label>
+                                        <input type="tel" class="form-control" id="profilePhone" value="+91 98500 11223" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">Communication Address</label>
+                                        <input type="text" class="form-control" id="profileAddress" value="Flat 402, Shivneri Heights, Kothrud, Pune" required>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button type="submit" class="btn btn-primary btn-sm px-4 font-12 font-weight-600">Save Account Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Change password -->
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="fw-bold mb-3 text-dark font-14"><i class="bi bi-shield-lock text-primary me-2"></i> Change Password</h5>
+                            
+                            <form id="profilePasswordForm" onsubmit="changeProfilePassword(event)">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">New Password</label>
+                                        <input type="password" class="form-control" id="newPass" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label font-12 font-weight-600">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="confirmPass" required>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button type="submit" class="btn btn-primary btn-sm px-4 font-12 font-weight-600">Update Credentials</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: KYC Check status -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-dark font-14 mb-3"><i class="bi bi-patch-check text-success me-2"></i> KYC Verification Status</h5>
+                            
+                            <div class="d-flex flex-column gap-3 text-start">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="font-12 text-secondary">Aadhaar Card Checks</span>
+                                    <span class="badge bg-success font-10">Verified</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="font-12 text-secondary">PAN Database Match</span>
+                                    <span class="badge bg-success font-10">Verified</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="font-12 text-secondary">Bank statement Verification</span>
+                                    <span class="badge bg-danger font-10" id="kycProfileBankBadge">Needs Review</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Read active verification status from database
+            const myApp = window.mockDB.applications.find(a => a.id === 'APP701');
+            if (myApp && myApp.kycStatus === 'Verified') {
+                document.getElementById('kycProfileBankBadge').className = 'badge bg-success font-10';
+                document.getElementById('kycProfileBankBadge').innerText = 'Verified';
+            }
+        });
+
+        function saveProfileDetails(e) {
+            e.preventDefault();
+            const phone = document.getElementById('profilePhone').value;
+            const address = document.getElementById('profileAddress').value;
+
+            // Log details update
+            window.logAudit('Abhijit Ranade', 'Profile', 'Update Profile info', `Updated mobile: ${phone}, address: ${address}`);
+            window.saveMockDB();
+
+            showToast('Account details updated successfully!', 'success');
+        }
+
+        function changeProfilePassword(e) {
+            e.preventDefault();
+            const pass = document.getElementById('newPass').value;
+            const conf = document.getElementById('confirmPass').value;
+
+            if (pass !== conf) {
+                showToast('Passwords do not match!', 'danger');
+                return;
+            }
+
+            // Log password change
+            window.logAudit('Abhijit Ranade', 'Credentials', 'Change Password', `Password reset successful`);
+            window.saveMockDB();
+
+            document.getElementById('profilePasswordForm').reset();
+            showToast('Credentials updated successfully!', 'success');
+        }
+    </script>
+</body>
+</html>
+
