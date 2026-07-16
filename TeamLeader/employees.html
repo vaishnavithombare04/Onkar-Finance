@@ -170,8 +170,8 @@
     const teamMembers = [
       { name: "Rahul Verma", role: "Relationship Manager", branch: "Mumbai Main", attendance: 95, target: 5000000, achieved: 4200000, status: "Active" },
       { name: "Kiran Das", role: "Relationship Manager", branch: "Mumbai Main", attendance: 97, target: 4000000, achieved: 2880000, status: "Active" },
-      { name: "Sunil Mehta", role: "Relationship Manager", branch: "Pune Deccan", attendance: 94, target: 3000000, achieved: 1920000, status: "Active" },
-      { name: "Priya N.", role: "Sales Team Leader", branch: "Mumbai Main", attendance: 99, target: 10000000, achieved: 7400000, status: "Active" }
+      { name: "Sunil Mehta", role: "Relationship Manager", branch: "Pune Deccan", attendance: 94, target: 3000000, achieved: 3200000, status: "Active" },
+      { name: "Priya N.", role: "Sales Team Leader", branch: "Mumbai Main", attendance: 99, target: 10000000, achieved: 10500000, status: "Active" }
     ];
 
     // Seed initial tasks if none exist
@@ -183,11 +183,17 @@
       localStorage.setItem('team_tasks', JSON.stringify(initialTasks));
     }
 
+    window.currentTab = 'Overview';
+ 
     function renderTeam() {
       const tbody = document.getElementById('employeeTableBody');
       tbody.innerHTML = '';
       
-      teamMembers.forEach(emp => {
+      const filtered = window.currentTab === 'Overview'
+        ? teamMembers
+        : teamMembers.filter(emp => emp.achieved < emp.target);
+ 
+      filtered.forEach(emp => {
         const badge = emp.status === 'Active' ? 'badge-success' : 'badge-danger';
         const initials = emp.name.split(' ').map(n => n[0]).join('');
         
@@ -228,6 +234,7 @@
       tasks.forEach(task => {
         if (task.status === 'Pending') pendingCount++;
         const badgeClass = task.status === 'Pending' ? 'badge-warning' : 'badge-success';
+        const badgeIcon = task.status === 'Pending' ? 'lucide-clock' : 'lucide-check-circle';
         
         tbody.innerHTML += `
           <tr>
@@ -235,10 +242,13 @@
             <td class="bold">${task.assignee}</td>
             <td>${task.description}</td>
             <td>${formatDate(task.date)}</td>
-            <td><span class="badge ${badgeClass}">${task.status}</span></td>
+            <td><span class="badge ${badgeClass}"><i class="${badgeIcon}" style="margin-right:4px; font-size:10px;"></i>${task.status}</span></td>
             <td>
               <div class="flex gap-sm">
-                ${task.status === 'Pending' ? `<button class="action-icon-btn" onclick="completeTask('${task.id}')" title="Complete"><i class="lucide-check"></i></button>` : ''}
+                ${task.status === 'Pending' 
+                  ? `<button class="action-icon-btn" onclick="completeTask('${task.id}')" title="Complete"><i class="lucide-check"></i></button>` 
+                  : `<button class="action-icon-btn" style="color: var(--color-success); border-color: rgba(16,185,129,0.2); background: rgba(16,185,129,0.05); cursor: default;" title="Completed" disabled><i class="lucide-check"></i></button>`
+                }
                 <button class="action-icon-btn" onclick="deleteTask('${task.id}')" title="Delete" style="color: var(--color-danger);"><i class="lucide-trash-2"></i></button>
               </div>
             </td>
@@ -299,6 +309,39 @@
       renderTasks();
     });
 
+    /* ─────────────── Topbar Tab Interceptor ─────────────── */
+    function setupTopbarTabs() {
+      const pills = document.querySelectorAll('.topbar .tab-pill');
+      if (pills.length === 0) {
+        setTimeout(setupTopbarTabs, 50);
+        return;
+      }
+ 
+      pills.forEach((pill, idx) => {
+        pill.removeAttribute('onclick');
+        
+        if (idx === 0) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+ 
+        pill.addEventListener('click', function(e) {
+          pills.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+ 
+          if (idx === 0) {
+            window.currentTab = 'Overview';
+          } else {
+            window.currentTab = 'Targets';
+          }
+          renderTeam();
+        });
+      });
+    }
+ 
+    setupTopbarTabs();
+ 
     renderTeam();
     renderTasks();
   }

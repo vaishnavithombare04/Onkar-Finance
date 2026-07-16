@@ -83,6 +83,72 @@
         </div>
       </div>
 
+  <!-- Edit Employee Modal -->
+  <div id="editEmployeeModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('editEmployeeModal')"></i>
+      <h3>Edit Staff Member</h3>
+      <form id="editEmployeeForm">
+        <input type="hidden" id="editEmpOriginalName">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpName">Full Name</label>
+            <input type="text" id="editEmpName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpRole">Designation / Role</label>
+            <select id="editEmpRole" class="form-control">
+              <option value="Relationship Manager">Relationship Manager</option>
+              <option value="Branch Manager">Branch Manager</option>
+              <option value="Credit Analyst">Credit Analyst</option>
+              <option value="Verification Officer">Verification Officer</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpBranch">Assigned Branch</label>
+            <select id="editEmpBranch" class="form-control">
+              <option value="Pune Deccan">Pune Deccan</option>
+              <option value="Mumbai Andheri">Mumbai Andheri</option>
+              <option value="Mumbai Main">Mumbai Main</option>
+              <option value="Delhi Connaught">Delhi Connaught</option>
+              <option value="Bengaluru Indiranagar">Bengaluru Indiranagar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpTeam">Team / Segment</label>
+            <select id="editEmpTeam" class="form-control">
+              <option value="Retail Loans">Retail Loans</option>
+              <option value="SME Lending">SME Lending</option>
+              <option value="Gold &amp; Agri">Gold &amp; Agri</option>
+              <option value="Sales Team A">Sales Team A</option>
+              <option value="Sales Team B">Sales Team B</option>
+              <option value="Risk &amp; Credit">Risk &amp; Credit</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpTarget">Monthly Target (INR)</label>
+            <input type="number" id="editEmpTarget" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpStatus">Status</label>
+            <select id="editEmpStatus" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('editEmployeeModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="lucide-save"></i> Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Add Employee Modal -->
   <div id="addEmployeeModal" class="modal-overlay">
     <div class="modal-container">
@@ -185,8 +251,8 @@
             </td>
             <td><span class="badge ${badge}">${emp.status}</span></td>
             <td>
-              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="showToast('Edit employee form popup coming soon.', 'info')">
-                Edit Staff
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openEditModal('${emp.name}')">
+                <i class="lucide-pencil"></i> Edit Staff
               </button>
             </td>
           </tr>
@@ -211,6 +277,43 @@
       showToast('Staff member added successfully!', 'success');
       closeModal('addEmployeeModal');
       document.getElementById('addEmployeeForm').reset();
+      renderEmployees();
+    });
+
+    // Open edit modal pre-filled with employee data
+    function openEditModal(name) {
+      const emp = api.getDb().employees.find(e => e.name === name);
+      if (!emp) return;
+
+      document.getElementById('editEmpOriginalName').value = emp.name;
+      document.getElementById('editEmpName').value         = emp.name;
+      document.getElementById('editEmpTarget').value       = emp.target;
+      document.getElementById('editEmpRole').value         = emp.role;
+      document.getElementById('editEmpBranch').value       = emp.branch;
+      document.getElementById('editEmpTeam').value         = emp.team;
+      document.getElementById('editEmpStatus').value       = emp.status;
+
+      openModal('editEmployeeModal');
+    }
+
+    // Save edited employee
+    document.getElementById('editEmployeeForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const originalName = document.getElementById('editEmpOriginalName').value;
+      const db = api.getDb();
+      const emp = db.employees.find(e => e.name === originalName);
+      if (!emp) return;
+
+      emp.name   = document.getElementById('editEmpName').value.trim();
+      emp.role   = document.getElementById('editEmpRole').value;
+      emp.branch = document.getElementById('editEmpBranch').value;
+      emp.team   = document.getElementById('editEmpTeam').value;
+      emp.target = parseFloat(document.getElementById('editEmpTarget').value);
+      emp.status = document.getElementById('editEmpStatus').value;
+
+      api.saveDb(db);
+      showToast(`${emp.name}'s details updated successfully!`, 'success');
+      closeModal('editEmployeeModal');
       renderEmployees();
     });
     

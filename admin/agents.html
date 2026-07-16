@@ -30,7 +30,7 @@
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Agent &amp; DSA Partners</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage external sourcing channels, track conversions, and monitor commission allocations.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Agent onboarding flow coming soon!', 'info')">
+        <button class="btn btn-primary" onclick="openModal('onboardAgentModal')">
           <i class="lucide-user-plus"></i> Onboard New Agent
         </button>
       </div>
@@ -125,6 +125,55 @@
     </div>
   </div>
   
+  <!-- Onboard New Agent Modal -->
+  <div id="onboardAgentModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('onboardAgentModal')"></i>
+      <h3>Onboard New Agent / DSA</h3>
+      <form id="onboardAgentForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentName">Full Name</label>
+            <input type="text" id="agentName" class="form-control" placeholder="e.g. Suresh Patil" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentEmail">Email Address</label>
+            <input type="email" id="agentEmail" class="form-control" placeholder="agent@example.com" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentContact">Phone Number</label>
+            <input type="text" id="agentContact" class="form-control" placeholder="+91 99999 88888" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentRegion">Region / City</label>
+            <input type="text" id="agentRegion" class="form-control" placeholder="e.g. Mumbai" required>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentType">Agent Type</label>
+            <select id="agentType" class="form-control">
+              <option value="DSA">DSA (Direct Selling Agent)</option>
+              <option value="Connector">Connector</option>
+              <option value="Franchise">Franchise Partner</option>
+              <option value="Referral">Referral Agent</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentCommissionRate">Commission Rate (%)</label>
+            <input type="number" id="agentCommissionRate" class="form-control" placeholder="e.g. 1.5" step="0.1" min="0" max="10" required>
+          </div>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('onboardAgentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="lucide-user-plus"></i> Onboard Agent</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   </div> <!-- End page-content -->
       
       <div data-component="footer"></div>
@@ -173,6 +222,23 @@
     }
     
     renderAgents();
+
+    // Onboard Agent Form submit
+    document.getElementById('onboardAgentForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name             = document.getElementById('agentName').value.trim();
+      const email            = document.getElementById('agentEmail').value.trim();
+      const contact          = document.getElementById('agentContact').value.trim();
+      const region           = document.getElementById('agentRegion').value.trim();
+      const type             = document.getElementById('agentType').value;
+      const commissionRate   = parseFloat(document.getElementById('agentCommissionRate').value);
+
+      api.addAgent({ name, email, contact, region, type, commissionRate });
+      showToast(`${name} has been onboarded successfully!`, 'success');
+      closeModal('onboardAgentModal');
+      document.getElementById('onboardAgentForm').reset();
+      renderAgents();
+    });
   }
   </script>
 </body>

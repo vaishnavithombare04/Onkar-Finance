@@ -23,6 +23,16 @@ const mockDb = {
     { name: "Suresh Patil", contact: "+91 95555 44444", referred: 14, conversion: "78%", commission: 142000, status: "Active" },
     { name: "Ramesh Iyer", contact: "+91 96666 55555", referred: 8, conversion: "62%", commission: 68000, status: "Active" },
     { name: "Manoj Awasthi", contact: "+91 97777 66666", referred: 22, conversion: "85%", commission: 310000, status: "Active" }
+  ],
+  banks: [
+    { id: "BNK-001", name: "HDFC Bank Ltd.", products: "Home Loan, Personal Loan", routed: 142, approvalRate: 82, apiStatus: "API Connected", support: "hdfc.support@onkar.com", apiKey: "hdfc_live_k9x2m", webhookUrl: "https://api.hdfcbank.com/webhook/onkar", routingMode: "API" },
+    { id: "BNK-002", name: "ICICI Bank Ltd.", products: "Business Loan, Auto Loan", routed: 98, approvalRate: 75, apiStatus: "API Connected", support: "icici.api@onkar.com", apiKey: "icici_prod_p4r7t", webhookUrl: "https://gateway.icicibank.com/hook/onkar", routingMode: "API" },
+    { id: "BNK-003", name: "State Bank of India (SBI)", products: "Agriculture Loan, Home Loan", routed: 210, approvalRate: 64, apiStatus: "Manual Routing", support: "sbi.manual@onkar.com", apiKey: "", webhookUrl: "", routingMode: "Manual" }
+  ],
+  branches: [
+    { id: "BR-001", name: "Mumbai Main",      manager: "Rahul Verma",  region: "Maharashtra", staff: 12, disbursedCr: 2.4, targetCr: 2.6, status: "On Track"      },
+    { id: "BR-002", name: "Delhi Connaught",   manager: "Siddhi Sen",   region: "Delhi NCR",   staff: 8,  disbursedCr: 1.8, targetCr: 2.4, status: "Action Needed" },
+    { id: "BR-003", name: "Pune Deccan",       manager: "Anjali Rao",   region: "Maharashtra", staff: 4,  disbursedCr: 0.62,targetCr: 1.2, status: "Lagging"       }
   ]
 };
 
@@ -57,6 +67,48 @@ const api = {
     return newLead;
   },
   
+  addAgent(agent) {
+    const db = this.getDb();
+    const newAgent = {
+      referred: 0,
+      conversion: '0%',
+      commission: 0,
+      status: 'Active',
+      ...agent
+    };
+    db.agents.unshift(newAgent);
+    this.saveDb(db);
+    return newAgent;
+  },
+
+  addBank(bank) {
+    const db = this.getDb();
+    if (!db.banks) db.banks = [];
+    const newId = `BNK-${String(db.banks.length + 1).padStart(3, '0')}`;
+    const newBank = { id: newId, routed: 0, approvalRate: 0, ...bank };
+    db.banks.unshift(newBank);
+    this.saveDb(db);
+    return newBank;
+  },
+
+  updateBank(id, fields) {
+    const db = this.getDb();
+    if (!db.banks) db.banks = [];
+    const bank = db.banks.find(b => b.id === id);
+    if (bank) { Object.assign(bank, fields); this.saveDb(db); }
+    return bank;
+  },
+
+  addBranch(branch) {
+    const db = this.getDb();
+    if (!db.branches) db.branches = [];
+    const newId = `BR-${String(db.branches.length + 1).padStart(3, '0')}`;
+    const newBranch = { id: newId, staff: 0, disbursedCr: 0, ...branch };
+    db.branches.push(newBranch);
+    this.saveDb(db);
+    return newBranch;
+  },
+
   updateLeadStatus(id, status) {
     const db = this.getDb();
     const lead = db.leads.find(l => l.id === id);

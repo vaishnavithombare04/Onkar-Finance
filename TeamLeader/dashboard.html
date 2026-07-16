@@ -210,28 +210,9 @@
               </select>
             </div>
             
-            <div class="dashboard-chart-bar">
-              <div class="chart-col">
-                <div class="chart-bar chart-bar-active" style="height: 84%;"></div>
-                <span class="chart-label">Rahul Verma</span>
-                <span class="text-secondary" style="font-size: 10px;">₹42.0L / ₹50L</span>
-              </div>
-              <div class="chart-col">
-                <div class="chart-bar" style="height: 72%;"></div>
-                <span class="chart-label">Kiran Das</span>
-                <span class="text-secondary" style="font-size: 10px;">₹28.8L / ₹40L</span>
-              </div>
-              <div class="chart-col">
-                <div class="chart-bar" style="height: 64%;"></div>
-                <span class="chart-label">Sunil Mehta</span>
-                <span class="text-secondary" style="font-size: 10px;">₹19.2L / ₹30L</span>
-              </div>
-              <div class="chart-col">
-                <div class="chart-bar" style="height: 73%;"></div>
-                <span class="chart-label">Priya N. (Self)</span>
-                <span class="text-secondary" style="font-size: 10px;">₹95.0L / ₹1.30Cr</span>
-              </div>
-            </div>
+            <div class="dashboard-chart-bar" id="achievementChart">
+               <!-- Rendered dynamically -->
+             </div>
           </div>
 
           <!-- Goal Completion Radial Gauge -->
@@ -362,7 +343,68 @@
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
-
-
+  <script data-page-init>
+  {
+    const teamDisbursals = [
+      { name: "Rahul Verma", percent: 84, text: "₹42.0L / ₹50L", met: false },
+      { name: "Kiran Das", percent: 72, text: "₹28.8L / ₹40L", met: false },
+      { name: "Sunil Mehta", percent: 100, text: "₹32.0L / ₹30L", met: true },
+      { name: "Priya N. (Self)", percent: 81, text: "₹1.05Cr / ₹1.30Cr", met: false }
+    ];
+ 
+    window.currentTab = 'Overview';
+ 
+    window.renderDisbursals = function() {
+      const container = document.getElementById('achievementChart');
+      if (!container) return;
+ 
+      const filtered = window.currentTab === 'Overview'
+        ? teamDisbursals
+        : teamDisbursals.filter(d => !d.met);
+ 
+      container.innerHTML = filtered.map(d => `
+        <div class="chart-col">
+          <div class="chart-bar ${d.name === 'Rahul Verma' ? 'chart-bar-active' : ''}" style="height: ${d.percent}%;"></div>
+          <span class="chart-label">${d.name}</span>
+          <span class="text-secondary" style="font-size: 10px;">${d.text}</span>
+        </div>
+      `).join('');
+    };
+ 
+    /* ─────────────── Topbar Tab Interceptor ─────────────── */
+    function setupTopbarTabs() {
+      const pills = document.querySelectorAll('.topbar .tab-pill');
+      if (pills.length === 0) {
+        setTimeout(setupTopbarTabs, 50);
+        return;
+      }
+ 
+      pills.forEach((pill, idx) => {
+        pill.removeAttribute('onclick');
+        
+        if (idx === 0) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+ 
+        pill.addEventListener('click', function(e) {
+          pills.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+ 
+          if (idx === 0) {
+            window.currentTab = 'Overview';
+          } else {
+            window.currentTab = 'Targets';
+          }
+          window.renderDisbursals();
+        });
+      });
+    }
+ 
+    setupTopbarTabs();
+    window.renderDisbursals();
+  }
+  </script>
 </body>
 </html>

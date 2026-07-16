@@ -124,6 +124,11 @@
     }
     .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
     .action-icon-btn i { width: 14px; height: 14px; }
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+    }
   </style>
 </head>
 <body>
@@ -188,8 +193,8 @@
               <span class="badge badge-success">Online</span>
             </div>
             <div class="flex gap-sm">
-              <button class="btn btn-outline" onclick="showToast('Calling Amit Sharma...', 'success')"><i class="lucide-phone"></i> VoIP Call</button>
-              <button class="btn btn-outline" onclick="showToast('Loading templates list...', 'info')"><i class="lucide-layout-template"></i> Templates</button>
+              <button class="btn btn-outline" onclick="triggerVoipCall(currentThread)"><i class="lucide-phone"></i> VoIP Call</button>
+              <button class="btn btn-outline" onclick="openTemplatesModal()"><i class="lucide-layout-template"></i> Templates</button>
             </div>
           </div>
           
@@ -214,6 +219,41 @@
           </div>
         </div>
       </div>
+ 
+      <!-- VoIP Calling Modal -->
+      <div class="modal-overlay" id="voipCallModal">
+        <div class="modal-container" style="max-width: 380px; text-align: center; padding: 32px;">
+          <div style="width: 72px; height: 72px; border-radius: 50%; background: var(--color-primary-light); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; font-size: 28px; animation: pulse 1.5s infinite;">
+            <i class="lucide-phone-call"></i>
+          </div>
+          <h3 class="bold" style="font-size: 20px;" id="voipCallName">Amit Sharma</h3>
+          <p class="text-secondary" style="font-size: 13px; margin: 8px 0 24px;" id="voipCallStatus">Connecting call...</p>
+          
+          <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 32px;">
+            <button class="btn btn-outline" style="width: 48px; height: 48px; border-radius: 50%; padding: 0;" onclick="showToast('Microphone muted', 'info')">
+              <i class="lucide-mic-off"></i>
+            </button>
+            <button class="btn btn-outline" style="width: 48px; height: 48px; border-radius: 50%; padding: 0;" onclick="showToast('Speaker toggled', 'info')">
+              <i class="lucide-volume-2"></i>
+            </button>
+          </div>
+ 
+          <button class="btn" style="background: var(--color-danger); color: #fff; border-color: var(--color-danger); padding: 12px 24px; border-radius: 30px; font-weight: 600;" onclick="hangupVoipCall()">
+            <i class="lucide-phone-off"></i> End Call
+          </button>
+        </div>
+      </div>
+ 
+      <!-- Message Templates Modal -->
+      <div class="modal-overlay" id="templatesModal">
+        <div class="modal-container" style="max-width: 480px; padding: 24px;">
+          <i class="lucide-x modal-close" onclick="closeModal('templatesModal')"></i>
+          <h3 class="bold m-b-md" style="font-size: 18px;">Select Message Template</h3>
+          <div class="flex flex-column gap-sm" style="max-height: 350px; overflow-y: auto;" id="templatesListContainer">
+            <!-- Injected dynamically -->
+          </div>
+        </div>
+      </div>
       
       </div> <!-- End page-content --><div data-component="footer"></div>
     </div>
@@ -224,9 +264,70 @@
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
   <script data-page-init>
-  {
-    let currentChannel = 'whatsapp';
-    let currentThread = 'Amit Sharma';
+    window.currentChannel = 'whatsapp';
+    window.currentThread = 'Amit Sharma';
+ 
+    const MESSAGE_TEMPLATES = [
+      { title: "KYC Verification Request", text: "Dear Customer, please upload your Aadhaar and PAN card documents to complete your KYC verification." },
+      { title: "Missing Bank Statement", text: "Dear Customer, we noticed your 6-month bank statement is missing. Please select and upload it to proceed." },
+      { title: "Loan Approval Status", text: "Congratulations! Your loan application has been approved by the credit committee. Disbursement is in progress." },
+      { title: "Follow-up Meeting", text: "Hi, I tried calling you regarding your loan application. Let me know a convenient time to speak." }
+    ];
+ 
+    let callTimer = null;
+    let callSeconds = 0;
+ 
+    window.triggerVoipCall = function(name) {
+      document.getElementById('voipCallName').textContent = name;
+      document.getElementById('voipCallStatus').textContent = "Ringing...";
+      openModal('voipCallModal');
+      
+      callSeconds = 0;
+      if (callTimer) clearInterval(callTimer);
+      
+      setTimeout(() => {
+        const statusEl = document.getElementById('voipCallStatus');
+        const modal = document.getElementById('voipCallModal');
+        if (statusEl && modal && modal.style.display === 'flex') {
+          statusEl.textContent = "Call Active: 00:00";
+          callTimer = setInterval(() => {
+            callSeconds++;
+            const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+            const secs = String(callSeconds % 60).padStart(2, '0');
+            statusEl.textContent = `Call Active: ${mins}:${secs}`;
+          }, 1000);
+        }
+      }, 2000);
+    };
+ 
+    window.hangupVoipCall = function() {
+      if (callTimer) clearInterval(callTimer);
+      closeModal('voipCallModal');
+      showToast('Call disconnected', 'info');
+    };
+ 
+    window.openTemplatesModal = function() {
+      const container = document.getElementById('templatesListContainer');
+      if (container) {
+        container.innerHTML = MESSAGE_TEMPLATES.map((tmpl, idx) => `
+          <div class="card pointer hover-border" style="padding: 14px; text-align: left;" onclick="applyTemplate(${idx})">
+            <h5 class="bold" style="font-size: 13.5px; color: var(--color-primary);">${tmpl.title}</h5>
+            <p class="text-secondary" style="font-size: 12.5px; margin-top: 4px; line-height: 1.4;">${tmpl.text}</p>
+          </div>
+        `).join('');
+      }
+      openModal('templatesModal');
+    };
+ 
+    window.applyTemplate = function(idx) {
+      const tmpl = MESSAGE_TEMPLATES[idx];
+      const input = document.getElementById('chatInputMessage');
+      if (input && tmpl) {
+        input.value = tmpl.text;
+      }
+      closeModal('templatesModal');
+      showToast('Template applied!', 'success');
+    };
 
     const mockMessages = {
       'Amit Sharma': {
@@ -269,7 +370,7 @@
     };
 
     window.switchChannel = function(channel) {
-      currentChannel = channel;
+      window.currentChannel = channel;
       const tabs = document.querySelectorAll('.channel-tab');
       tabs.forEach(tab => {
         const text = tab.textContent.toLowerCase();
@@ -289,7 +390,7 @@
     };
 
     window.selectThread = function(name) {
-      currentThread = name;
+      window.currentThread = name;
       const threads = document.querySelectorAll('.thread-item');
       threads.forEach(t => {
         if (t.textContent.includes(name)) {
@@ -300,8 +401,8 @@
       });
       
       // Auto-switch channel back to whatsapp if user was viewing Call Logs when selecting a chat thread
-      if (currentChannel === 'calls') {
-        currentChannel = 'whatsapp';
+      if (window.currentChannel === 'calls') {
+        window.currentChannel = 'whatsapp';
         const tabs = document.querySelectorAll('.channel-tab');
         tabs.forEach(tab => {
           const text = tab.textContent.toLowerCase();
@@ -318,16 +419,16 @@
 
     function restoreChatView() {
       const chatView = document.getElementById('chatView');
-      const escapedThread = currentThread.replace(/'/g, "\\'");
+      const escapedThread = window.currentThread.replace(/'/g, "\\'");
       chatView.innerHTML = `
         <div class="chat-header">
           <div>
-            <h3 class="bold" id="chatTargetName">${currentThread}</h3>
+            <h3 class="bold" id="chatTargetName">${window.currentThread}</h3>
             <span class="badge badge-success">Online</span>
           </div>
           <div class="flex gap-sm">
-            <button class="btn btn-outline" onclick="showToast('Calling ${escapedThread}...', 'success')"><i class="lucide-phone"></i> VoIP Call</button>
-            <button class="btn btn-outline" onclick="showToast('Loading templates list...', 'info')"><i class="lucide-layout-template"></i> Templates</button>
+            <button class="btn btn-outline" onclick="triggerVoipCall(window.currentThread)"><i class="lucide-phone"></i> VoIP Call</button>
+            <button class="btn btn-outline" onclick="openTemplatesModal()"><i class="lucide-layout-template"></i> Templates</button>
           </div>
         </div>
         <div class="chat-messages" id="chatMessages">
@@ -340,7 +441,7 @@
       `;
 
       const msgsEl = document.getElementById('chatMessages');
-      const threadMsgs = mockMessages[currentThread][currentChannel] || [];
+      const threadMsgs = mockMessages[window.currentThread][window.currentChannel] || [];
       msgsEl.innerHTML = threadMsgs.map(m => {
         const typeClass = m.type === 'received' ? 'msg-received' : 'msg-sent';
         const styleText = m.type === 'sent' ? 'color: rgba(255,255,255,0.7)' : '';
@@ -369,11 +470,11 @@
       `;
       
       // Update local cache
-      if (!mockMessages[currentThread][currentChannel]) mockMessages[currentThread][currentChannel] = [];
-      mockMessages[currentThread][currentChannel].push({ type: 'sent', text: val, time: 'Just now' });
+      if (!mockMessages[window.currentThread][window.currentChannel]) mockMessages[window.currentThread][window.currentChannel] = [];
+      mockMessages[window.currentThread][window.currentChannel].push({ type: 'sent', text: val, time: 'Just now' });
       
       // Update thread last message summary
-      const safeName = currentThread.split(' ')[0];
+      const safeName = window.currentThread.split(' ')[0];
       const summaryEl = document.getElementById('lastMsg-' + safeName);
       if (summaryEl) summaryEl.textContent = val;
 
@@ -435,7 +536,6 @@
     }
 
     restoreChatView();
-  }
   </script>
 
 </body>
