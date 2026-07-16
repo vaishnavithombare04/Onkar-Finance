@@ -30,90 +30,256 @@
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Branches &amp; Regions</h1>
           <p class="text-secondary" style="font-size: 13px;">Monitor localized performance metrics, branch managers, and regional disbursal goals.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Create branch workflow coming soon', 'info')">
+        <button class="btn btn-primary" onclick="openModal('registerBranchModal')">
           <i class="lucide-plus"></i> Register Branch
         </button>
       </div>
-
+ 
       <!-- Branch Grid -->
-      <div class="grid grid-3">
-        <!-- Branch Card 1 -->
-        <div class="card flex flex-column gap-md">
-          <div class="flex justify-between align-center">
-            <div>
-              <h3 class="bold" style="font-size: 16px;">Mumbai Main</h3>
-              <span class="text-muted" style="font-size: 12px;">Manager: Rahul Verma</span>
-            </div>
-            <span class="badge badge-success">On Track</span>
-          </div>
-          
-          <hr style="border:none; border-top: 1px solid var(--color-border);">
-          
-          <div class="flex flex-column gap-sm" style="font-size: 13px;">
-            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">12 Employees</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹2.4 Cr</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹2.6 Cr</span></div>
-          </div>
-          
-          <div class="progress-bar-container m-t-md">
-            <div class="progress-bar-fill" style="width: 92%; background-color: var(--color-success)"></div>
-          </div>
-        </div>
-
-        <!-- Branch Card 2 -->
-        <div class="card flex flex-column gap-md">
-          <div class="flex justify-between align-center">
-            <div>
-              <h3 class="bold" style="font-size: 16px;">Delhi Connaught</h3>
-              <span class="text-muted" style="font-size: 12px;">Manager: Siddhi Sen</span>
-            </div>
-            <span class="badge badge-warning">Action Needed</span>
-          </div>
-          
-          <hr style="border:none; border-top: 1px solid var(--color-border);">
-          
-          <div class="flex flex-column gap-sm" style="font-size: 13px;">
-            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">8 Employees</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹1.8 Cr</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹2.4 Cr</span></div>
-          </div>
-          
-          <div class="progress-bar-container m-t-md">
-            <div class="progress-bar-fill" style="width: 75%;"></div>
-          </div>
-        </div>
-
-        <!-- Branch Card 3 -->
-        <div class="card flex flex-column gap-md">
-          <div class="flex justify-between align-center">
-            <div>
-              <h3 class="bold" style="font-size: 16px;">Pune Deccan</h3>
-              <span class="text-muted" style="font-size: 12px;">Manager: Anjali Rao</span>
-            </div>
-            <span class="badge badge-danger">Lagging</span>
-          </div>
-          
-          <hr style="border:none; border-top: 1px solid var(--color-border);">
-          
-          <div class="flex flex-column gap-sm" style="font-size: 13px;">
-            <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">4 Employees</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹0.62 Cr</span></div>
-            <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹1.2 Cr</span></div>
-          </div>
-          
-          <div class="progress-bar-container m-t-md">
-            <div class="progress-bar-fill" style="width: 50%; background-color: var(--color-danger)"></div>
-          </div>
-        </div>
+      <div class="grid grid-3" id="branchGrid">
+        <!-- Rendered dynamically -->
       </div>
       </div> <!-- End page-content -->
       <div data-component="footer"></div>
     </div>
   </div>
 
+  <!-- Register Branch Modal -->
+  <div id="registerBranchModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('registerBranchModal')"></i>
+      <h3 class="m-b-md">Register New Branch</h3>
+      
+      <form id="registerBranchForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="branchName">Branch Name</label>
+            <input type="text" id="branchName" class="form-control" placeholder="Bengaluru East" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="branchManager">Branch Manager</label>
+            <select id="branchManager" class="form-control">
+              <option value="Rahul Verma">Rahul Verma</option>
+              <option value="Siddhi Sen">Siddhi Sen</option>
+              <option value="Anjali Rao">Anjali Rao</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="branchStaff">Staff Count</label>
+            <input type="number" id="branchStaff" class="form-control" placeholder="5" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="branchStatus">Status</label>
+            <select id="branchStatus" class="form-control">
+              <option value="On Track">On Track</option>
+              <option value="Action Needed">Action Needed</option>
+              <option value="Lagging">Lagging</option>
+            </select>
+          </div>
+        </div>
+ 
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="branchDisbursed">Disbursed Amount (Cr INR)</label>
+            <input type="number" step="0.01" id="branchDisbursed" class="form-control" placeholder="1.2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="branchTarget">Monthly Target (Cr INR)</label>
+            <input type="number" step="0.01" id="branchTarget" class="form-control" placeholder="1.5" required>
+          </div>
+        </div>
+ 
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('registerBranchModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Branch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
+  <!-- Configure Branch Modal -->
+  <div id="configBranchModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('configBranchModal')"></i>
+      <h3 class="m-b-md">Configure Branch</h3>
+      
+      <form id="configBranchForm">
+        <input type="hidden" id="configBranchIndex" />
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="configBranchName">Branch Name</label>
+            <input type="text" id="configBranchName" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="configBranchManager">Branch Manager</label>
+            <select id="configBranchManager" class="form-control">
+              <option value="Rahul Verma">Rahul Verma</option>
+              <option value="Siddhi Sen">Siddhi Sen</option>
+              <option value="Anjali Rao">Anjali Rao</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="configBranchStaff">Staff Count</label>
+            <input type="number" id="configBranchStaff" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="configBranchStatus">Status</label>
+            <select id="configBranchStatus" class="form-control">
+              <option value="On Track">On Track</option>
+              <option value="Action Needed">Action Needed</option>
+              <option value="Lagging">Lagging</option>
+            </select>
+          </div>
+        </div>
+ 
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="configBranchDisbursed">Disbursed Amount (Cr INR)</label>
+            <input type="number" step="0.01" id="configBranchDisbursed" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="configBranchTarget">Monthly Target (Cr INR)</label>
+            <input type="number" step="0.01" id="configBranchTarget" class="form-control" required>
+          </div>
+        </div>
+ 
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('configBranchModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
   <script src="../assets/js/global.js"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function renderBranches() {
+      const db = api.getDb();
+      const grid = document.getElementById('branchGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+ 
+      db.branches.forEach((branch, index) => {
+        let badgeClass = 'badge-success';
+        let progressBg = 'background-color: var(--color-success)';
+ 
+        if (branch.status === 'Action Needed') {
+          badgeClass = 'badge-warning';
+          progressBg = '';
+        } else if (branch.status === 'Lagging') {
+          badgeClass = 'badge-danger';
+          progressBg = 'background-color: var(--color-danger)';
+        }
+ 
+        const percentage = Math.min(Math.round((branch.disbursed / branch.target) * 100), 100);
+ 
+        grid.innerHTML += `
+          <div class="card flex flex-column gap-md">
+            <div class="flex justify-between align-center">
+              <div>
+                <h3 class="bold" style="font-size: 16px;">${branch.name}</h3>
+                <span class="text-muted" style="font-size: 12px;">Manager: ${branch.manager}</span>
+              </div>
+              <span class="badge ${badgeClass}">${branch.status}</span>
+            </div>
+            
+            <hr style="border:none; border-top: 1px solid var(--color-border);">
+            
+            <div class="flex flex-column gap-sm" style="font-size: 13px;">
+              <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">${branch.staffCount} Employees</span></div>
+              <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹${branch.disbursed} Cr</span></div>
+              <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹${branch.target} Cr</span></div>
+            </div>
+            
+            <div class="progress-bar-container m-t-md">
+              <div class="progress-bar-fill" style="width: ${percentage}%; ${progressBg}"></div>
+            </div>
+ 
+            <div class="flex justify-end m-t-sm">
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size:11px;" onclick="openConfigBranchModal(${index})">
+                Configure Branch
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+ 
+    document.getElementById('registerBranchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('branchName').value;
+      const manager = document.getElementById('branchManager').value;
+      const staffCount = parseInt(document.getElementById('branchStaff').value, 10);
+      const status = document.getElementById('branchStatus').value;
+      const disbursed = parseFloat(document.getElementById('branchDisbursed').value);
+      const target = parseFloat(document.getElementById('branchTarget').value);
+ 
+      const db = api.getDb();
+      db.branches.push({
+        name,
+        manager,
+        staffCount,
+        disbursed,
+        target,
+        status
+      });
+      api.saveDb(db);
+ 
+      showToast('New branch registered successfully!', 'success');
+      closeModal('registerBranchModal');
+      document.getElementById('registerBranchForm').reset();
+      renderBranches();
+    });
+ 
+    window.openConfigBranchModal = function(index) {
+      const db = api.getDb();
+      const branch = db.branches[index];
+      if (!branch) return;
+ 
+      document.getElementById('configBranchIndex').value = index;
+      document.getElementById('configBranchName').value = branch.name;
+      document.getElementById('configBranchManager').value = branch.manager;
+      document.getElementById('configBranchStaff').value = branch.staffCount;
+      document.getElementById('configBranchStatus').value = branch.status;
+      document.getElementById('configBranchDisbursed').value = branch.disbursed;
+      document.getElementById('configBranchTarget').value = branch.target;
+ 
+      openModal('configBranchModal');
+    };
+ 
+    document.getElementById('configBranchForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const index = parseInt(document.getElementById('configBranchIndex').value, 10);
+ 
+      const db = api.getDb();
+      if (db.branches[index]) {
+        db.branches[index].name = document.getElementById('configBranchName').value;
+        db.branches[index].manager = document.getElementById('configBranchManager').value;
+        db.branches[index].staffCount = parseInt(document.getElementById('configBranchStaff').value, 10);
+        db.branches[index].status = document.getElementById('configBranchStatus').value;
+        db.branches[index].disbursed = parseFloat(document.getElementById('configBranchDisbursed').value);
+        db.branches[index].target = parseFloat(document.getElementById('configBranchTarget').value);
+ 
+        api.saveDb(db);
+        showToast('Branch settings updated successfully!', 'success');
+        closeModal('configBranchModal');
+        renderBranches();
+      }
+    });
+ 
+    renderBranches();
+  }
+  </script>
 </body>
 </html>

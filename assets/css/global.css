@@ -46,6 +46,9 @@ body {
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
   --shadow-card: 0 4px 20px rgba(20, 20, 43, 0.06);
   --shadow-hover: 0 8px 28px rgba(20, 20, 43, 0.10);
 
@@ -166,9 +169,9 @@ input, select, textarea, button {
 
 /* Grid systems */
 .grid { display: grid; }
-.grid-2 { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.grid-3 { grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.grid-4 { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
 @media (max-width: 1024px) {
   .grid-4, .grid-3 {

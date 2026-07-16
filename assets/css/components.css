@@ -593,7 +593,8 @@
   transition: var(--transition-smooth);
 }
 
-.file-upload-drag:hover {
+.file-upload-drag:hover,
+.file-upload-drag.highlight {
   border-color: var(--color-primary);
   background-color: var(--color-primary-light);
 }
@@ -622,6 +623,8 @@
   box-shadow: var(--shadow-hover);
   position: relative;
   animation: slideDown 0.3s ease-out;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 @keyframes slideDown {

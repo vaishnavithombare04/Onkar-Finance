@@ -30,11 +30,11 @@
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Agent &amp; DSA Partners</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage external sourcing channels, track conversions, and monitor commission allocations.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Agent onboarding flow coming soon!', 'info')">
+        <button class="btn btn-primary" onclick="openModal('onboardAgentModal')">
           <i class="lucide-user-plus"></i> Onboard New Agent
         </button>
       </div>
-
+ 
       <!-- Agent Metrics Row -->
       <div class="grid grid-3">
         <div class="card stat-card">
@@ -59,7 +59,7 @@
           <div class="stat-value">124</div>
         </div>
       </div>
-
+ 
       <!-- Agents Table -->
       <div class="card" style="padding: 0;">
         <div class="table-responsive">
@@ -81,6 +81,12 @@
           </table>
         </div>
       </div>
+      </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
   <!-- Commission Report Modal -->
   <div id="commissionModal" class="modal-overlay">
     <div class="modal-container">
@@ -120,14 +126,59 @@
       
       <div class="flex justify-end gap-sm m-t-md">
         <button class="btn btn-outline" onclick="closeModal('commissionModal')">Close Statement</button>
-        <button class="btn btn-primary" onclick="showToast('Processing commission transfer...', 'success')"><i class="lucide-credit-card"></i> Pay Now</button>
+        <button class="btn btn-primary" onclick="payAgentCommission()"><i class="lucide-credit-card"></i> Pay Now</button>
       </div>
     </div>
   </div>
-  
-  </div> <!-- End page-content -->
+
+  <!-- Onboard Agent Modal -->
+  <div id="onboardAgentModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('onboardAgentModal')"></i>
+      <h3 class="m-b-md">Onboard New Agent Partner</h3>
       
-      <div data-component="footer"></div>
+      <form id="onboardAgentForm">
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentName">Agent Full Name</label>
+            <input type="text" id="agentName" class="form-control" placeholder="Suresh Patil" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentContact">Contact Number</label>
+            <input type="text" id="agentContact" class="form-control" placeholder="+91 95555 44444" required>
+          </div>
+        </div>
+ 
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentReferred">Initial Referred Leads</label>
+            <input type="number" id="agentReferred" class="form-control" value="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentConversion">Conversion Rate (%)</label>
+            <input type="text" id="agentConversion" class="form-control" value="0%" required>
+          </div>
+        </div>
+ 
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="agentCommission">Initial Commission Paid (INR)</label>
+            <input type="number" id="agentCommission" class="form-control" value="0" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="agentStatus">Status</label>
+            <select id="agentStatus" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+ 
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('onboardAgentModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Onboard Agent</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -167,10 +218,49 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function openCommissionModal(name) {
+    window.openCommissionModal = function(name) {
       document.getElementById('modalAgentName').textContent = name;
       openModal('commissionModal');
-    }
+    };
+
+    document.getElementById('onboardAgentForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('agentName').value;
+      const contact = document.getElementById('agentContact').value;
+      const referred = parseInt(document.getElementById('agentReferred').value, 10);
+      const conversion = document.getElementById('agentConversion').value;
+      const commission = parseFloat(document.getElementById('agentCommission').value);
+      const status = document.getElementById('agentStatus').value;
+      
+      const db = api.getDb();
+      db.agents.push({ name, contact, referred, conversion, commission, status });
+      api.saveDb(db);
+      
+      showToast('Agent partner onboarded successfully!', 'success');
+      closeModal('onboardAgentModal');
+      document.getElementById('onboardAgentForm').reset();
+      renderAgents();
+    });
+
+    window.payAgentCommission = function() {
+      const agentName = document.getElementById('modalAgentName').textContent;
+      const db = api.getDb();
+      const agent = db.agents.find(a => a.name === agentName);
+      if (agent) {
+        const amount = agent.commission;
+        if (amount <= 0) {
+          showToast('No commission balance to pay for this agent.', 'warning');
+          return;
+        }
+        
+        agent.commission = 0;
+        api.saveDb(db);
+        
+        showToast(`Commission of ${formatCurrency(amount)} paid successfully to ${agentName}!`, 'success');
+        closeModal('commissionModal');
+        renderAgents();
+      }
+    };
     
     renderAgents();
   }

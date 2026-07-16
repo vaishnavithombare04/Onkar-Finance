@@ -2,11 +2,11 @@
 
 const mockDb = {
   leads: [
-    { id: "LD-8902", name: "Amit Sharma", contact: "+91 98765 43210", email: "amit.sharma@example.com", source: "Website", product: "Personal Loan", assignedTo: "Rahul Verma", status: "New Lead", date: "2026-07-10", amount: 500000 },
-    { id: "LD-8903", name: "Priya Patel", contact: "+91 87654 32109", email: "priya.patel@example.com", source: "Agent", product: "Home Loan", assignedTo: "Siddhi Sen", status: "Verification", date: "2026-07-11", amount: 3500000 },
-    { id: "LD-8904", name: "Rajesh Kumar", contact: "+91 76543 21098", email: "rajesh.k@example.com", source: "Google Ads", product: "Business Loan", assignedTo: "Rahul Verma", status: "Under Process", date: "2026-07-12", amount: 1500000 },
-    { id: "LD-8905", name: "Neha Gupta", contact: "+91 98123 45678", email: "neha.g@example.com", source: "Referral", product: "Gold Loan", assignedTo: "Anjali Rao", status: "Approved", date: "2026-07-13", amount: 250000 },
-    { id: "LD-8906", name: "Vikram Malhotra", contact: "+91 99112 23344", email: "vikram.m@example.com", source: "Direct", product: "Vehicle Loan", assignedTo: "Rahul Verma", status: "Disbursed", date: "2026-07-14", amount: 800000 }
+    { id: "LD-8902", name: "Amit Sharma", contact: "+91 98765 43210", email: "amit.sharma@example.com", source: "Website", product: "Personal Loan", assignedTo: "Rahul Verma", status: "New Lead", date: "2026-07-10", amount: 500000, sentTo: "HDFC Bank Ltd.", documents: [ { fileName: "Amit_Sharma_PAN.pdf", type: "PAN Card", status: "Completed", date: "2026-07-10" }, { fileName: "Amit_Sharma_Aadhaar.pdf", type: "Aadhaar Card", status: "Completed", date: "2026-07-10" } ] },
+    { id: "LD-8903", name: "Priya Patel", contact: "+91 87654 32109", email: "priya.patel@example.com", source: "Agent", product: "Home Loan", assignedTo: "Siddhi Sen", status: "Verification", date: "2026-07-11", amount: 3500000, sentTo: "ICICI Bank Ltd.", documents: [] },
+    { id: "LD-8904", name: "Rajesh Kumar", contact: "+91 76543 21098", email: "rajesh.k@example.com", source: "Google Ads", product: "Business Loan", assignedTo: "Rahul Verma", status: "Under Process", date: "2026-07-12", amount: 1500000, sentTo: "HDFC Bank Ltd.", documents: [ { fileName: "Rajesh_Kumar_PAN.pdf", type: "PAN Card", status: "Completed", date: "2026-07-12" } ] },
+    { id: "LD-8905", name: "Neha Gupta", contact: "+91 98123 45678", email: "neha.g@example.com", source: "Referral", product: "Gold Loan", assignedTo: "Anjali Rao", status: "Approved", date: "2026-07-13", amount: 250000, sentTo: "State Bank of India (SBI)", documents: [] },
+    { id: "LD-8906", name: "Vikram Malhotra", contact: "+91 99112 23344", email: "vikram.m@example.com", source: "Direct", product: "Vehicle Loan", assignedTo: "Rahul Verma", status: "Disbursed", date: "2026-07-14", amount: 800000, sentTo: "HDFC Bank Ltd.", documents: [ { fileName: "Vikram_Malhotra_PAN.pdf", type: "PAN Card", status: "Completed", date: "2026-07-14" }, { fileName: "Vikram_Malhotra_SalarySlips.pdf", type: "Salary Slips (Last 3 Mos)", status: "Completed", date: "2026-07-14" } ] }
   ],
   customers: [
     { id: "CUST-4101", name: "Amit Sharma", email: "amit.sharma@example.com", contact: "+91 98765 43210", activeLoans: 1, kycStatus: "Completed", branch: "Mumbai Main" },
@@ -27,13 +27,90 @@ const mockDb = {
 };
 
 // Initializing local storage database if not present
-if (!localStorage.getItem('onkar_db')) {
+let existingDb = localStorage.getItem('onkar_db');
+if (!existingDb) {
   localStorage.setItem('onkar_db', JSON.stringify(mockDb));
+} else {
+  try {
+    const dbObj = JSON.parse(existingDb);
+    const needsMigration = dbObj.leads && dbObj.leads.some(l => !l.sentTo);
+    if (needsMigration) {
+      dbObj.leads.forEach((l, idx) => {
+        const updatedLead = mockDb.leads.find(ml => ml.id === l.id);
+        if (updatedLead) {
+          l.sentTo = l.sentTo || updatedLead.sentTo;
+          l.documents = l.documents || updatedLead.documents;
+        } else {
+          if (idx % 3 === 0) l.sentTo = "HDFC Bank Ltd.";
+          else if (idx % 3 === 1) l.sentTo = "ICICI Bank Ltd.";
+          else l.sentTo = "State Bank of India (SBI)";
+          l.documents = l.documents || [];
+        }
+      });
+      localStorage.setItem('onkar_db', JSON.stringify(dbObj));
+    }
+  } catch (e) {
+    console.error("Migration failed, resetting db:", e);
+    localStorage.setItem('onkar_db', JSON.stringify(mockDb));
+  }
+}
+
+// Initializing vendor profile if not present
+if (!localStorage.getItem('onkar_vendor_profile')) {
+  const defaultVendorProfile = {
+    name: "Rajesh Saxena",
+    bankName: "HDFC Bank Ltd.",
+    email: "rajesh.saxena@hdfcbank.com",
+    contact: "+91 98989 12345",
+    apiKey: "hk_live_9a2f8b5c4d2e"
+  };
+  localStorage.setItem('onkar_vendor_profile', JSON.stringify(defaultVendorProfile));
 }
 
 const api = {
   getDb() {
-    return JSON.parse(localStorage.getItem('onkar_db'));
+    const db = JSON.parse(localStorage.getItem('onkar_db'));
+    if (db) {
+      let updated = false;
+      if (!db.partners) {
+        db.partners = [
+          { name: "HDFC Bank Ltd.", products: "Home Loan, Personal Loan", routed: 142, rate: 82, status: "API Connected", contact: "hdfc.support@onkar.com" },
+          { name: "ICICI Bank Ltd.", products: "Business Loan, Auto Loan", routed: 98, rate: 75, status: "API Connected", contact: "icici.api@onkar.com" },
+          { name: "State Bank of India (SBI)", products: "Agriculture Loan, Home Loan", routed: 210, rate: 64, status: "Manual Routing", contact: "sbi.manual@onkar.com" }
+        ];
+        updated = true;
+      }
+      if (!db.branches) {
+        db.branches = [
+          { name: "Mumbai Main", manager: "Rahul Verma", staffCount: 12, disbursed: 2.4, target: 2.6, status: "On Track" },
+          { name: "Delhi Connaught", manager: "Siddhi Sen", staffCount: 8, disbursed: 1.8, target: 2.4, status: "Action Needed" },
+          { name: "Pune Deccan", manager: "Anjali Rao", staffCount: 4, disbursed: 0.62, target: 1.2, status: "Lagging" }
+        ];
+        updated = true;
+      }
+      if (!db.roles) {
+        db.roles = [
+          { name: "Super Admin", icon: "lucide-shield" },
+          { name: "Branch Manager", icon: "lucide-user-check" },
+          { name: "Relationship Manager", icon: "lucide-users" },
+          { name: "Verification Agent", icon: "lucide-search" },
+          { name: "Partner / DSA", icon: "lucide-handshake" }
+        ];
+        updated = true;
+      }
+      if (!db.campaigns) {
+        db.campaigns = [
+          { name: "Monsoon Special Home Loan", channel: "WhatsApp", status: "Completed", sent: "10,000 / 9,800", clicks: "42% / 15%", date: "10 Jul 2026" },
+          { name: "Aadhaar E-Sign Reminder", channel: "SMS", status: "Completed", sent: "2,400 / 2,350", clicks: "98% / 60%", date: "12 Jul 2026" },
+          { name: "Festival Gold Loan Discount", channel: "WhatsApp", status: "Scheduled", sent: "0 / 0", clicks: "0% / 0%", date: "20 Jul 2026" }
+        ];
+        updated = true;
+      }
+      if (updated) {
+        localStorage.setItem('onkar_db', JSON.stringify(db));
+      }
+    }
+    return db;
   },
   
   saveDb(db) {

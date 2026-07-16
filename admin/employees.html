@@ -54,7 +54,7 @@
         <div class="card stat-card">
           <div class="flex justify-between align-center">
             <span class="stat-label">Target Completion Ratio</span>
-            <div class="stat-icon"><i class="lucide-target"></i></div>
+            <div class="stat-icon"><i class="lucide-bullseye"></i></div>
           </div>
           <div class="stat-value">84.2%</div>
         </div>
@@ -83,6 +83,12 @@
         </div>
       </div>
 
+      </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
   <!-- Add Employee Modal -->
   <div id="addEmployeeModal" class="modal-overlay">
     <div class="modal-container">
@@ -110,6 +116,8 @@
           <div class="form-group">
             <label class="form-label" for="empBranch">Assigned Branch</label>
             <select id="empBranch" class="form-control">
+              <option value="Mumbai Main">Mumbai Main</option>
+              <option value="Delhi Connaught">Delhi Connaught</option>
               <option value="Pune Deccan">Pune Deccan</option>
               <option value="Mumbai Andheri">Mumbai Andheri</option>
               <option value="Bengaluru Indiranagar">Bengaluru Indiranagar</option>
@@ -118,6 +126,9 @@
           <div class="form-group">
             <label class="form-label" for="empTeam">Team / Segment</label>
             <select id="empTeam" class="form-control">
+              <option value="Sales Team A">Sales Team A</option>
+              <option value="Sales Team B">Sales Team B</option>
+              <option value="Risk &amp; Credit">Risk &amp; Credit</option>
               <option value="Retail Loans">Retail Loans</option>
               <option value="SME Lending">SME Lending</option>
               <option value="Gold &amp; Agri">Gold &amp; Agri</option>
@@ -146,10 +157,85 @@
       </form>
     </div>
   </div>
+
+  <!-- Edit Employee Modal -->
+  <div id="editEmployeeModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('editEmployeeModal')"></i>
+      <h3 class="m-b-md">Edit Staff Member</h3>
       
-      </div> <!-- End page-content -->
-      
-      <div data-component="footer"></div>
+      <form id="editEmployeeForm">
+        <input type="hidden" id="editEmpIndex" />
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpName">Full Name</label>
+            <input type="text" id="editEmpName" class="form-control" placeholder="Ramesh Patil" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpRole">Designation / Role</label>
+            <select id="editEmpRole" class="form-control">
+              <option value="Relationship Manager">Relationship Manager</option>
+              <option value="Branch Manager">Branch Manager</option>
+              <option value="Credit Analyst">Credit Analyst</option>
+              <option value="Verification Officer">Verification Officer</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpBranch">Assigned Branch</label>
+            <select id="editEmpBranch" class="form-control">
+              <option value="Mumbai Main">Mumbai Main</option>
+              <option value="Delhi Connaught">Delhi Connaught</option>
+              <option value="Pune Deccan">Pune Deccan</option>
+              <option value="Mumbai Andheri">Mumbai Andheri</option>
+              <option value="Bengaluru Indiranagar">Bengaluru Indiranagar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpTeam">Team / Segment</label>
+            <select id="editEmpTeam" class="form-control">
+              <option value="Sales Team A">Sales Team A</option>
+              <option value="Sales Team B">Sales Team B</option>
+              <option value="Risk &amp; Credit">Risk &amp; Credit</option>
+              <option value="Retail Loans">Retail Loans</option>
+              <option value="SME Lending">SME Lending</option>
+              <option value="Gold &amp; Agri">Gold &amp; Agri</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpTarget">Monthly Payout Quota Target (INR)</label>
+            <input type="number" id="editEmpTarget" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpAchieved">Achieved Amount (INR)</label>
+            <input type="number" id="editEmpAchieved" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="editEmpAttendance">Attendance %</label>
+            <input type="number" id="editEmpAttendance" class="form-control" min="0" max="100" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="editEmpStatus">Status</label>
+            <select id="editEmpStatus" class="form-control">
+              <option value="Active">Active</option>
+              <option value="Suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('editEmployeeModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
     </div>
   </div>
 
@@ -164,7 +250,7 @@
       const tbody = document.getElementById('employeeTableBody');
       tbody.innerHTML = '';
       
-      emps.forEach(emp => {
+      emps.forEach((emp, index) => {
         const badge = emp.status === 'Active' ? 'badge-success' : 'badge-danger';
         
         tbody.innerHTML += `
@@ -185,7 +271,7 @@
             </td>
             <td><span class="badge ${badge}">${emp.status}</span></td>
             <td>
-              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="showToast('Edit employee form popup coming soon.', 'info')">
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openEditEmployeeModal(${index})">
                 Edit Staff
               </button>
             </td>
@@ -194,7 +280,7 @@
       });
       if (window.lucide) lucide.createIcons();
     }
-
+ 
     document.getElementById('addEmployeeForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const name = document.getElementById('empName').value;
@@ -212,6 +298,46 @@
       closeModal('addEmployeeModal');
       document.getElementById('addEmployeeForm').reset();
       renderEmployees();
+    });
+ 
+    window.openEditEmployeeModal = function(index) {
+      const db = api.getDb();
+      const emp = db.employees[index];
+      if (!emp) return;
+ 
+      document.getElementById('editEmpIndex').value = index;
+      document.getElementById('editEmpName').value = emp.name;
+      document.getElementById('editEmpRole').value = emp.role;
+      document.getElementById('editEmpBranch').value = emp.branch;
+      document.getElementById('editEmpTeam').value = emp.team;
+      document.getElementById('editEmpTarget').value = emp.target;
+      document.getElementById('editEmpAchieved').value = emp.achieved || 0;
+      document.getElementById('editEmpAttendance').value = emp.attendance || 100;
+      document.getElementById('editEmpStatus').value = emp.status;
+ 
+      openModal('editEmployeeModal');
+    };
+ 
+    document.getElementById('editEmployeeForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const index = parseInt(document.getElementById('editEmpIndex').value, 10);
+      
+      const db = api.getDb();
+      if (db.employees[index]) {
+        db.employees[index].name = document.getElementById('editEmpName').value;
+        db.employees[index].role = document.getElementById('editEmpRole').value;
+        db.employees[index].branch = document.getElementById('editEmpBranch').value;
+        db.employees[index].team = document.getElementById('editEmpTeam').value;
+        db.employees[index].target = parseFloat(document.getElementById('editEmpTarget').value);
+        db.employees[index].achieved = parseFloat(document.getElementById('editEmpAchieved').value);
+        db.employees[index].attendance = parseInt(document.getElementById('editEmpAttendance').value, 10);
+        db.employees[index].status = document.getElementById('editEmpStatus').value;
+        
+        api.saveDb(db);
+        showToast('Employee details updated successfully!', 'success');
+        closeModal('editEmployeeModal');
+        renderEmployees();
+      }
     });
     
     renderEmployees();

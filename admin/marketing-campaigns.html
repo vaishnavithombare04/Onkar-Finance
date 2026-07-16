@@ -71,39 +71,13 @@
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="bold">Monsoon Special Home Loan</td>
-                <td><span class="badge badge-success"><i class="lucide-message-circle"></i> WhatsApp</span></td>
-                <td><span class="badge badge-success">Completed</span></td>
-                <td>10,000 / 9,800</td>
-                <td>42% / 15%</td>
-                <td>10 Jul 2026</td>
-                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Stats</button></td>
-              </tr>
-              <tr>
-                <td class="bold">Aadhaar E-Sign Reminder</td>
-                <td><span class="badge badge-info"><i class="lucide-message-square"></i> SMS</span></td>
-                <td><span class="badge badge-success">Completed</span></td>
-                <td>2,400 / 2,350</td>
-                <td>98% / 60%</td>
-                <td>12 Jul 2026</td>
-                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Stats</button></td>
-              </tr>
-              <tr>
-                <td class="bold">Festival Gold Loan Discount</td>
-                <td><span class="badge badge-success"><i class="lucide-message-circle"></i> WhatsApp</span></td>
-                <td><span class="badge badge-warning">Scheduled</span></td>
-                <td>0 / 0</td>
-                <td>0% / 0%</td>
-                <td>20 Jul 2026</td>
-                <td><button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;">Modify</button></td>
-              </tr>
+            <tbody id="campaignTableBody">
+              <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
       </div>
-
+ 
   <!-- Create Campaign Stepper Wizard Modal -->
   <div id="createCampaignModal" class="modal-overlay">
     <div class="modal-container" style="max-width: 550px;">
@@ -120,25 +94,25 @@
       <!-- Wizard Bodies -->
       <div id="wBody1" class="wizard-body">
         <div class="form-group">
-          <label class="form-label">Campaign Name</label>
-          <input type="text" class="form-control" placeholder="Festival Promo Offer 2026">
+          <label class="form-label" for="cName">Campaign Name</label>
+          <input type="text" class="form-control" id="cName" placeholder="Festival Promo Offer 2026">
         </div>
         <div class="form-group">
-          <label class="form-label">Target Audience Segment</label>
-          <select class="form-control">
-            <option>All Active Borrowers</option>
-            <option>Pending KYC Leads</option>
-            <option>DSAs &amp; External Agents</option>
-            <option>Custom Filter List</option>
+          <label class="form-label" for="cAudience">Target Audience Segment</label>
+          <select class="form-control" id="cAudience">
+            <option value="All Active Borrowers">All Active Borrowers</option>
+            <option value="Pending KYC Leads">Pending KYC Leads</option>
+            <option value="DSAs &amp; External Agents">DSAs &amp; External Agents</option>
+            <option value="Custom Filter List">Custom Filter List</option>
           </select>
         </div>
         <button class="btn btn-primary w-full m-t-md" onclick="nextWizardStep(2)">Proceed to Template</button>
       </div>
-
+ 
       <div id="wBody2" class="wizard-body" style="display: none;">
         <div class="form-group">
-          <label class="form-label">Choose Message Template</label>
-          <select class="form-control" onchange="previewTemplateText(this)">
+          <label class="form-label" for="cTemplate">Choose Message Template</label>
+          <select class="form-control" id="cTemplate" onchange="previewTemplateText(this)">
             <option value="Select a pre-approved template...">Select a pre-approved template...</option>
             <option value="Hello {{name}}, grab your Monsoon Personal Loan at just 8.9%! Click to apply.">Monsoon Offer personal loan</option>
             <option value="Dear {{name}}, KYC pending for APP-{{id}}. Upload Aadhaar XML file now.">KYC Pending Reminder</option>
@@ -155,20 +129,20 @@
           <button class="btn btn-primary" onclick="nextWizardStep(3)">Schedule Campaign</button>
         </div>
       </div>
-
+ 
       <div id="wBody3" class="wizard-body" style="display: none;">
         <div class="grid-2">
           <div class="form-group">
-            <label class="form-label">Send Channel</label>
-            <select class="form-control">
-              <option>WhatsApp API</option>
-              <option>Transactional SMS Gateway</option>
-              <option>Corporate Email Server</option>
+            <label class="form-label" for="cChannel">Send Channel</label>
+            <select class="form-control" id="cChannel">
+              <option value="WhatsApp">WhatsApp API</option>
+              <option value="SMS">Transactional SMS Gateway</option>
+              <option value="Email">Corporate Email Server</option>
             </select>
           </div>
           <div class="form-group">
-            <label class="form-label">Schedule Time</label>
-            <input type="datetime-local" class="form-control">
+            <label class="form-label" for="cTime">Schedule Time</label>
+            <input type="datetime-local" class="form-control" id="cTime">
           </div>
         </div>
         
@@ -177,6 +151,62 @@
           <button class="btn btn-primary" onclick="submitCampaign()">Launch Campaign</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Campaign Stats Modal -->
+  <div id="campaignStatsModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 500px;">
+      <i class="lucide-x modal-close" onclick="closeModal('campaignStatsModal')"></i>
+      <h3 class="m-b-md" id="statsCampaignName">Campaign Performance Stats</h3>
+      <p class="text-secondary m-b-md" style="font-size: 13px;">Performance details for this completed run.</p>
+      
+      <div class="flex flex-column gap-md" style="font-size: 13px;">
+        <div class="flex justify-between"><span class="text-secondary">Channel Type</span><span class="bold" id="statsChannel">WhatsApp</span></div>
+        <div class="flex justify-between"><span class="text-secondary">Sent / Delivered</span><span class="bold" id="statsSent">10,000 / 9,800</span></div>
+        <div class="flex justify-between"><span class="text-secondary">Delivery Success Rate</span><span class="bold text-success" id="statsDeliveryRate">98%</span></div>
+        <div class="flex justify-between"><span class="text-secondary">Opened / Clicked</span><span class="bold" id="statsClicks">42% / 15%</span></div>
+        <div class="flex justify-between"><span class="text-secondary">Conversion Rate</span><span class="bold text-success" id="statsConversion">35%</span></div>
+        <div class="flex justify-between"><span class="text-secondary">Run Date</span><span class="bold" id="statsDate">10 Jul 2026</span></div>
+      </div>
+      <div class="flex justify-end m-t-md">
+        <button class="btn btn-primary" onclick="closeModal('campaignStatsModal')">Close Stats</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modify Campaign Modal -->
+  <div id="modifyCampaignModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 550px;">
+      <i class="lucide-x modal-close" onclick="closeModal('modifyCampaignModal')"></i>
+      <h3 class="m-b-md">Modify Scheduled Campaign</h3>
+      
+      <form id="modifyCampaignForm">
+        <input type="hidden" id="modifyCampaignIndex" />
+        <div class="form-group">
+          <label class="form-label" for="modifyName">Campaign Name</label>
+          <input type="text" id="modifyName" class="form-control" required>
+        </div>
+        
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="modifyChannel">Send Channel</label>
+            <select id="modifyChannel" class="form-control">
+              <option value="WhatsApp">WhatsApp API</option>
+              <option value="SMS">SMS Gateway</option>
+              <option value="Email">Email Server</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modifyDate">Schedule Time</label>
+            <input type="datetime-local" id="modifyDate" class="form-control" required>
+          </div>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('modifyCampaignModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
     </div>
   </div>
       
@@ -191,23 +221,160 @@
   <script src="../assets/js/nav.js"></script>
   <script data-page-init>
   {
-    function nextWizardStep(step) {
+    function renderCampaigns() {
+      const db = api.getDb();
+      const tbody = document.getElementById('campaignTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+ 
+      db.campaigns.forEach((camp, index) => {
+        let channelBadge = '';
+        if (camp.channel === 'WhatsApp') {
+          channelBadge = `<span class="badge badge-success"><i class="lucide-message-circle"></i> WhatsApp</span>`;
+        } else if (camp.channel === 'SMS') {
+          channelBadge = `<span class="badge badge-info"><i class="lucide-message-square"></i> SMS</span>`;
+        } else {
+          channelBadge = `<span class="badge badge-warning"><i class="lucide-mail"></i> Email</span>`;
+        }
+ 
+        const statusBadge = camp.status === 'Completed' ? `<span class="badge badge-success">Completed</span>` : `<span class="badge badge-warning">Scheduled</span>`;
+        
+        const actionBtn = camp.status === 'Completed' 
+          ? `<button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;" onclick="openStatsModal(${index})">Stats</button>`
+          : `<button class="btn btn-outline" style="padding: 4px 8px; font-size:12px;" onclick="openModifyModal(${index})">Modify</button>`;
+ 
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">${camp.name}</td>
+            <td>${channelBadge}</td>
+            <td>${statusBadge}</td>
+            <td>${camp.sent}</td>
+            <td>${camp.clicks}</td>
+            <td>${camp.date}</td>
+            <td>${actionBtn}</td>
+          </tr>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+ 
+    window.nextWizardStep = function(step) {
       document.querySelectorAll('.wizard-body').forEach(b => b.style.display = 'none');
       document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
       
       document.getElementById('wBody' + step).style.display = 'block';
       document.getElementById('wStep' + step).classList.add('active');
-    }
-
-    function previewTemplateText(select) {
+    };
+ 
+    window.previewTemplateText = function(select) {
       document.getElementById('templatePreviewBox').textContent = select.value;
-    }
-
-    function submitCampaign() {
+    };
+ 
+    window.submitCampaign = function() {
+      const name = document.getElementById('cName').value || 'New Promo Campaign';
+      const channel = document.getElementById('cChannel').value;
+      const scheduleTime = document.getElementById('cTime').value;
+ 
+      let launchDate = 'Scheduled';
+      if (scheduleTime) {
+        const d = new Date(scheduleTime);
+        const options = { day: 'numeric', month: 'short', year: 'numeric' };
+        launchDate = d.toLocaleDateString('en-GB', options);
+      }
+ 
+      const db = api.getDb();
+      db.campaigns.push({
+        name,
+        channel,
+        status: 'Scheduled',
+        sent: '0 / 0',
+        clicks: '0% / 0%',
+        date: launchDate
+      });
+      api.saveDb(db);
+ 
       closeModal('createCampaignModal');
       showToast('Campaign scheduled successfully!', 'success');
+      
+      document.getElementById('cName').value = '';
+      document.getElementById('cTime').value = '';
+      document.getElementById('templatePreviewBox').textContent = 'Select a template from above...';
+      document.getElementById('cTemplate').value = 'Select a pre-approved template...';
+      
       nextWizardStep(1);
-    }
+      renderCampaigns();
+    };
+ 
+    window.openStatsModal = function(index) {
+      const db = api.getDb();
+      const camp = db.campaigns[index];
+      if (!camp) return;
+ 
+      document.getElementById('statsCampaignName').textContent = camp.name;
+      document.getElementById('statsChannel').textContent = camp.channel;
+      document.getElementById('statsSent').textContent = camp.sent;
+      document.getElementById('statsClicks').textContent = camp.clicks;
+      document.getElementById('statsDate').textContent = camp.date;
+ 
+      const sentVal = parseInt(camp.sent.split(' / ')[0].replace(/,/g, ''), 10);
+      const delVal = parseInt(camp.sent.split(' / ')[1].replace(/,/g, ''), 10);
+      const deliverySuccessRate = sentVal > 0 ? Math.round((delVal / sentVal) * 100) : 0;
+      document.getElementById('statsDeliveryRate').textContent = deliverySuccessRate + '%';
+ 
+      openModal('campaignStatsModal');
+    };
+ 
+    window.openModifyModal = function(index) {
+      const db = api.getDb();
+      const camp = db.campaigns[index];
+      if (!camp) return;
+ 
+      document.getElementById('modifyCampaignIndex').value = index;
+      document.getElementById('modifyName').value = camp.name;
+      document.getElementById('modifyChannel').value = camp.channel;
+      
+      let dateString = '';
+      try {
+        const d = new Date(camp.date);
+        if (!isNaN(d.getTime())) {
+          dateString = d.toISOString().substring(0, 16);
+        }
+      } catch(e) {}
+      
+      document.getElementById('modifyDate').value = dateString;
+ 
+      openModal('modifyCampaignModal');
+    };
+ 
+    document.getElementById('modifyCampaignForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const index = parseInt(document.getElementById('modifyCampaignIndex').value, 10);
+ 
+      const db = api.getDb();
+      if (db.campaigns[index]) {
+        const name = document.getElementById('modifyName').value;
+        const channel = document.getElementById('modifyChannel').value;
+        const rawDate = document.getElementById('modifyDate').value;
+        
+        let launchDate = db.campaigns[index].date;
+        if (rawDate) {
+          const d = new Date(rawDate);
+          const options = { day: 'numeric', month: 'short', year: 'numeric' };
+          launchDate = d.toLocaleDateString('en-GB', options);
+        }
+ 
+        db.campaigns[index].name = name;
+        db.campaigns[index].channel = channel;
+        db.campaigns[index].date = launchDate;
+ 
+        api.saveDb(db);
+        showToast('Campaign details updated successfully!', 'success');
+        closeModal('modifyCampaignModal');
+        renderCampaigns();
+      }
+    });
+ 
+    renderCampaigns();
   }
   </script>
 </body>

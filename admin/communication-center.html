@@ -156,8 +156,8 @@
               <span class="badge badge-success">Online</span>
             </div>
             <div class="flex gap-sm">
-              <button class="btn btn-outline" onclick="showToast('Calling Amit Sharma...', 'success')"><i class="lucide-phone"></i> Direct Call</button>
-              <button class="btn btn-outline" onclick="showToast('Loading templates list...', 'info')"><i class="lucide-layout-template"></i> Templates</button>
+              <button class="btn btn-outline" onclick="showToast('Calling...', 'success')"><i class="lucide-phone"></i> Direct Call</button>
+              <button class="btn btn-outline" onclick="openTemplatesModal()"><i class="lucide-layout-template"></i> Templates</button>
             </div>
           </div>
           
@@ -183,7 +183,21 @@
         </div>
       </div>
       
-      </div> <!-- End page-content --><div data-component="footer"></div>
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- Templates Modal -->
+  <div id="templatesModal" class="modal-overlay">
+    <div class="modal-container" style="max-width: 500px;">
+      <i class="lucide-x modal-close" onclick="closeModal('templatesModal')"></i>
+      <h3 class="m-b-md">Select Message Template</h3>
+      <p class="text-secondary m-b-md" style="font-size: 13px;">Choose a pre-approved template for the current channel.</p>
+      
+      <div id="templatesListContainer" class="flex flex-column gap-sm">
+        <!-- Rendered dynamically depending on channel -->
+      </div>
     </div>
   </div>
 
@@ -193,10 +207,111 @@
   <script src="../assets/js/nav.js"></script>
   <script data-page-init>
   {
-    function switchChannel(channel) {
+    const channelsData = {
+      whatsapp: {
+        threads: [
+          { name: "Amit Sharma", time: "10:24 AM", lastMsg: "Thank you, checking documents now.", messages: [
+            { type: "received", text: "Hello, I completed uploading my PAN card. When will my eligibility status update?", time: "10:18 AM" },
+            { type: "sent", text: "Hi Amit! Our automated OCR engine is verifying your document details. We will update you shortly.", time: "10:20 AM" },
+            { type: "received", text: "Thank you, checking documents now.", time: "10:24 AM" }
+          ]},
+          { name: "Priya Patel", time: "Yesterday", lastMsg: "Will HDFC bank approve my home loan?", messages: [
+            { type: "received", text: "Will HDFC bank approve my home loan?", time: "Yesterday" }
+          ]}
+        ]
+      },
+      email: {
+        threads: [
+          { name: "Amit Sharma", time: "9:15 AM", lastMsg: "Subject: Loan eligibility status update...", messages: [
+            { type: "received", text: "Subject: Loan eligibility status update<br><br>Hi Team, I have sent all the requested PAN and Aadhaar details.", time: "9:10 AM" },
+            { type: "sent", text: "Subject: Re: Loan eligibility status update<br><br>Thanks Amit, we have received your files and will update soon.", time: "9:15 AM" }
+          ]},
+          { name: "Priya Patel", time: "2 Days Ago", lastMsg: "Subject: Home Loan query...", messages: [
+            { type: "received", text: "Subject: Home Loan query<br><br>Dear support, what is the current interest rate for Home Loans?", time: "2 Days Ago" }
+          ]}
+        ]
+      },
+      sms: {
+        threads: [
+          { name: "Amit Sharma", time: "8:05 AM", lastMsg: "Your OTP for KYC verification is 8827...", messages: [
+            { type: "sent", text: "Your OTP for KYC verification is 8827. Do not share this with anyone.", time: "8:05 AM" }
+          ]},
+          { name: "Priya Patel", time: "3 Days Ago", lastMsg: "Your Home loan application has been registered.", messages: [
+            { type: "sent", text: "Your Home loan application has been registered. Track it here: http://onkar.com/t/LD-8903", time: "3 Days Ago" }
+          ]}
+        ]
+      }
+    };
+ 
+    let currentActiveChannel = 'whatsapp';
+    let currentActiveThreadIndex = 0;
+    let originalChatViewHtml = null;
+ 
+    function saveOriginalChatView() {
+      if (!originalChatViewHtml) {
+        const view = document.getElementById('chatView');
+        if (view) originalChatViewHtml = view.innerHTML;
+      }
+    }
+ 
+    function renderThreads() {
+      const list = document.getElementById('threadList');
+      if (!list) return;
+      list.innerHTML = '';
+ 
+      const threads = channelsData[currentActiveChannel]?.threads || [];
+      threads.forEach((t, index) => {
+        const activeClass = index === currentActiveThreadIndex ? 'active' : '';
+        list.innerHTML += `
+          <div class="thread-item ${activeClass}" onclick="selectThread(${index})">
+            <div class="flex justify-between m-b-md">
+              <span class="bold">${t.name}</span>
+              <span class="text-muted" style="font-size: 10px;">${t.time}</span>
+            </div>
+            <p class="text-secondary" style="font-size: 12px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${t.lastMsg}</p>
+          </div>
+        `;
+      });
+    }
+ 
+    function renderActiveThreadMessages() {
+      const messagesContainer = document.getElementById('chatMessages');
+      const targetNameEl = document.getElementById('chatTargetName');
+      
+      const threads = channelsData[currentActiveChannel]?.threads || [];
+      const thread = threads[currentActiveThreadIndex];
+      
+      if (!thread) {
+        if (messagesContainer) messagesContainer.innerHTML = '<p class="text-muted">No messages in this thread.</p>';
+        return;
+      }
+ 
+      if (targetNameEl) targetNameEl.textContent = thread.name;
+      if (!messagesContainer) return;
+ 
+      messagesContainer.innerHTML = '';
+      thread.messages.forEach(m => {
+        const sentClass = m.type === 'sent' ? 'msg-sent' : 'msg-received';
+        const textStyle = m.type === 'sent' ? 'color: rgba(255,255,255,0.7)' : '';
+        
+        messagesContainer.innerHTML += `
+          <div class="msg ${sentClass}">
+            ${m.text}
+            <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right; ${textStyle}">${m.time}</div>
+          </div>
+        `;
+      });
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+ 
+    window.switchChannel = function(channel) {
+      saveOriginalChatView();
+      currentActiveChannel = channel;
+      currentActiveThreadIndex = 0;
+ 
       const tabs = document.querySelectorAll('.channel-tab');
       tabs.forEach(tab => {
-        if (tab.textContent.toLowerCase().includes(channel)) {
+        if (tab.textContent.toLowerCase().includes(channel === 'calls' ? 'call logs' : channel)) {
           tab.classList.add('active');
         } else {
           tab.classList.remove('active');
@@ -204,44 +319,49 @@
       });
       showToast('Switched communications channel to ' + channel.toUpperCase(), 'info');
       
-      // If voice calls, let's render a mini call recorder widget
       if (channel === 'calls') {
+        const threadList = document.getElementById('threadList');
+        if (threadList) threadList.innerHTML = '<div style="padding:16px; font-size:12px;" class="text-muted">Voice channels log selected.</div>';
         renderCallLogs();
       } else {
         restoreChatView();
+        renderThreads();
+        renderActiveThreadMessages();
       }
-    }
-
-    function selectThread(name) {
-      document.getElementById('chatTargetName').textContent = name;
-      const threads = document.querySelectorAll('.thread-item');
-      threads.forEach(t => {
-        if (t.textContent.includes(name)) {
-          t.classList.add('active');
-        } else {
-          t.classList.remove('active');
-        }
-      });
-    }
-
-    function sendMessage() {
+    };
+ 
+    window.selectThread = function(index) {
+      currentActiveThreadIndex = index;
+      renderThreads();
+      renderActiveThreadMessages();
+    };
+ 
+    window.sendMessage = function() {
       const input = document.getElementById('chatInputMessage');
       const val = input.value.trim();
       if (!val) return;
       
-      const msgs = document.getElementById('chatMessages');
-      msgs.innerHTML += `
-        <div class="msg msg-sent">
-          ${val}
-          <div class="text-muted" style="font-size: 10px; margin-top: 4px; text-align: right; color: rgba(255,255,255,0.7)">Just now</div>
-        </div>
-      `;
+      const threads = channelsData[currentActiveChannel]?.threads || [];
+      const thread = threads[currentActiveThreadIndex];
+      if (thread) {
+        thread.messages.push({
+          type: "sent",
+          text: val,
+          time: "Just now"
+        });
+        thread.lastMsg = val;
+        thread.time = "Just now";
+        
+        renderThreads();
+        renderActiveThreadMessages();
+      }
+      
       input.value = '';
-      msgs.scrollTop = msgs.scrollHeight;
-    }
-
-    function renderCallLogs() {
+    };
+ 
+    window.renderCallLogs = function() {
       const view = document.getElementById('chatView');
+      if (!view) return;
       view.innerHTML = `
         <div class="chat-header">
           <h3 class="bold">Regional Call Recordings</h3>
@@ -276,15 +396,71 @@
           </table>
         </div>
       `;
-    }
-
-    function restoreChatView() {
-      if (window.loadPage) {
-        loadPage('communication-center.html', false);
-      } else {
-        location.reload();
+    };
+ 
+    window.restoreChatView = function() {
+      const view = document.getElementById('chatView');
+      if (view && originalChatViewHtml) {
+        view.innerHTML = originalChatViewHtml;
       }
-    }
+    };
+ 
+    window.openTemplatesModal = function() {
+      const listContainer = document.getElementById('templatesListContainer');
+      if (!listContainer) return;
+      listContainer.innerHTML = '';
+ 
+      const templates = {
+        whatsapp: [
+          { title: "Document Request", text: "Hi {name}, we have received your initial application. Please upload your PAN and Aadhaar card on the portal to proceed." },
+          { title: "Eligibility Success", text: "Hi {name}, congratulations! Your loan eligibility check has succeeded. We have forwarded it to partner banks." },
+          { title: "Query Raised", text: "Hi {name}, a query has been raised on your bank statement upload. Please upload the last 6 months statement." }
+        ],
+        email: [
+          { title: "Application Checklist", text: "Dear {name},\n\nThank you for choosing Onkar Finance. To process your loan, please provide:\n1. PAN Card\n2. Aadhaar Card\n3. Bank Statements (6 Months)\n\nRegards,\nOnkar Team" },
+          { title: "KYC Success Alert", text: "Dear {name},\n\nWe are pleased to inform you that your KYC verification is complete. Your application is under review by partner banks.\n\nBest regards,\nOnkar Finance Team" }
+        ],
+        sms: [
+          { title: "OTP Code Verification", text: "Dear Customer, your OTP for Onkar Finance portal access is 4820. Valid for 10 minutes." },
+          { title: "Application Routed Alert", text: "Hi {name}, your loan application has been successfully routed to partner bank. Check status here: http://onkar.com" }
+        ]
+      };
+ 
+      const channelTemplates = templates[currentActiveChannel] || [];
+      const threads = channelsData[currentActiveChannel]?.threads || [];
+      const activeThread = threads[currentActiveThreadIndex];
+      const customerName = activeThread ? activeThread.name : "Customer";
+ 
+      if (channelTemplates.length === 0) {
+        listContainer.innerHTML = '<p class="text-muted" style="font-size:13px;">No templates available for this channel.</p>';
+      } else {
+        channelTemplates.forEach(t => {
+          const processedText = t.text.replace(/{name}/g, customerName);
+          listContainer.innerHTML += `
+            <div class="card pointer hover-border" style="padding: 12px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); margin-bottom: 8px;" onclick="selectTemplateText(\`${processedText.replace(/\n/g, '\\n')}\`)">
+              <h5 class="bold" style="font-size: 13px; margin-bottom: 4px; color: var(--color-primary);">${t.title}</h5>
+              <p class="text-secondary" style="font-size: 12px; white-space: pre-wrap; margin: 0;">${processedText}</p>
+            </div>
+          `;
+        });
+      }
+ 
+      openModal('templatesModal');
+    };
+ 
+    window.selectTemplateText = function(text) {
+      const input = document.getElementById('chatInputMessage');
+      if (input) {
+        input.value = text;
+      }
+      closeModal('templatesModal');
+      showToast('Template populated!', 'success');
+    };
+ 
+    // Initialize layout
+    saveOriginalChatView();
+    renderThreads();
+    renderActiveThreadMessages();
   }
   </script>
 </body>

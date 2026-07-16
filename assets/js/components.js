@@ -61,11 +61,18 @@ async function loadComponent(selector, path) {
     const html = await response.text();
     element.innerHTML = html;
     
-    // Rewrite URLs dynamically if inside admin or TeamLeader folder
+    // Rewrite URLs dynamically if inside admin, TeamLeader, Agent or Vendor folder
     const isInsideAdmin = window.location.pathname.includes('/admin/');
     const isInsideTeamLeader = window.location.pathname.includes('/TeamLeader/');
-    if (isInsideAdmin || isInsideTeamLeader) {
-      const folderPrefix = isInsideAdmin ? 'admin/' : 'TeamLeader/';
+    const isInsideAgent = window.location.pathname.includes('/Agent/');
+    const isInsideVendor = window.location.pathname.includes('/Vendor/');
+    if (isInsideAdmin || isInsideTeamLeader || isInsideAgent || isInsideVendor) {
+      let folderPrefix = '';
+      if (isInsideAdmin) folderPrefix = 'admin/';
+      else if (isInsideTeamLeader) folderPrefix = 'TeamLeader/';
+      else if (isInsideAgent) folderPrefix = 'Agent/';
+      else if (isInsideVendor) folderPrefix = 'Vendor/';
+
       element.querySelectorAll('a').forEach(a => {
         const href = a.getAttribute('href');
         if (href && !href.startsWith('http') && !href.startsWith('#') && !href.startsWith('javascript:')) {
@@ -76,9 +83,14 @@ async function loadComponent(selector, path) {
           }
         }
       });
-      const userProfile = element.querySelector('.user-profile');
-      if (userProfile) {
-        userProfile.setAttribute('onclick', "location.href='profile.html'");
+    }
+
+    if (selector === '[data-component="topbar"]') {
+      const isDashboard = window.location.pathname.includes('dashboard.html');
+      const tabsContainer = element.querySelector('.topbar-tabs');
+      if (tabsContainer && !isDashboard) {
+        const pageTitle = document.title.split('—')[1] || 'Overview';
+        tabsContainer.innerHTML = `<div class="tab-pill active">${pageTitle.trim()}</div>`;
       }
     }
     
@@ -95,6 +107,12 @@ async function loadComponent(selector, path) {
     // Initialize Lucide icons
     if (window.initializeLucideIcons) {
       initializeLucideIcons();
+    }
+    if (window.updateTopbarProfile) {
+      window.updateTopbarProfile();
+    }
+    if (window.updateVendorTopbarProfile) {
+      window.updateVendorTopbarProfile();
     }
   } catch (error) {
     console.warn(`Failed to dynamically load ${path} (usually due to CORS or local filesystem restrictions):`, error);
@@ -196,7 +214,7 @@ function fallbackComponentRenderer(selector) {
               <i class="lucide-bell"></i>
               <div class="badge-dot"></div>
             </div>
-            <div class="user-profile" onclick="location.href='${rootPrefix}${tlPrefix}profile.html'">
+            <div class="user-profile">
               <div class="avatar">PN</div>
               <div class="text-secondary bold" style="font-size: 13px;">Priya N.</div>
             </div>
@@ -220,13 +238,20 @@ function fallbackComponentRenderer(selector) {
               <i class="lucide-bell"></i>
               <div class="badge-dot"></div>
             </div>
-            <div class="user-profile" onclick="location.href='${rootPrefix}${adminPrefix}profile.html'">
+            <div class="user-profile">
               <div class="avatar">AD</div>
               <div class="text-secondary bold" style="font-size: 13px;">Aditya S.</div>
             </div>
           </div>
         </div>
       `;
+      
+      const isDashboard = window.location.pathname.includes('dashboard.html');
+      const tabsContainer = element.querySelector('.topbar-tabs');
+      if (tabsContainer && !isDashboard) {
+        const pageTitle = document.title.split('—')[1] || 'Overview';
+        tabsContainer.innerHTML = `<div class="tab-pill active">${pageTitle.trim()}</div>`;
+      }
     }
   } else if (selector === '[data-component="footer"]') {
     element.innerHTML = `
@@ -238,6 +263,12 @@ function fallbackComponentRenderer(selector) {
   
   if (window.initializeLucideIcons) {
     initializeLucideIcons();
+  }
+  if (window.updateTopbarProfile) {
+    window.updateTopbarProfile();
+  }
+  if (window.updateVendorTopbarProfile) {
+    window.updateVendorTopbarProfile();
   }
 }
 
@@ -298,10 +329,23 @@ function initTabs(containerSelector) {
 document.addEventListener('DOMContentLoaded', () => {
   const isInsideAdmin = window.location.pathname.includes('/admin/');
   const isInsideTeamLeader = window.location.pathname.includes('/TeamLeader/');
-  const rootPrefix = (isInsideAdmin || isInsideTeamLeader) ? '../' : './';
+  const isInsideAgent = window.location.pathname.includes('/Agent/');
+  const isInsideVendor = window.location.pathname.includes('/Vendor/');
+  const rootPrefix = (isInsideAdmin || isInsideTeamLeader || isInsideAgent || isInsideVendor) ? '../' : './';
 
-  const sidebarPath = isInsideTeamLeader ? `${rootPrefix}components/sidebar-tl.html` : `${rootPrefix}components/sidebar.html`;
-  const topbarPath = isInsideTeamLeader ? `${rootPrefix}components/topbar-tl.html` : `${rootPrefix}components/topbar.html`;
+  let sidebarPath = `${rootPrefix}components/sidebar.html`;
+  let topbarPath = `${rootPrefix}components/topbar.html`;
+
+  if (isInsideTeamLeader) {
+    sidebarPath = `${rootPrefix}components/sidebar-tl.html`;
+    topbarPath = `${rootPrefix}components/topbar-tl.html`;
+  } else if (isInsideAgent) {
+    sidebarPath = `${rootPrefix}components/sidebar-agent.html`;
+    topbarPath = `${rootPrefix}components/topbar-agent.html`;
+  } else if (isInsideVendor) {
+    sidebarPath = `${rootPrefix}components/sidebar-vendor.html`;
+    topbarPath = `${rootPrefix}components/topbar-vendor.html`;
+  }
 
   loadComponent('[data-component="sidebar"]', sidebarPath);
   loadComponent('[data-component="topbar"]', topbarPath);
@@ -322,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 1. Notification Dropdown Toggle
     const bellBtn = e.target.closest('.topbar .icon-btn');
-    if (bellBtn && bellBtn.querySelector('.lucide-bell')) {
+    if (bellBtn && (bellBtn.querySelector('.lucide-bell') || bellBtn.querySelector('.bi-bell'))) {
       e.stopPropagation();
       let dropdown = bellBtn.querySelector('.dropdown-menu');
       if (!dropdown) {
@@ -338,6 +382,12 @@ document.addEventListener('DOMContentLoaded', () => {
         bellBtn.appendChild(dropdown);
         if (window.lucide) window.lucide.createIcons();
       }
+      
+      const badgeDot = bellBtn.querySelector('.badge-dot');
+      if (badgeDot) {
+        badgeDot.style.display = 'none';
+      }
+
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
     }
@@ -465,6 +515,56 @@ window.bulkDeleteItems = function() {
         const row = cb.closest('tr');
         if (row) row.remove();
       });
+    }
+  }
+};
+
+window.updateTopbarProfile = function() {
+  const isInsideAgent = window.location.pathname.includes('/Agent/');
+  if (!isInsideAgent) return;
+  
+  const topbarComponent = document.querySelector('[data-component="topbar"]');
+  if (!topbarComponent) return;
+  const savedProfile = localStorage.getItem('onkar_agent_profile');
+  if (savedProfile) {
+    const p = JSON.parse(savedProfile);
+    const avatarEl = topbarComponent.querySelector('.user-profile .avatar');
+    const nameEl = topbarComponent.querySelector('.user-profile .text-secondary');
+    if (avatarEl) {
+      if (p.avatar) {
+        avatarEl.innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+      } else {
+        const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase();
+        avatarEl.textContent = initials;
+      }
+    }
+    if (nameEl) {
+      nameEl.textContent = p.name;
+    }
+  }
+};
+
+window.updateVendorTopbarProfile = function() {
+  const isInsideVendor = window.location.pathname.includes('/Vendor/');
+  if (!isInsideVendor) return;
+  
+  const topbarComponent = document.querySelector('[data-component="topbar"]');
+  if (!topbarComponent) return;
+  const savedProfile = localStorage.getItem('onkar_vendor_profile');
+  if (savedProfile) {
+    const p = JSON.parse(savedProfile);
+    const avatarEl = topbarComponent.querySelector('.user-profile .avatar');
+    const nameEl = topbarComponent.querySelector('.user-profile .text-secondary');
+    if (avatarEl) {
+      if (p.avatar) {
+        avatarEl.innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+      } else {
+        const initials = p.name.split(' ').map(w=>w[0]).join('').toUpperCase();
+        avatarEl.textContent = initials;
+      }
+    }
+    if (nameEl) {
+      nameEl.textContent = p.name;
     }
   }
 };

@@ -30,11 +30,11 @@
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Banking Partners &amp; API Integrations</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage associated banks, financial products offered, and track sanction ratios.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Add partner dialog coming soon', 'info')">
+        <button class="btn btn-primary" onclick="openModal('addPartnerModal')">
           <i class="lucide-plus"></i> Add Banking Partner
         </button>
       </div>
-
+ 
       <!-- Partner cards / list -->
       <div class="card" style="padding: 0;">
         <div class="table-responsive">
@@ -44,49 +44,14 @@
                 <th>Bank / Vendor Name</th>
                 <th>Products Offered</th>
                 <th>Applications Routed</th>
-                <th>Sanktion / Approval Rate</th>
+                <th>Sanction / Approval Rate</th>
                 <th>API Integration Status</th>
                 <th>Support Contact</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="bold">HDFC Bank Ltd.</td>
-                <td>Home Loan, Personal Loan</td>
-                <td class="bold">142</td>
-                <td>
-                  <span class="bold">82%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 82%;"></div></div>
-                </td>
-                <td><span class="badge badge-success">API Connected</span></td>
-                <td>hdfc.support@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
-              <tr>
-                <td class="bold">ICICI Bank Ltd.</td>
-                <td>Business Loan, Auto Loan</td>
-                <td class="bold">98</td>
-                <td>
-                  <span class="bold">75%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 75%;"></div></div>
-                </td>
-                <td><span class="badge badge-success">API Connected</span></td>
-                <td>icici.api@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
-              <tr>
-                <td class="bold">State Bank of India (SBI)</td>
-                <td>Agriculture Loan, Home Loan</td>
-                <td class="bold">210</td>
-                <td>
-                  <span class="bold">64%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 64%; background-color: var(--color-warning);"></div></div>
-                </td>
-                <td><span class="badge badge-warning">Manual Routing</span></td>
-                <td>sbi.manual@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
+            <tbody id="partnerTableBody">
+              <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
@@ -96,9 +61,191 @@
     </div>
   </div>
 
+  <!-- Add Banking Partner Modal -->
+  <div id="addPartnerModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('addPartnerModal')"></i>
+      <h3 class="m-b-md">Add New Banking Partner</h3>
+      
+      <form id="addPartnerForm">
+        <div class="form-group">
+          <label class="form-label" for="partnerName">Bank / Partner Name</label>
+          <input type="text" id="partnerName" class="form-control" placeholder="Axis Bank Ltd." required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="partnerProducts">Products Offered (comma separated)</label>
+          <input type="text" id="partnerProducts" class="form-control" placeholder="Personal Loan, Business Loan" required>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="partnerContact">Support Contact Email</label>
+            <input type="email" id="partnerContact" class="form-control" placeholder="axis.support@onkar.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="partnerStatus">API Status</label>
+            <select id="partnerStatus" class="form-control">
+              <option value="API Connected">API Connected</option>
+              <option value="Manual Routing">Manual Routing</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('addPartnerModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Partner</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Configure Partner Modal -->
+  <div id="configPartnerModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('configPartnerModal')"></i>
+      <h3 class="m-b-md">Configure Banking Partner</h3>
+      
+      <form id="configPartnerForm">
+        <input type="hidden" id="configPartnerIndex" />
+        <div class="form-group">
+          <label class="form-label" for="configPartnerName">Bank / Partner Name</label>
+          <input type="text" id="configPartnerName" class="form-control" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="configPartnerProducts">Products Offered (comma separated)</label>
+          <input type="text" id="configPartnerProducts" class="form-control" required>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="configPartnerContact">Support Contact Email</label>
+            <input type="email" id="configPartnerContact" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="configPartnerStatus">API Status</label>
+            <select id="configPartnerStatus" class="form-control">
+              <option value="API Connected">API Connected</option>
+              <option value="Manual Routing">Manual Routing</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="form-group">
+            <label class="form-label" for="configPartnerRouted">Applications Routed</label>
+            <input type="number" id="configPartnerRouted" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="configPartnerRate">Sanction / Approval Rate (%)</label>
+            <input type="number" id="configPartnerRate" class="form-control" min="0" max="100" required>
+          </div>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('configPartnerModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Config</button>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
   <script src="../assets/js/global.js"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    function renderPartners() {
+      const db = api.getDb();
+      const tbody = document.getElementById('partnerTableBody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+ 
+      db.partners.forEach((partner, index) => {
+        const badgeClass = partner.status === 'API Connected' ? 'badge-success' : 'badge-warning';
+        const progressColor = partner.rate < 70 ? 'background-color: var(--color-warning);' : '';
+        
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">${partner.name}</td>
+            <td>${partner.products}</td>
+            <td class="bold">${partner.routed}</td>
+            <td>
+              <span class="bold">${partner.rate}%</span>
+              <div class="progress-bar-container" style="height:4px; margin-top:4px;">
+                <div class="progress-bar-fill" style="width: ${partner.rate}%; ${progressColor}"></div>
+              </div>
+            </td>
+            <td><span class="badge ${badgeClass}">${partner.status}</span></td>
+            <td>${partner.contact}</td>
+            <td>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;" onclick="openConfigPartnerModal(${index})">
+                Configure
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+ 
+    document.getElementById('addPartnerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('partnerName').value;
+      const products = document.getElementById('partnerProducts').value;
+      const contact = document.getElementById('partnerContact').value;
+      const status = document.getElementById('partnerStatus').value;
+ 
+      const db = api.getDb();
+      db.partners.push({
+        name,
+        products,
+        routed: 0,
+        rate: 70,
+        status,
+        contact
+      });
+      api.saveDb(db);
+ 
+      showToast('Banking partner added successfully!', 'success');
+      closeModal('addPartnerModal');
+      document.getElementById('addPartnerForm').reset();
+      renderPartners();
+    });
+ 
+    window.openConfigPartnerModal = function(index) {
+      const db = api.getDb();
+      const partner = db.partners[index];
+      if (!partner) return;
+ 
+      document.getElementById('configPartnerIndex').value = index;
+      document.getElementById('configPartnerName').value = partner.name;
+      document.getElementById('configPartnerProducts').value = partner.products;
+      document.getElementById('configPartnerContact').value = partner.contact;
+      document.getElementById('configPartnerStatus').value = partner.status;
+      document.getElementById('configPartnerRouted').value = partner.routed;
+      document.getElementById('configPartnerRate').value = partner.rate;
+ 
+      openModal('configPartnerModal');
+    };
+ 
+    document.getElementById('configPartnerForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const index = parseInt(document.getElementById('configPartnerIndex').value, 10);
+      
+      const db = api.getDb();
+      if (db.partners[index]) {
+        db.partners[index].name = document.getElementById('configPartnerName').value;
+        db.partners[index].products = document.getElementById('configPartnerProducts').value;
+        db.partners[index].contact = document.getElementById('configPartnerContact').value;
+        db.partners[index].status = document.getElementById('configPartnerStatus').value;
+        db.partners[index].routed = parseInt(document.getElementById('configPartnerRouted').value, 10);
+        db.partners[index].rate = parseInt(document.getElementById('configPartnerRate').value, 10);
+ 
+        api.saveDb(db);
+        showToast('Banking partner updated successfully!', 'success');
+        closeModal('configPartnerModal');
+        renderPartners();
+      }
+    });
+ 
+    renderPartners();
+  }
+  </script>
 </body>
 </html>
