@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Finance — Team Leader Dashboard</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Dashboard specific styles */
+    .dashboard-chart-bar {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 150px;
+      padding-top: 20px;
+    }
+    .chart-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-bar {
+      width: 100%;
+      background-color: var(--color-primary-light);
+      border-radius: var(--radius-sm);
+      transition: height 1s ease;
+      cursor: pointer;
+      position: relative;
+    }
+    .chart-bar:hover {
+      background-color: var(--color-primary);
+    }
+    .chart-bar-active {
+      background-color: var(--color-primary) !important;
+    }
+    .chart-label {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+
+    /* Radial Gauge */
+    .radial-gauge {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .radial-gauge svg {
+      transform: rotate(-90deg);
+    }
+    .radial-gauge-bg {
+      fill: none;
+      stroke: var(--color-border);
+      stroke-width: 8;
+    }
+    .radial-gauge-fill {
+      fill: none;
+      stroke: var(--color-primary);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 314;
+      stroke-dashoffset: 82; /* 74% progress (314 - 314 * 0.74 = 81.6) */
+      transition: stroke-dashoffset 1s ease;
+    }
+    .radial-gauge-text {
+      position: absolute;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--color-text);
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1040;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.18);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    /* Action icon buttons */
+    .action-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .action-icon-btn i { width: 14px; height: 14px; }
+  </style>
+</head>
+
+<body>
+  <div class="admin-layout">
+
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+
+      <!-- ══ PAGE CONTENT ══ -->
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+
+        <!-- Greeting Header -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Good Afternoon, Priya!</h1>
+            <p class="text-secondary" style="font-size: 13px;">Here is the performance and pipeline status for Sales Team A today.</p>
+          </div>
+          <div class="flex gap-sm">
+            <button class="btn btn-outline" onclick="showToast('Exporting team report...', 'info')">
+              <i class="lucide-download"></i> Export Report
+            </button>
+            <button class="btn btn-primary" onclick="location.href='leads.html'">
+              <i class="lucide-plus"></i> Add Team Lead
+            </button>
+          </div>
+        </div>
+
+        <!-- Metrics row -->
+        <div class="grid grid-4">
+          <!-- Highlighted Card -->
+          <div class="card stat-card stat-card--highlighted">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Total Disbursed</span>
+              <div class="stat-icon"><i class="lucide-banknote"></i></div>
+            </div>
+            <div class="stat-value">₹1.85 Cr</div>
+            <div class="stat-trend"><i class="lucide-trending-up"></i> Target: ₹2.50 Cr (74%)</div>
+          </div>
+          
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Total Leads</span>
+              <div class="stat-icon"><i class="lucide-user-plus"></i></div>
+            </div>
+            <div class="stat-value">48</div>
+            <div class="stat-trend up"><i class="lucide-trending-up"></i> +14% vs last week</div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Active Applications</span>
+              <div class="stat-icon"><i class="lucide-file-text"></i></div>
+            </div>
+            <div class="stat-value">18</div>
+            <div class="stat-trend"><i class="lucide-clock"></i> 8 in Verification</div>
+          </div>
+
+          <div class="card stat-card">
+            <div class="flex justify-between align-center">
+              <span class="stat-label">Conversion Rate</span>
+              <div class="stat-icon"><i class="lucide-percent"></i></div>
+            </div>
+            <div class="stat-value">22.5%</div>
+            <div class="stat-trend up"><i class="lucide-trending-up"></i> Lead to Disbursed</div>
+          </div>
+        </div>
+
+        <!-- Charts & Goal Gauge -->
+        <div class="grid grid-3">
+          <!-- Team Member Target Chart -->
+          <div class="card" style="grid-column: span 2;">
+            <div class="card-header">
+              <h3 class="card-title">Disbursement Target Achievements</h3>
+              <select class="form-control" style="width: 140px; padding: 6px 12px; border-radius: var(--radius-sm);">
+                <option>This Month</option>
+                <option>Last Month</option>
+              </select>
+            </div>
+            
+            <div class="dashboard-chart-bar">
+              <div class="chart-col">
+                <div class="chart-bar chart-bar-active" style="height: 84%;"></div>
+                <span class="chart-label">Rahul Verma</span>
+                <span class="text-secondary" style="font-size: 10px;">₹42.0L / ₹50L</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 72%;"></div>
+                <span class="chart-label">Kiran Das</span>
+                <span class="text-secondary" style="font-size: 10px;">₹28.8L / ₹40L</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 64%;"></div>
+                <span class="chart-label">Sunil Mehta</span>
+                <span class="text-secondary" style="font-size: 10px;">₹19.2L / ₹30L</span>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar" style="height: 73%;"></div>
+                <span class="chart-label">Priya N. (Self)</span>
+                <span class="text-secondary" style="font-size: 10px;">₹95.0L / ₹1.30Cr</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Goal Completion Radial Gauge -->
+          <div class="card flex flex-column align-center justify-between p-md">
+            <div class="card-title w-full text-center">Goal Completion</div>
+            
+            <div class="radial-gauge">
+              <svg width="120" height="120">
+                <circle class="radial-gauge-bg" cx="60" cy="60" r="50"></circle>
+                <circle class="radial-gauge-fill" cx="60" cy="60" r="50" style="stroke-dashoffset: 82;"></circle>
+              </svg>
+              <div class="radial-gauge-text">74%</div>
+            </div>
+            
+            <div class="w-full">
+              <div class="flex justify-between m-b-md" style="font-size: 13px;">
+                <span class="text-secondary">Disbursed Target</span>
+                <span class="bold">₹1.85 Cr / ₹2.50 Cr</span>
+              </div>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" style="width: 74%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activities & Tasks -->
+        <div class="grid grid-3">
+          <!-- Table for Leads / Applications status -->
+          <div class="card" style="grid-column: span 2;">
+            <div class="card-header">
+              <h3 class="card-title">Recent Team Applications Pipeline</h3>
+              <a href="loan-applications.html" class="bold" style="font-size: 13px;">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Application</th>
+                    <th>Applicant</th>
+                    <th>Product</th>
+                    <th>Officer</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="bold">APP-9201</td>
+                    <td>Amit Sharma</td>
+                    <td>Personal Loan</td>
+                    <td>Kiran Das</td>
+                    <td><span class="badge badge-success">Disbursed</span></td>
+                    <td><a href="loan-application-detail.html?id=LD-8902"><i class="lucide-eye"></i></a></td>
+                  </tr>
+                  <tr>
+                    <td class="bold">APP-9202</td>
+                    <td>Priya Patel</td>
+                    <td>Home Loan</td>
+                    <td>Kiran Das</td>
+                    <td><span class="badge badge-warning">Verification</span></td>
+                    <td><a href="loan-application-detail.html?id=LD-8903"><i class="lucide-eye"></i></a></td>
+                  </tr>
+                  <tr>
+                    <td class="bold">APP-9203</td>
+                    <td>Rajesh Kumar</td>
+                    <td>Business Loan</td>
+                    <td>Rahul Verma</td>
+                    <td><span class="badge badge-warning">Under Process</span></td>
+                    <td><a href="loan-application-detail.html?id=LD-8904"><i class="lucide-eye"></i></a></td>
+                  </tr>
+                  <tr>
+                    <td class="bold">APP-9205</td>
+                    <td>Vikram Malhotra</td>
+                    <td>Vehicle Loan</td>
+                    <td>Rahul Verma</td>
+                    <td><span class="badge badge-info">New Lead</span></td>
+                    <td><a href="loan-application-detail.html?id=LD-8906"><i class="lucide-eye"></i></a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Team Leader Tasks & Announcements -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Follow-ups &amp; Tasks Due</h3>
+            </div>
+            <div class="flex flex-column gap-md" style="font-size: 13.5px;">
+              <!-- Task Item 1 -->
+              <div>
+                <div class="flex justify-between m-b-sm">
+                  <span class="bold"><span class="badge badge-danger" style="margin-right:6px; padding:2px 6px;">High</span> Escalated File Review</span>
+                </div>
+                <p class="text-secondary" style="font-size: 12px; line-height: 1.4;">Verify details for Priya Patel (APP-9202). Siddhi Sen raised query.</p>
+              </div>
+              
+              <!-- Task Item 2 -->
+              <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                <div class="flex justify-between m-b-sm">
+                  <span class="bold">Weekly Review Meeting</span>
+                  <span class="text-muted" style="font-size: 11px;">10:00 AM</span>
+                </div>
+                <p class="text-secondary" style="font-size: 12px; line-height: 1.4;">Align with Rahul, Kiran, and Sunil on target gap closing.</p>
+              </div>
+
+              <!-- Task Item 3 -->
+              <div style="border-top: 1px solid var(--color-border); padding-top: 12px;">
+                <div class="flex justify-between m-b-sm">
+                  <span class="bold"><span class="badge badge-success" style="margin-right:6px; padding:2px 6px;">Done</span> Leads Allocation</span>
+                </div>
+                <p class="text-secondary" style="font-size: 12px; line-height: 1.4;">Allocate 12 new website leads to Sunil Mehta.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- End page content -->
+
+      <!-- Footer -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- ══ SCRIPTS ══ -->
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+
+</body>
+</html>

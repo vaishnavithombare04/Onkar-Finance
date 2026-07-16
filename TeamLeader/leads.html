@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Team Leads CRM</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Leads CRM</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage **Sales Team A** leads, assign officers, and track conversion stages.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('addLeadModal')">
+          <i class="lucide-plus-circle"></i> Add Team Lead
+        </button>
+      </div>
+
+      <!-- Filters panel -->
+      <div class="card flex align-center gap-md" style="padding: 16px; flex-wrap: wrap;">
+        <div class="search-bar" style="width: 260px; background-color: var(--color-bg);">
+          <i class="lucide-search"></i>
+          <input type="text" placeholder="Search by name, ID or product..." id="leadSearchInput">
+        </div>
+        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="New Lead">New Lead</option>
+          <option value="Verification">Verification</option>
+          <option value="Under Process">Under Process</option>
+          <option value="Approved">Approved</option>
+          <option value="Disbursed">Disbursed</option>
+        </select>
+        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="assigneeFilter">
+          <option value="">All Officers</option>
+          <option value="Rahul Verma">Rahul Verma</option>
+          <option value="Kiran Das">Kiran Das</option>
+          <option value="Sunil Mehta">Sunil Mehta</option>
+          <option value="Priya N.">Priya N. (Self)</option>
+        </select>
+        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="sourceFilter">
+          <option value="">All Sources</option>
+          <option value="Website">Website</option>
+          <option value="Agent">Agent</option>
+          <option value="Google Ads">Google Ads</option>
+          <option value="Referral">Referral</option>
+          <option value="Direct">Direct</option>
+        </select>
+        <button class="btn btn-outline" onclick="exportLeads()"><i class="lucide-download"></i> Export</button>
+      </div>
+
+      <!-- Lead table card -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table" id="leadsTable">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAllCheckbox"></th>
+                <th>Lead ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Source</th>
+                <th>Product</th>
+                <th>Assigned To</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leadsTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+      <!-- Add Lead Modal -->
+      <div id="addLeadModal" class="modal-overlay">
+        <div class="modal-container">
+          <i class="lucide-x modal-close" onclick="closeModal('addLeadModal')"></i>
+          <h3 class="m-b-md">Create New Team Lead Entry</h3>
+          <form id="addLeadForm">
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="leadName">Full Name</label>
+                <input type="text" id="leadName" class="form-control" placeholder="Amit Sharma" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="leadEmail">Email Address</label>
+                <input type="email" id="leadEmail" class="form-control" placeholder="amit@gmail.com" required>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="leadPhone">Phone Number</label>
+                <input type="text" id="leadPhone" class="form-control" placeholder="+91 99999 88888" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="leadAmount">Required Loan Amount (INR)</label>
+                <input type="number" id="leadAmount" class="form-control" placeholder="500000" required>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="leadProduct">Loan Product</label>
+                <select id="leadProduct" class="form-control">
+                  <option value="Personal Loan">Personal Loan</option>
+                  <option value="Home Loan">Home Loan</option>
+                  <option value="Business Loan">Business Loan</option>
+                  <option value="Gold Loan">Gold Loan</option>
+                  <option value="Vehicle Loan">Vehicle Loan</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="leadSource">Lead Source</label>
+                <select id="leadSource" class="form-control">
+                  <option value="Website">Website</option>
+                  <option value="Agent">Agent</option>
+                  <option value="Google Ads">Google Ads</option>
+                  <option value="Referral">Referral</option>
+                  <option value="Direct">Direct</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="leadAssigned">Assign Team Officer</label>
+              <select id="leadAssigned" class="form-control">
+                <option value="Rahul Verma">Rahul Verma</option>
+                <option value="Kiran Das">Kiran Das</option>
+                <option value="Sunil Mehta">Sunil Mehta</option>
+                <option value="Priya N.">Priya N. (Self)</option>
+              </select>
+            </div>
+            <div class="flex justify-end gap-sm m-t-md">
+              <button type="button" class="btn btn-outline" onclick="closeModal('addLeadModal')">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save Lead</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      </div> <!-- End page-content -->
+      
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    const teamMembers = ["Rahul Verma", "Kiran Das", "Sunil Mehta", "Priya N."];
+
+    // Load leads list
+    function renderLeads() {
+      const leads = api.getLeads();
+      const tbody = document.getElementById('leadsTableBody');
+      tbody.innerHTML = '';
+      
+      const searchVal = document.getElementById('leadSearchInput').value.toLowerCase();
+      const statusVal = document.getElementById('statusFilter').value;
+      const assigneeVal = document.getElementById('assigneeFilter').value;
+      const sourceVal = document.getElementById('sourceFilter').value;
+      
+      leads.forEach(lead => {
+        // Scoped to team members only
+        const isTeamScoped = teamMembers.includes(lead.assignedTo);
+        if (!isTeamScoped) return;
+
+        // Filter conditions
+        const matchSearch = lead.name.toLowerCase().includes(searchVal) || lead.id.toLowerCase().includes(searchVal) || lead.product.toLowerCase().includes(searchVal);
+        const matchStatus = statusVal === '' || lead.status === statusVal;
+        const matchAssignee = assigneeVal === '' || lead.assignedTo === assigneeVal;
+        const matchSource = sourceVal === '' || lead.source === sourceVal;
+        
+        if (matchSearch && matchStatus && matchAssignee && matchSource) {
+          let statusBadgeClass = 'badge-info';
+          if (lead.status === 'Disbursed' || lead.status === 'Approved') statusBadgeClass = 'badge-success';
+          if (lead.status === 'New Lead') statusBadgeClass = 'badge-info';
+          if (lead.status === 'Verification') statusBadgeClass = 'badge-warning';
+          if (lead.status === 'Under Process') statusBadgeClass = 'badge-warning';
+          if (lead.status === 'Rejected') statusBadgeClass = 'badge-danger';
+          
+          tbody.innerHTML += `
+            <tr>
+              <td><input type="checkbox" class="lead-select"></td>
+              <td class="bold">${lead.id}</td>
+              <td>${lead.name}</td>
+              <td>${lead.contact}</td>
+              <td>${lead.source}</td>
+              <td>${lead.product}</td>
+              <td>${lead.assignedTo}</td>
+              <td><span class="badge ${statusBadgeClass}">${lead.status}</span></td>
+              <td>${formatDate(lead.date)}</td>
+              <td>
+                <div class="flex gap-sm">
+                  <a href="loan-application-detail.html?id=${lead.id}" title="View detail" class="action-icon-btn"><i class="lucide-eye"></i></a>
+                  <a href="javascript:void(0)" onclick="deleteLead('${lead.id}')" title="Delete" class="action-icon-btn" style="color: var(--color-danger);"><i class="lucide-trash-2"></i></a>
+                </div>
+              </td>
+            </tr>
+          `;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+    
+    // Add lead Form
+    document.getElementById('addLeadForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('leadName').value;
+      const email = document.getElementById('leadEmail').value;
+      const contact = document.getElementById('leadPhone').value;
+      const amount = parseFloat(document.getElementById('leadAmount').value);
+      const product = document.getElementById('leadProduct').value;
+      const source = document.getElementById('leadSource').value;
+      const assignedTo = document.getElementById('leadAssigned').value;
+      
+      api.addLead({ name, email, contact, amount, product, source, assignedTo, status: 'New Lead' });
+      showToast('Lead added successfully!', 'success');
+      closeModal('addLeadModal');
+      document.getElementById('addLeadForm').reset();
+      renderLeads();
+    });
+
+    window.deleteLead = function(id) {
+      if (confirm('Are you sure you want to delete lead ' + id + '?')) {
+        const db = api.getDb();
+        db.leads = db.leads.filter(l => l.id !== id);
+        api.saveDb(db);
+        showToast('Lead deleted', 'warning');
+        renderLeads();
+      }
+    };
+
+    window.exportLeads = function() {
+      showToast('Exporting team leads list as spreadsheet...', 'success');
+    };
+
+    document.getElementById('leadSearchInput').addEventListener('keyup', renderLeads);
+    document.getElementById('statusFilter').addEventListener('change', renderLeads);
+    document.getElementById('assigneeFilter').addEventListener('change', renderLeads);
+    document.getElementById('sourceFilter').addEventListener('change', renderLeads);
+    
+    // Select all checkboxes
+    document.getElementById('selectAllCheckbox').addEventListener('change', (e) => {
+      const checkboxes = document.querySelectorAll('.lead-select');
+      checkboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+
+    renderLeads();
+  }
+  </script>
+
+</body>
+</html>

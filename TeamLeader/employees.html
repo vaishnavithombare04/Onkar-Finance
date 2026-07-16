@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — My Team Directory</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Action icon buttons */
+    .action-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .action-icon-btn i { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <div class="flex justify-between align-center">
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">My Team Members</h1>
+          <p class="text-secondary" style="font-size: 13px;">Monitor target achievements, assign follow-ups, and track task workloads.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openModal('addTaskModal')">
+          <i class="lucide-plus-circle"></i> Assign Team Task
+        </button>
+      </div>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-3">
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Active Team Size</span>
+            <div class="stat-icon" style="background:rgba(99,102,241,0.12); color:#6366f1;"><i class="lucide-users"></i></div>
+          </div>
+          <div class="stat-value" id="teamSizeVal">4 members</div>
+        </div>
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Avg Attendance</span>
+            <div class="stat-icon" style="background:rgba(16,185,129,0.12); color:#10b981;"><i class="lucide-calendar-check"></i></div>
+          </div>
+          <div class="stat-value">95.2%</div>
+        </div>
+        <div class="card stat-card">
+          <div class="flex justify-between align-center">
+            <span class="stat-label">Pending Team Tasks</span>
+            <div class="stat-icon" style="background:rgba(245,158,11,0.12); color:#f59e0b;"><i class="lucide-clipboard-list"></i></div>
+          </div>
+          <div class="stat-value" id="pendingTasksVal">2</div>
+        </div>
+      </div>
+
+      <!-- Employee List Table -->
+      <div class="card" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Branch</th>
+                <th>Team Segment</th>
+                <th>Attendance %</th>
+                <th>Monthly Target vs Achieved</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="employeeTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Team Tasks Section -->
+      <div class="card" style="padding: 24px;">
+        <h3 class="card-title m-b-md">Team Tasks & Follow-up Board</h3>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Task ID</th>
+                <th>Assignee</th>
+                <th>Instructions</th>
+                <th>Assigned Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tasksTableBody">
+              <!-- Rendered dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Add Task Modal -->
+      <div id="addTaskModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 450px;">
+          <i class="lucide-x modal-close" onclick="closeModal('addTaskModal')"></i>
+          <h3>Assign New Follow-up Task</h3>
+          <p class="text-secondary" style="font-size: 13px; margin: 8px 0 16px;">Create a new follow-up request for your team members.</p>
+          
+          <form id="addTaskForm">
+            <div class="form-group">
+              <label class="form-label" for="taskAssigneeSelect">Assignee</label>
+              <select id="taskAssigneeSelect" class="form-control" required>
+                <option value="Rahul Verma">Rahul Verma</option>
+                <option value="Kiran Das">Kiran Das</option>
+                <option value="Sunil Mehta">Sunil Mehta</option>
+                <option value="Priya N.">Priya N. (Self)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="taskDetailsText">Task Details / Instruction</label>
+              <textarea id="taskDetailsText" class="form-control" rows="3" placeholder="e.g. Call client Rajesh Kumar to submit ITR-V statement." required></textarea>
+            </div>
+            <div class="flex justify-end gap-sm m-t-md">
+              <button type="button" class="btn btn-outline" onclick="closeModal('addTaskModal')">Cancel</button>
+              <button type="submit" class="btn btn-primary">Assign Task</button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    // Sales Team A dataset
+    const teamMembers = [
+      { name: "Rahul Verma", role: "Relationship Manager", branch: "Mumbai Main", attendance: 95, target: 5000000, achieved: 4200000, status: "Active" },
+      { name: "Kiran Das", role: "Relationship Manager", branch: "Mumbai Main", attendance: 97, target: 4000000, achieved: 2880000, status: "Active" },
+      { name: "Sunil Mehta", role: "Relationship Manager", branch: "Pune Deccan", attendance: 94, target: 3000000, achieved: 1920000, status: "Active" },
+      { name: "Priya N.", role: "Sales Team Leader", branch: "Mumbai Main", attendance: 99, target: 10000000, achieved: 7400000, status: "Active" }
+    ];
+
+    // Seed initial tasks if none exist
+    if (!localStorage.getItem('team_tasks')) {
+      const initialTasks = [
+        { id: "T-101", assignee: "Rahul Verma", description: "Call client Rajesh Kumar for pending verification documents.", date: "2026-07-13", status: "Pending" },
+        { id: "T-102", assignee: "Kiran Das", description: "Collect signed physical copy of HDFC Home Loan file for Priya Patel.", date: "2026-07-14", status: "Pending" }
+      ];
+      localStorage.setItem('team_tasks', JSON.stringify(initialTasks));
+    }
+
+    function renderTeam() {
+      const tbody = document.getElementById('employeeTableBody');
+      tbody.innerHTML = '';
+      
+      teamMembers.forEach(emp => {
+        const badge = emp.status === 'Active' ? 'badge-success' : 'badge-danger';
+        const initials = emp.name.split(' ').map(n => n[0]).join('');
+        
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">
+              <div class="flex align-center gap-sm">
+                <div class="avatar" style="width:32px; height:32px; font-size:12px;">${initials}</div>
+                <span>${emp.name}</span>
+              </div>
+            </td>
+            <td>${emp.role}</td>
+            <td>${emp.branch}</td>
+            <td>Sales Team A</td>
+            <td class="bold">${emp.attendance}%</td>
+            <td>
+              <span class="bold">${formatCurrency(emp.achieved)}</span>
+              <span class="text-muted" style="font-size: 11px; display: block;">Target: ${formatCurrency(emp.target)}</span>
+            </td>
+            <td><span class="badge ${badge}">${emp.status}</span></td>
+            <td>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openTaskFor('${emp.name}')">
+                Assign Task
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function renderTasks() {
+      const tasks = JSON.parse(localStorage.getItem('team_tasks') || '[]');
+      const tbody = document.getElementById('tasksTableBody');
+      tbody.innerHTML = '';
+      
+      let pendingCount = 0;
+      
+      tasks.forEach(task => {
+        if (task.status === 'Pending') pendingCount++;
+        const badgeClass = task.status === 'Pending' ? 'badge-warning' : 'badge-success';
+        
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">${task.id}</td>
+            <td class="bold">${task.assignee}</td>
+            <td>${task.description}</td>
+            <td>${formatDate(task.date)}</td>
+            <td><span class="badge ${badgeClass}">${task.status}</span></td>
+            <td>
+              <div class="flex gap-sm">
+                ${task.status === 'Pending' ? `<button class="action-icon-btn" onclick="completeTask('${task.id}')" title="Complete"><i class="lucide-check"></i></button>` : ''}
+                <button class="action-icon-btn" onclick="deleteTask('${task.id}')" title="Delete" style="color: var(--color-danger);"><i class="lucide-trash-2"></i></button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('pendingTasksVal').textContent = pendingCount;
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.openTaskFor = function(name) {
+      document.getElementById('taskAssigneeSelect').value = name;
+      openModal('addTaskModal');
+    };
+
+    window.completeTask = function(id) {
+      let tasks = JSON.parse(localStorage.getItem('team_tasks') || '[]');
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        task.status = 'Completed';
+        localStorage.setItem('team_tasks', JSON.stringify(tasks));
+        showToast('Task marked as Completed!', 'success');
+        renderTasks();
+      }
+    };
+
+    window.deleteTask = function(id) {
+      if (confirm('Delete this task log?')) {
+        let tasks = JSON.parse(localStorage.getItem('team_tasks') || '[]');
+        tasks = tasks.filter(t => t.id !== id);
+        localStorage.setItem('team_tasks', JSON.stringify(tasks));
+        showToast('Task removed', 'warning');
+        renderTasks();
+      }
+    };
+
+    document.getElementById('addTaskForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const assignee = document.getElementById('taskAssigneeSelect').value;
+      const details = document.getElementById('taskDetailsText').value;
+      
+      let tasks = JSON.parse(localStorage.getItem('team_tasks') || '[]');
+      const newId = 'T-' + Math.floor(100 + Math.random() * 900);
+      
+      tasks.push({
+        id: newId,
+        assignee: assignee,
+        description: details,
+        date: new Date().toISOString().split('T')[0],
+        status: 'Pending'
+      });
+      localStorage.setItem('team_tasks', JSON.stringify(tasks));
+      
+      showToast('Task assigned successfully!', 'success');
+      closeModal('addTaskModal');
+      document.getElementById('addTaskForm').reset();
+      renderTasks();
+    });
+
+    renderTeam();
+    renderTasks();
+  }
+  </script>
+
+</body>
+</html>

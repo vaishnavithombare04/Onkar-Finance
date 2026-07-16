@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Partner — Lead Detail</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Stepper component */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .stepper::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-color: var(--color-border);
+      z-index: 1;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--color-surface);
+      border: 3px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: var(--transition-smooth);
+      color: var(--color-text-secondary);
+    }
+    .step.completed .step-circle {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+      color: #FFFFFF;
+    }
+    .step.active .step-circle {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #FFFFFF;
+      box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+    .step-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    .step.active .step-label {
+      color: var(--color-primary);
+    }
+
+    /* Score gauge */
+    .cibil-badge {
+      display: inline-block;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--color-success);
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Back button and title -->
+        <div class="flex align-center gap-sm">
+          <a href="leads.html" class="btn btn-outline" style="padding: 8px 12px;"><i class="lucide-arrow-left"></i> Back</a>
+          <div>
+            <h2 class="bold" id="detailName">—</h2>
+            <span class="text-secondary" style="font-size: 13px;">File ID: <span id="detailRefId">—</span></span>
+          </div>
+        </div>
+
+        <!-- Stepper Progress Tracker -->
+        <div class="card" style="padding: 24px 12px 16px;">
+          <div class="stepper">
+            <div class="step" id="step-new">
+              <div class="step-circle">1</div>
+              <div class="step-label">New Lead</div>
+            </div>
+            <div class="step" id="step-verify">
+              <div class="step-circle">2</div>
+              <div class="step-label">Verification</div>
+            </div>
+            <div class="step" id="step-process">
+              <div class="step-circle">3</div>
+              <div class="step-label">Under Process</div>
+            </div>
+            <div class="step" id="step-approve">
+              <div class="step-circle">4</div>
+              <div class="step-label">Approved</div>
+            </div>
+            <div class="step" id="step-disburse">
+              <div class="step-circle">5</div>
+              <div class="step-label">Disbursed</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Grid Layout -->
+        <div class="grid grid-3">
+          <!-- Left 2 Cols: Credentials & Document Table -->
+          <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
+            <!-- Basic applicant credentials -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Applicant Credentials & Financial Info</h3>
+                <span class="badge badge-warning" id="stageBadge">Under Process</span>
+              </div>
+              <div class="grid grid-2" style="font-size: 13px; row-gap: 16px; margin-top: 16px;">
+                <div class="flex flex-column"><span class="text-secondary">Full Name</span><span class="bold" id="detailCardName">—</span></div>
+                <div class="flex flex-column"><span class="text-secondary">Phone Number</span><span class="bold" id="detailPhone">—</span></div>
+                <div class="flex flex-column"><span class="text-secondary">Email Address</span><span class="bold" id="detailEmail">—</span></div>
+                <div class="flex flex-column"><span class="text-secondary">Requested Loan Amount</span><span class="bold" id="detailAmount">—</span></div>
+                <div class="flex flex-column"><span class="text-secondary">Product Segment</span><span class="bold" id="detailProduct">—</span></div>
+                <div class="flex flex-column"><span class="text-secondary">Assigned Relationship Officer</span><span class="bold" id="detailOfficer">—</span></div>
+              </div>
+            </div>
+
+            <!-- Referred Customer Files -->
+            <div class="card flex flex-column gap-md">
+              <div>
+                <h3 class="card-title">Referred Customer Files</h3>
+                <span class="text-secondary" style="font-size: 11px;">Verify uploaded credentials and statuses.</span>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>File Name</th>
+                      <th>Document Type</th>
+                      <th>Status</th>
+                      <th>Upload Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="documentsTableBody">
+                    <!-- Rendered dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right 1 Col: Score & Uploader -->
+          <div style="display: flex; flex-direction: column; gap: 24px;">
+            <!-- Bureau Score Widget -->
+            <div class="card text-center">
+              <h3 class="card-title text-center">CIBIL Bureau Score</h3>
+              <span class="cibil-badge" id="cibilScore">765</span>
+              <p style="font-size: 13px; color: var(--color-success); font-weight: 600;"><i class="lucide-shield"></i> Excellent Credit Profile</p>
+              <span style="font-size: 11px; color: var(--color-text-secondary); opacity: 0.8;">Referred Lead Profile Bureau Check</span>
+            </div>
+
+            <!-- Upload KYC/Income Docs -->
+            <div class="card flex flex-column gap-md">
+              <div>
+                <h3 class="card-title">Upload KYC/Income Docs</h3>
+                <span class="text-secondary" style="font-size: 11px;">Upload verified files to expedite verification.</span>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Document Type <span class="text-danger">*</span></label>
+                <select id="uploadDocType" class="form-control">
+                  <option value="">Select document type</option>
+                  <option>PAN Card</option>
+                  <option>Aadhaar Card</option>
+                  <option>Bank Statements (Last 6 Mos)</option>
+                  <option>Salary Slips (Last 3 Mos)</option>
+                  <option>IT Returns (Form 16)</option>
+                </select>
+              </div>
+              <div class="file-upload-drag" onclick="document.getElementById('realFileInput').click();">
+                <i class="lucide-upload-cloud" style="font-size: 32px; color: var(--color-primary);"></i>
+                <h4 class="bold" style="font-size: 13.5px; margin-top: 8px;">Upload Verification Document</h4>
+                <p class="text-secondary" style="font-size: 11px; margin-top: 4px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
+              </div>
+              <input type="file" id="realFileInput" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" onchange="handleDocumentUpload(event);" />
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    // Retrieve lead ID from query parameters
+    const params = new URLSearchParams(window.location.search);
+    const leadId = params.get('id') || 'LD-8902';
+    let currentLead = null;
+
+    function loadLeadDetails() {
+      const db = api.getDb();
+      currentLead = db.leads.find(l => l.id === leadId);
+      
+      if (!currentLead) {
+        showToast('Referral lead not found.', 'danger');
+        return;
+      }
+
+      document.getElementById('detailRefId').textContent = currentLead.id.replace('LD', 'REF');
+      document.getElementById('detailName').textContent = currentLead.name + ' — Application File';
+      document.getElementById('detailCardName').textContent = currentLead.name;
+      document.getElementById('detailPhone').textContent = currentLead.contact;
+      document.getElementById('detailEmail').textContent = currentLead.email || 'No email';
+      document.getElementById('detailAmount').textContent = formatCurrency(currentLead.amount);
+      document.getElementById('detailProduct').textContent = currentLead.product;
+      document.getElementById('detailOfficer').textContent = currentLead.assignedTo || 'Unassigned';
+
+      // Set badge class
+      const badge = document.getElementById('stageBadge');
+      badge.textContent = currentLead.status;
+      if (currentLead.status === 'Disbursed' || currentLead.status === 'Approved') badge.className = 'badge badge-success';
+      else if (currentLead.status === 'Verification' || currentLead.status === 'Under Process') badge.className = 'badge badge-warning';
+      else if (currentLead.status === 'Rejected') badge.className = 'badge badge-danger';
+      else badge.className = 'badge badge-info';
+
+      // Bureau Score Simulation based on lead ID
+      const scoreNum = 680 + (parseInt(currentLead.id.replace(/\D/g, ''), 10) % 120);
+      const scoreEl = document.getElementById('cibilScore');
+      scoreEl.textContent = scoreNum;
+      if (scoreNum >= 750) {
+        scoreEl.style.color = 'var(--color-success)';
+      } else if (scoreNum >= 680) {
+        scoreEl.style.color = 'var(--color-warning)';
+      } else {
+        scoreEl.style.color = 'var(--color-danger)';
+      }
+
+      renderStepper(currentLead.status);
+      renderDocumentsList();
+    }
+
+    function renderStepper(status) {
+      const stages = ['New Lead', 'Verification', 'Under Process', 'Approved', 'Disbursed'];
+      const index = stages.indexOf(status);
+      
+      const steps = [
+        { key: 'New Lead', id: 'step-new' },
+        { key: 'Verification', id: 'step-verify' },
+        { key: 'Under Process', id: 'step-process' },
+        { key: 'Approved', id: 'step-approve' },
+        { key: 'Disbursed', id: 'step-disburse' }
+      ];
+
+      steps.forEach((s, idx) => {
+        const el = document.getElementById(s.id);
+        if (!el) return;
+        el.classList.remove('completed', 'active');
+        const circle = el.querySelector('.step-circle');
+        
+        if (idx < index) {
+          el.classList.add('completed');
+          if (circle) circle.innerHTML = '<i class="lucide-check"></i>';
+        } else if (idx === index) {
+          el.classList.add('active');
+          if (circle) {
+            if (status === 'Disbursed') {
+              el.classList.add('completed');
+              circle.innerHTML = '<i class="lucide-check"></i>';
+            } else {
+              circle.textContent = idx + 1;
+            }
+          }
+        } else {
+          if (circle) circle.textContent = idx + 1;
+        }
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderDocumentsList() {
+      const tbody = document.getElementById('documentsTableBody');
+      tbody.innerHTML = '';
+      
+      const docs = currentLead.documents || [];
+      if (docs.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; color: var(--color-text-secondary); padding: 24px;">
+              <i class="lucide-file-text" style="font-size: 24px; opacity: 0.3; display: block; margin-bottom: 8px;"></i>
+              No documents uploaded yet.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      docs.forEach((doc, idx) => {
+        const badge = doc.status === 'Completed' ? 'badge-success' : 'badge-warning';
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold"><i class="lucide-file" style="margin-right: 6px; font-size: 12px; color: var(--color-primary)"></i> ${doc.fileName}</td>
+            <td>${doc.type}</td>
+            <td><span class="badge ${badge}">${doc.status}</span></td>
+            <td>${doc.date}</td>
+            <td>
+              <button class="btn btn-outline" style="padding: 4px 8px; font-size: 11px; color: var(--color-danger); border-color: var(--color-danger);" onclick="deleteDocument(${idx})">
+                <i class="lucide-trash-2"></i> Delete
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.handleDocumentUpload = function(event) {
+      const type = document.getElementById('uploadDocType').value;
+      if (!type) {
+        showToast('Please select a document type first.', 'danger');
+        event.target.value = '';
+        return;
+      }
+      
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const newDoc = {
+        fileName: file.name,
+        type: type,
+        status: 'Verification',
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead) {
+        if (!lead.documents) lead.documents = [];
+        lead.documents.push(newDoc);
+        api.saveDb(db);
+        
+        showToast(`"${file.name}" uploaded successfully for ${type} verification.`, 'success');
+        document.getElementById('uploadDocType').value = '';
+        event.target.value = '';
+        loadLeadDetails();
+      }
+    };
+
+    window.deleteDocument = function(idx) {
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead && lead.documents) {
+        lead.documents.splice(idx, 1);
+        api.saveDb(db);
+        showToast('Document deleted.', 'info');
+        loadLeadDetails();
+      }
+    };
+
+    function showToast(msg, type = 'success') {
+      const icons = { success: 'lucide-check-circle', danger: 'lucide-alert-circle', info: 'lucide-info' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<i class="${icons[type] || 'lucide-info'}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        toast.style.cssText = 'opacity:0;transform:translateX(30px);transition:.3s;';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    loadLeadDetails();
+
+    // Drag and Drop implementation
+    const dropZone = document.querySelector('.file-upload-drag');
+    if (dropZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('highlight'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('highlight'), false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+          const fileInput = document.getElementById('realFileInput');
+          fileInput.files = files;
+          const event = new Event('change', { bubbles: true });
+          fileInput.dispatchEvent(event);
+        }
+      }, false);
+    }
+  }
+  </script>
+</body>
+</html>

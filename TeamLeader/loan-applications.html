@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    (function () {
+      const t = localStorage.getItem('onkar-theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+      document.documentElement.style.colorScheme = t;
+    })();
+  </script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Onkar Finance — Team Applications</title>
+  <link rel="stylesheet" href="../assets/css/global.css" />
+  <link rel="stylesheet" href="../assets/css/components.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* ── Stage Summary Cards ─────────────────────────────── */
+    .stage-grid {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    .stage-card {
+      flex: 1;
+      background-color: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      min-width: 160px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .stage-card:hover, .stage-card.active-filter {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-card);
+      background-color: var(--color-primary-light);
+      color: var(--color-primary);
+    }
+    .stage-card .stage-icon {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      margin-bottom: 2px;
+    }
+    .stage-card.info    .stage-icon { background: rgba(59,130,246,0.12); color: var(--color-info); }
+    .stage-card.warning .stage-icon { background: rgba(245,158,11,0.12); color: var(--color-warning); }
+    .stage-card.success .stage-icon { background: rgba(16,185,129,0.12); color: var(--color-success); }
+    .stage-card.primary .stage-icon { background: rgba(99,102,241,0.12); color: var(--color-primary); }
+    .stage-card.danger  .stage-icon { background: rgba(239,68,68,0.12);  color: var(--color-danger); }
+
+    .stage-card .stage-count {
+      font-size: 20px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .stage-card.info    .stage-count { color: var(--color-info); }
+    .stage-card.warning .stage-count { color: var(--color-warning); }
+    .stage-card.success .stage-count { color: var(--color-success); }
+    .stage-card.primary .stage-count { color: var(--color-primary); }
+    .stage-card.danger  .stage-count { color: var(--color-danger); }
+
+    .stage-card .stage-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .stage-card.active-filter .stage-label {
+      color: var(--color-primary);
+    }
+    .stage-card .stage-sub {
+      font-size: 11px;
+      color: var(--color-text-secondary);
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    /* ── Filter Bar ──────────────────────────────────────── */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .filter-bar .search-input-wrap {
+      flex: 1 1 220px;
+      position: relative;
+      min-width: 180px;
+    }
+    .filter-bar .search-input-wrap i {
+      position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+      color: var(--color-text-secondary); pointer-events: none;
+    }
+    .filter-bar .search-input-wrap input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-size: 13px;
+    }
+    .filter-bar select,
+    .filter-bar input[type="date"] {
+      padding: 8px 12px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-size: 13px;
+      min-width: 130px;
+    }
+    .filter-bar .date-group {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .filter-bar .date-group label { font-size: 12px; color: var(--color-text-secondary); white-space: nowrap; }
+
+    /* ── Table ───────────────────────────────────────────── */
+    .app-table-wrap { overflow-x: auto; }
+    .app-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .app-table th, .app-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .app-table th {
+      background-color: var(--color-bg);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      font-size: var(--fs-small);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .app-table tbody tr {
+      transition: var(--transition-smooth);
+    }
+    .app-table tbody tr:hover {
+      background-color: var(--color-bg);
+    }
+
+    .app-id-link { font-weight: 700; color: var(--color-primary); text-decoration: none; font-size: 13px; }
+    .app-id-link:hover { text-decoration: underline; }
+
+    .applicant-cell { display: flex; flex-direction: column; gap: 2px; }
+    .applicant-name { font-weight: 600; font-size: 13.5px; }
+    .applicant-sub  { font-size: 11px; color: var(--color-text-secondary); }
+
+    .amount-cell { font-weight: 700; font-size: 14px; white-space: nowrap; }
+
+    .assigned-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 20px;
+      padding: 3px 8px;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .assigned-chip .av-xs {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--color-primary);
+      color: #fff;
+      font-size: 9px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+
+    .action-group { display: flex; align-items: center; gap: 6px; }
+    .btn-icon-sm {
+      width: 30px; height: 30px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: inline-flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background .12s, color .12s, border-color .12s;
+      text-decoration: none;
+    }
+    .btn-icon-sm:hover { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+
+    /* ── Modal & Forms ───────────────────────────────────── */
+    .modal-app-info {
+      background: var(--color-bg);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      margin-bottom: var(--space-md);
+      display: flex; gap: 16px;
+      font-size: 13px;
+    }
+    .modal-app-info .info-item { display: flex; flex-direction: column; gap: 2px; }
+    .modal-app-info .info-label { font-size: 11px; color: var(--color-text-secondary); font-weight: 600; text-transform: uppercase; }
+    .modal-app-info .info-val   { font-weight: 700; }
+    .modal-actions { display: flex; gap: var(--space-sm); justify-content: flex-end; margin-top: var(--space-lg); }
+
+    .grid-2-form { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-sm) var(--space-md); }
+
+    /* ── Toast ───────────────────────────────────────────── */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px;
+      display: flex; flex-direction: column; gap: 10px;
+      z-index: 9999;
+    }
+    .toast {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 12px 18px;
+      display: flex; align-items: center; gap: 10px;
+      box-shadow: var(--shadow-lg);
+      font-size: 13.5px;
+      animation: toastIn .25s ease;
+      min-width: 260px;
+    }
+    .toast.success i { color: var(--color-success); }
+    .toast.danger  i { color: var(--color-danger); }
+    .toast.info    i { color: var(--color-info); }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+
+    /* ── Bulk Bar ────────────────────────────────────────── */
+    .bulk-bar {
+      display: none;
+      align-items: center; gap: 12px;
+      padding: 10px 16px;
+      background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 30%, transparent);
+      border-radius: var(--radius-md);
+      font-size: 13px;
+    }
+    .bulk-bar.show { display: flex; }
+    .bulk-bar .bulk-count { font-weight: 700; color: var(--color-primary); }
+
+    /* ── Empty State ─────────────────────────────────────── */
+    .empty-state {
+      padding: 60px 20px;
+      text-align: center;
+      color: var(--color-text-secondary);
+    }
+    .empty-state i { font-size: 48px; opacity: .3; margin-bottom: 12px; display: block; }
+    .empty-state p { font-size: 14px; margin: 0; }
+
+    @media (max-width: 900px) {
+      .app-table thead th:nth-child(8),
+      .app-table td:nth-child(8) { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- Sidebar -->
+  <div data-component="sidebar"></div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <!-- Topbar -->
+    <div data-component="topbar"></div>
+
+    <!-- PAGE CONTENT -->
+    <div id="page-content" class="w-full flex flex-column gap-lg">
+
+      <!-- Page Header -->
+      <div class="flex items-center justify-between flex-wrap gap-sm">
+        <div>
+          <h1 class="page-title" style="margin:0 0 4px;">Loan Applications</h1>
+          <p class="text-secondary" style="margin:0; font-size:14px;">Track <strong>Sales Team A</strong> pipeline across all workflow stages.</p>
+        </div>
+        <div class="flex gap-sm">
+          <button class="btn btn-outline" id="exportBtn"><i class="lucide-download"></i> Export</button>
+          <button class="btn btn-primary" id="openNewAppBtn"><i class="lucide-plus"></i> New Application</button>
+        </div>
+      </div>
+
+      <!-- Stage Summary Cards -->
+      <div class="stage-grid">
+        <div class="stage-card info" data-stage="New Lead" onclick="filterByStage(this)">
+          <div class="stage-icon"><i class="lucide-user-plus"></i></div>
+          <div class="stage-count">8</div>
+          <div class="stage-label">New Lead</div>
+          <div class="stage-sub">Awaiting first contact</div>
+        </div>
+        <div class="stage-card warning" data-stage="Verification" onclick="filterByStage(this)">
+          <div class="stage-icon"><i class="lucide-shield-check"></i></div>
+          <div class="stage-count">12</div>
+          <div class="stage-label">Verification</div>
+          <div class="stage-sub">Documents under review</div>
+        </div>
+        <div class="stage-card info" data-stage="Under Process" onclick="filterByStage(this)">
+          <div class="stage-icon"><i class="lucide-loader-circle"></i></div>
+          <div class="stage-count">15</div>
+          <div class="stage-label">Under Process</div>
+          <div class="stage-sub">Credit &amp; risk analysis</div>
+        </div>
+        <div class="stage-card success" data-stage="Approved" onclick="filterByStage(this)">
+          <div class="stage-icon"><i class="lucide-badge-check"></i></div>
+          <div class="stage-count">7</div>
+          <div class="stage-label">Approved</div>
+          <div class="stage-sub">Ready for disbursement</div>
+        </div>
+        <div class="stage-card primary" data-stage="Disbursed" onclick="filterByStage(this)">
+          <div class="stage-icon"><i class="lucide-banknote"></i></div>
+          <div class="stage-count">5</div>
+          <div class="stage-label">Disbursed</div>
+          <div class="stage-sub">Funds transferred</div>
+        </div>
+      </div>
+
+      <!-- Pipeline progress bar -->
+      <div style="padding:0 2px;">
+        <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--color-text-secondary); margin-bottom:6px;">
+          <span>Pipeline Health — 47 Total Applications</span>
+          <span>Conversion: <strong>51%</strong> (Approved + Disbursed)</span>
+        </div>
+        <div class="pipeline-bar-wrap">
+          <div class="pipeline-seg" style="flex:8;  background:var(--color-info);    opacity:.75;" title="New Lead: 8"></div>
+          <div class="pipeline-seg" style="flex:12; background:var(--color-warning); opacity:.85;" title="Verification: 12"></div>
+          <div class="pipeline-seg" style="flex:15; background:var(--color-info);    opacity:.55;" title="Under Process: 15"></div>
+          <div class="pipeline-seg" style="flex:7;  background:var(--color-success);"              title="Approved: 7"></div>
+          <div class="pipeline-seg" style="flex:5;  background:var(--color-primary);"              title="Disbursed: 5"></div>
+        </div>
+        <div style="display:flex; gap:18px; margin-top:8px; flex-wrap:wrap;">
+          <span style="font-size:11px; display:flex; align-items:center; gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--color-info);opacity:.75;display:inline-block;"></span>New Lead (8)</span>
+          <span style="font-size:11px; display:flex; align-items:center; gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--color-warning);display:inline-block;"></span>Verification (12)</span>
+          <span style="font-size:11px; display:flex; align-items:center; gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--color-info);opacity:.55;display:inline-block;"></span>Under Process (15)</span>
+          <span style="font-size:11px; display:flex; align-items:center; gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--color-success);display:inline-block;"></span>Approved (7)</span>
+          <span style="font-size:11px; display:flex; align-items:center; gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:var(--color-primary);display:inline-block;"></span>Disbursed (5)</span>
+        </div>
+      </div>
+
+      <!-- Bulk Bar -->
+      <div class="bulk-bar" id="bulkBar">
+        <i class="lucide-check-square"></i>
+        <span><span class="bulk-count" id="bulkCount">0</span> selected</span>
+        <button class="btn btn-sm btn-outline" onclick="bulkStageUpdate()"><i class="lucide-layers"></i> Update Stage</button>
+        <button class="btn btn-sm btn-outline" onclick="bulkAssign()"><i class="lucide-user-plus"></i> Reassign</button>
+        <button class="btn btn-sm" style="background:var(--color-danger);color:#fff;border-color:var(--color-danger);" onclick="bulkReject()"><i class="lucide-x-circle"></i> Reject</button>
+        <button class="btn btn-sm btn-ghost" onclick="clearSelection()"><i class="lucide-x"></i></button>
+      </div>
+
+      <!-- Filter Bar -->
+      <div class="card" style="padding:var(--space-md);">
+        <div class="filter-bar">
+          <div class="search-input-wrap">
+            <i class="lucide-search"></i>
+            <input type="text" id="appSearchInput" placeholder="Search App ID, applicant, mobile…" oninput="applyFilters()" />
+          </div>
+          <select id="stageFilter" onchange="applyFilters()">
+            <option value="">All Stages</option>
+            <option>New Lead</option>
+            <option>Verification</option>
+            <option>Under Process</option>
+            <option>Approved</option>
+            <option>Disbursed</option>
+            <option>Rejected</option>
+          </select>
+          <select id="productFilter" onchange="applyFilters()">
+            <option value="">All Products</option>
+            <option>Personal Loan</option>
+            <option>Home Loan</option>
+            <option>Business Loan</option>
+            <option>Gold Loan</option>
+            <option>Vehicle Loan</option>
+          </select>
+          <select id="assigneeFilter" onchange="applyFilters()">
+            <option value="">All Agents</option>
+            <option>Kiran Das</option>
+            <option>Meera Joshi</option>
+            <option>Ravi Tiwari</option>
+            <option>Sunil Mehta</option>
+          </select>
+          <div class="date-group">
+            <label>From</label>
+            <input type="date" id="dateFrom" onchange="applyFilters()" />
+            <label>To</label>
+            <input type="date" id="dateTo" onchange="applyFilters()" />
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="clearFilters()"><i class="lucide-filter-x"></i> Clear</button>
+          <button class="btn btn-outline btn-sm" id="exportBtn2"><i class="lucide-download"></i> Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Applications Table -->
+      <div class="card" style="padding:0; overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px 14px; border-bottom:1px solid var(--color-border);">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-weight:700; font-size:15px;">Applications</span>
+            <span class="badge badge-info" id="rowCountBadge">8</span>
+          </div>
+          <div class="flex gap-sm">
+            <button class="btn btn-sm btn-ghost" title="Refresh" onclick="renderTable()"><i class="lucide-refresh-cw"></i></button>
+            <button class="btn btn-sm btn-outline" onclick="selectAll()"><i class="lucide-check-square"></i> Select All</button>
+          </div>
+        </div>
+        <div class="app-table-wrap">
+          <table class="app-table" id="appTable">
+            <thead>
+              <tr>
+                <th style="width:40px;"><input type="checkbox" id="masterCheck" onchange="toggleAllRows(this)" /></th>
+                <th>App ID</th>
+                <th>Applicant</th>
+                <th>Product</th>
+                <th>Amount</th>
+                <th>Stage / Status</th>
+                <th>Assigned To</th>
+                <th>Applied Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="appTableBody"></tbody>
+          </table>
+          <div id="emptyState" class="empty-state" style="display:none;">
+            <i class="lucide-file-search"></i>
+            <p>No applications match your filters.</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /page-content -->
+
+    <div data-component="footer"></div>
+  </div><!-- /main-content -->
+</div><!-- /admin-layout -->
+
+<!-- Stage Update Modal -->
+<div class="modal-overlay" id="stageModal">
+  <div class="modal-container">
+    <i class="lucide-x modal-close" onclick="closeModal('stageModal')"></i>
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title bold" style="font-size: 18px;">Update Application Stage</h3>
+        <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Change workflow stage for this application</p>
+      </div>
+    </div>
+    <div class="modal-app-info" style="margin-top: 16px;">
+      <div class="info-item"><div class="info-label">App ID</div><div class="info-val" id="smAppId">—</div></div>
+      <div class="info-item"><div class="info-label">Applicant</div><div class="info-val" id="smApplicant">—</div></div>
+      <div class="info-item"><div class="info-label">Product</div><div class="info-val" id="smProduct">—</div></div>
+      <div class="info-item"><div class="info-label">Current Stage</div><div class="info-val" id="smCurrentStage">—</div></div>
+    </div>
+    <div class="form-group" style="margin-top: 16px;">
+      <label class="form-label">New Stage <span class="text-danger">*</span></label>
+      <select id="smNewStage" class="form-control">
+        <option>New Lead</option>
+        <option>Verification</option>
+        <option>Under Process</option>
+        <option>Approved</option>
+        <option>Disbursed</option>
+        <option>Rejected</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Priority</label>
+      <select id="smPriority" class="form-control">
+        <option>Normal</option>
+        <option>High</option>
+        <option>Urgent</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes / Remarks</label>
+      <textarea id="smNotes" class="form-control" placeholder="Add any remarks about this stage change…" style="min-height: 80px;"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notify Applicant</label>
+      <select id="smNotify" class="form-control">
+        <option value="yes">Yes – Send SMS &amp; Email</option>
+        <option value="sms">SMS Only</option>
+        <option value="email">Email Only</option>
+        <option value="no">No Notification</option>
+      </select>
+    </div>
+    <div class="modal-actions" style="margin-top: 24px;">
+      <button class="btn btn-outline" onclick="closeModal('stageModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitStageUpdate()"><i class="lucide-check"></i> Update Stage</button>
+    </div>
+  </div>
+</div>
+
+<!-- New Application Modal -->
+<div class="modal-overlay" id="newAppModal">
+  <div class="modal-container" style="max-width:560px;">
+    <i class="lucide-x modal-close" onclick="closeModal('newAppModal')"></i>
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title bold" style="font-size: 18px;">New Loan Application</h3>
+        <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Create a new application for Sales Team A</p>
+      </div>
+    </div>
+    <div class="grid-2-form" style="margin-top: 16px; margin-bottom: 12px;">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Applicant Name <span class="text-danger">*</span></label>
+        <input type="text" id="naName" class="form-control" placeholder="Full name" />
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+        <input type="tel" id="naMobile" class="form-control" placeholder="10-digit mobile" />
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Loan Product <span class="text-danger">*</span></label>
+        <select id="naProduct" class="form-control">
+          <option value="">Select product</option>
+          <option>Personal Loan</option>
+          <option>Home Loan</option>
+          <option>Business Loan</option>
+          <option>Gold Loan</option>
+          <option>Vehicle Loan</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
+        <input type="number" id="naAmount" class="form-control" placeholder="e.g. 500000" min="10000" />
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Assign To <span class="text-danger">*</span></label>
+        <select id="naAssignee" class="form-control">
+          <option value="">Select agent</option>
+          <option>Kiran Das</option>
+          <option>Meera Joshi</option>
+          <option>Ravi Tiwari</option>
+          <option>Sunil Mehta</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label class="form-label">Tenure (Months)</label>
+        <input type="number" id="naTenure" class="form-control" placeholder="e.g. 36" min="6" max="360" />
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Applicant Address</label>
+      <textarea id="naAddress" class="form-control" placeholder="Full address..." style="min-height:60px;"></textarea>
+    </div>
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label class="form-label">Initial Notes</label>
+      <textarea id="naNote" class="form-control" placeholder="Any initial observations…" style="min-height:60px;"></textarea>
+    </div>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button class="btn btn-outline" onclick="closeModal('newAppModal')">Cancel</button>
+      <button class="btn btn-primary" onclick="submitNewApp()"><i class="lucide-plus"></i> Create Application</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Scripts -->
+<script src="../assets/js/global.js"></script>
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/components.js"></script>
+<script src="../assets/js/nav.js"></script>
+
+<script data-page-init>
+{
+  /* ─── Dataset ─── */
+  const applications = [
+    { id:'APP-9201', applicant:'Amit Sharma',     mobile:'9812345670', product:'Personal Loan', amount:500000,  stage:'Disbursed',     assignee:'Kiran Das',   date:'2026-07-10' },
+    { id:'APP-9202', applicant:'Priya Patel',      mobile:'9823456781', product:'Home Loan',     amount:3500000, stage:'Verification',  assignee:'Meera Joshi', date:'2026-07-11' },
+    { id:'APP-9203', applicant:'Rajesh Kumar',     mobile:'9834567892', product:'Business Loan', amount:1500000, stage:'Under Process', assignee:'Kiran Das',   date:'2026-07-12' },
+    { id:'APP-9204', applicant:'Neha Gupta',       mobile:'9845678903', product:'Gold Loan',     amount:250000,  stage:'Approved',      assignee:'Ravi Tiwari', date:'2026-07-13' },
+    { id:'APP-9205', applicant:'Vikram Malhotra',  mobile:'9856789014', product:'Vehicle Loan',  amount:800000,  stage:'New Lead',      assignee:'Sunil Mehta', date:'2026-07-14' },
+    { id:'APP-9206', applicant:'Anita Sharma',     mobile:'9867890125', product:'Personal Loan', amount:300000,  stage:'Rejected',      assignee:'Meera Joshi', date:'2026-07-09' },
+    { id:'APP-9207', applicant:'Suresh Bhat',      mobile:'9878901236', product:'Home Loan',     amount:5000000, stage:'Under Process', assignee:'Kiran Das',   date:'2026-07-08' },
+    { id:'APP-9208', applicant:'Kavita Pillai',    mobile:'9889012347', product:'Business Loan', amount:2000000, stage:'Verification',  assignee:'Ravi Tiwari', date:'2026-07-07' },
+  ];
+
+  /* ─── Helpers ─── */
+  function fmtAmount(n) {
+    if (n >= 10000000) return 'Rs.' + (n/10000000).toFixed(1) + ' Cr';
+    if (n >= 100000)   return 'Rs.' + (n/100000).toFixed(1).replace(/\.0$/,'') + ' L';
+    return 'Rs.' + n.toLocaleString('en-IN');
+  }
+  function fmtDate(d) {
+    return new Date(d).toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+  }
+  function initials(name) {
+    return name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+  }
+
+  const stageBadge = {
+    'New Lead':'badge-info','Verification':'badge-warning','Under Process':'badge-warning',
+    'Approved':'badge-success','Disbursed':'badge-success','Rejected':'badge-danger'
+  };
+  const stageIcon = {
+    'New Lead':'lucide-user-plus','Verification':'lucide-shield-check','Under Process':'lucide-loader-circle',
+    'Approved':'lucide-badge-check','Disbursed':'lucide-banknote','Rejected':'lucide-x-circle'
+  };
+  const assigneeColors = {
+    'Kiran Das':'#6366f1','Meera Joshi':'#f59e0b','Ravi Tiwari':'#10b981','Sunil Mehta':'#3b82f6'
+  };
+
+  /* ─── State ─── */
+  let activeStageFilter = '';
+  let selectedRows = new Set();
+  let appCounter = 9209;
+
+  /* ─── Render Table ─── */
+  function renderTable() {
+    const search   = (document.getElementById('appSearchInput').value||'').toLowerCase();
+    const stage    = document.getElementById('stageFilter').value;
+    const product  = document.getElementById('productFilter').value;
+    const assignee = document.getElementById('assigneeFilter').value;
+    const from     = document.getElementById('dateFrom').value;
+    const to       = document.getElementById('dateTo').value;
+    const stageF   = activeStageFilter || stage;
+
+    const filtered = applications.filter(a =>
+      (!search  || a.id.toLowerCase().includes(search) || a.applicant.toLowerCase().includes(search) || a.mobile.includes(search)) &&
+      (!stageF  || a.stage === stageF) &&
+      (!product  || a.product === product) &&
+      (!assignee || a.assignee === assignee) &&
+      (!from || a.date >= from) &&
+      (!to   || a.date <= to)
+    );
+
+    const tbody = document.getElementById('appTableBody');
+    const empty = document.getElementById('emptyState');
+    document.getElementById('rowCountBadge').textContent = filtered.length;
+
+    if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+
+    tbody.innerHTML = filtered.map(app => {
+      const bc = stageBadge[app.stage]||'badge-info';
+      const ic = stageIcon[app.stage]||'lucide-circle';
+      const ac = assigneeColors[app.assignee]||'#6366f1';
+      return `
+        <tr data-id="${app.id}">
+          <td><input type="checkbox" class="row-check" data-id="${app.id}" ${selectedRows.has(app.id)?'checked':''} onchange="toggleRow(this)" /></td>
+          <td><a href="loan-application-detail.html?id=${app.id}" class="app-id-link">${app.id}</a></td>
+          <td>
+            <div class="applicant-cell">
+              <span class="applicant-name">${app.applicant}</span>
+              <span class="applicant-sub">${app.mobile}</span>
+            </div>
+          </td>
+          <td style="font-size:13px;">${app.product}</td>
+          <td><span class="amount-cell">${fmtAmount(app.amount)}</span></td>
+          <td>
+            <span class="badge ${bc}" style="display:inline-flex;align-items:center;gap:4px;">
+              <i class="${ic}" style="font-size:11px;"></i>${app.stage}
+            </span>
+          </td>
+          <td>
+            <div class="assigned-chip">
+              <span class="av-xs" style="background:${ac};">${initials(app.assignee)}</span>
+              ${app.assignee.split(' ')[0]}
+            </div>
+          </td>
+          <td style="color:var(--color-text-secondary);font-size:13px;">${fmtDate(app.date)}</td>
+          <td>
+            <div class="action-group">
+              <a href="loan-application-detail.html?id=${app.id}" class="btn-icon-sm" title="View Details"><i class="lucide-eye"></i></a>
+              <button class="btn-icon-sm" title="Update Stage" onclick="openStageModal('${app.id}')"><i class="lucide-layers"></i></button>
+              <button class="btn-icon-sm" title="More Actions" onclick="showRowMenu(event,'${app.id}')"><i class="lucide-more-vertical"></i></button>
+            </div>
+          </td>
+        </tr>`;
+    }).join('');
+
+    if(window.lucide) lucide.createIcons();
+    updateBulkBar();
+  }
+
+  function applyFilters() { renderTable(); }
+
+  function clearFilters() {
+    ['appSearchInput'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    ['stageFilter','productFilter','assigneeFilter'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    ['dateFrom','dateTo'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    activeStageFilter='';
+    document.querySelectorAll('.stage-card').forEach(c=>c.classList.remove('active-filter'));
+    renderTable();
+  }
+
+  /* ─── Stage card click ─── */
+  function filterByStage(card) {
+    const s = card.dataset.stage;
+    if (activeStageFilter === s) { activeStageFilter=''; card.classList.remove('active-filter'); }
+    else {
+      activeStageFilter=s;
+      document.querySelectorAll('.stage-card').forEach(c=>c.classList.remove('active-filter'));
+      card.classList.add('active-filter');
+    }
+    document.getElementById('stageFilter').value = activeStageFilter;
+    renderTable();
+  }
+
+  /* ─── Selection ─── */
+  function toggleRow(cb) {
+    const id = cb.dataset.id;
+    cb.checked ? selectedRows.add(id) : selectedRows.delete(id);
+    updateBulkBar();
+    const checks = document.querySelectorAll('.row-check');
+    const master = document.getElementById('masterCheck');
+    master.indeterminate = selectedRows.size>0 && selectedRows.size<checks.length;
+    master.checked = selectedRows.size===checks.length && checks.length>0;
+  }
+  function toggleAllRows(master) {
+    document.querySelectorAll('.row-check').forEach(cb => {
+      cb.checked=master.checked;
+      master.checked ? selectedRows.add(cb.dataset.id) : selectedRows.delete(cb.dataset.id);
+    });
+    updateBulkBar();
+  }
+  function selectAll() {
+    applications.forEach(a=>selectedRows.add(a.id));
+    document.querySelectorAll('.row-check').forEach(cb=>cb.checked=true);
+    document.getElementById('masterCheck').checked=true;
+    updateBulkBar();
+  }
+  function clearSelection() {
+    selectedRows.clear();
+    document.querySelectorAll('.row-check').forEach(cb=>cb.checked=false);
+    document.getElementById('masterCheck').checked=false;
+    updateBulkBar();
+  }
+  function updateBulkBar() {
+    document.getElementById('bulkCount').textContent=selectedRows.size;
+    document.getElementById('bulkBar').classList.toggle('show', selectedRows.size>0);
+  }
+
+  /* ─── Bulk Actions ─── */
+  function bulkStageUpdate() { showToast('info','Bulk stage update for '+selectedRows.size+' applications.'); }
+  function bulkAssign()      { showToast('info',selectedRows.size+' applications queued for reassignment.'); }
+  function bulkReject() {
+    if(!confirm('Reject '+selectedRows.size+' selected applications?')) return;
+    selectedRows.forEach(id=>{const a=applications.find(x=>x.id===id); if(a) a.stage='Rejected';});
+    clearSelection(); renderTable();
+    showToast('danger','Selected applications marked as Rejected.');
+  }
+
+  /* ─── Row Context Menu ─── */
+  function showRowMenu(e, id) {
+    e.stopPropagation();
+    document.querySelectorAll('.row-ctx-menu').forEach(m=>m.remove());
+    const menu = document.createElement('div');
+    menu.className='dropdown-menu row-ctx-menu show';
+    menu.style.cssText='position:fixed;z-index:9000;';
+    menu.innerHTML=`
+      <div class="dropdown-item" onclick="location.href='loan-application-detail.html?id=${id}'"><i class="lucide-eye"></i> View Details</div>
+      <div class="dropdown-item" onclick="openStageModal('${id}')"><i class="lucide-layers"></i> Update Stage</div>
+      <div class="dropdown-item"><i class="lucide-user-plus"></i> Reassign</div>
+      <div class="dropdown-item"><i class="lucide-phone"></i> Call Applicant</div>
+      <div class="dropdown-item" style="color:var(--color-danger);"><i class="lucide-trash-2"></i> Delete</div>`;
+    document.body.appendChild(menu);
+    const rect = e.target.closest('button').getBoundingClientRect();
+    menu.style.top  = (rect.bottom+4)+'px';
+    menu.style.left = Math.max(4, rect.right - menu.offsetWidth)+'px';
+    if(window.lucide) lucide.createIcons();
+    setTimeout(()=>document.addEventListener('click',()=>menu.remove(),{once:true}),10);
+  }
+
+  /* ─── Stage Modal ─── */
+  let stageTarget = null;
+  function openStageModal(id) {
+    const app = applications.find(a=>a.id===id);
+    if(!app) return;
+    stageTarget=id;
+    document.getElementById('smAppId').textContent       = app.id;
+    document.getElementById('smApplicant').textContent   = app.applicant;
+    document.getElementById('smProduct').textContent     = app.product;
+    document.getElementById('smCurrentStage').textContent = app.stage;
+    document.getElementById('smNewStage').value          = app.stage;
+    document.getElementById('smNotes').value             = '';
+    openModal('stageModal');
+  }
+  function submitStageUpdate() {
+    const newStage = document.getElementById('smNewStage').value;
+    const notify   = document.getElementById('smNotify').value;
+    const app = applications.find(a=>a.id===stageTarget);
+    if(app) {
+      const old=app.stage; app.stage=newStage;
+      showToast('success',app.id+' moved from '+old+' to '+newStage+'.');
+      if(notify!=='no') showToast('info','Notification sent to '+app.applicant+'.');
+    }
+    closeModal('stageModal'); renderTable();
+  }
+
+  /* ─── New App Modal ─── */
+  function submitNewApp() {
+    const name   =document.getElementById('naName').value.trim();
+    const mobile =document.getElementById('naMobile').value.trim();
+    const product=document.getElementById('naProduct').value;
+    const amount =parseInt(document.getElementById('naAmount').value,10);
+    const assign =document.getElementById('naAssignee').value;
+    if(!name||!mobile||!product||!amount||!assign){ showToast('danger','Please fill all required fields.'); return; }
+    if(!/^\d{10}$/.test(mobile)){ showToast('danger','Enter a valid 10-digit mobile number.'); return; }
+    const newApp = { id:'APP-'+appCounter++, applicant:name, mobile, product, amount, stage:'New Lead', assignee:assign, date:new Date().toISOString().split('T')[0] };
+    applications.unshift(newApp);
+    closeModal('newAppModal'); renderTable();
+    showToast('success','Application '+newApp.id+' created for '+name+'.');
+    ['naName','naMobile','naAmount','naTenure','naAddress','naNote'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('naProduct').value=''; document.getElementById('naAssignee').value='';
+  }
+
+  /* ─── Toast ─── */
+  function showToast(type, msg) {
+    const icons={success:'lucide-check-circle',danger:'lucide-alert-circle',info:'lucide-info',warning:'lucide-alert-triangle'};
+    const t=document.createElement('div');
+    t.className='toast '+type;
+    t.innerHTML='<i class="'+(icons[type]||'lucide-info')+'"></i><span>'+msg+'</span>';
+    document.getElementById('toastContainer').appendChild(t);
+    if(window.lucide) lucide.createIcons();
+    setTimeout(()=>{t.style.cssText='opacity:0;transform:translateX(30px);transition:.3s';setTimeout(()=>t.remove(),350);},3500);
+  }
+
+  /* ─── CSV Export ─── */
+  function exportCSV() {
+    const rows=[['App ID','Applicant','Mobile','Product','Amount','Stage','Assigned To','Applied Date'],
+      ...applications.map(a=>[a.id,a.applicant,a.mobile,a.product,a.amount,a.stage,a.assignee,a.date])];
+    const csv=rows.map(r=>r.join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const url=URL.createObjectURL(blob);
+    const link=document.createElement('a'); link.href=url; link.download='team-applications.csv'; link.click();
+    URL.revokeObjectURL(url);
+    showToast('success','CSV exported successfully.');
+  }
+
+  /* ─── Init ─── */
+  document.getElementById('openNewAppBtn').addEventListener('click',()=>openModal('newAppModal'));
+  document.getElementById('exportBtn').addEventListener('click', exportCSV);
+  document.getElementById('exportBtn2').addEventListener('click', exportCSV);
+  document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this) closeModal(this.id);}));
+
+  renderTable();
+}
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function() {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <title>Onkar Finance — Application Detail</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    /* Stepper component */
+    .stepper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .stepper::before {
+      content: '';
+      position: absolute;
+      top: 20px;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background-color: var(--color-border);
+      z-index: 1;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      flex: 1;
+    }
+    .step-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: var(--color-surface);
+      border: 3px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      transition: var(--transition-smooth);
+      color: var(--color-text-secondary);
+    }
+    .step.completed .step-circle {
+      background-color: var(--color-success);
+      border-color: var(--color-success);
+      color: #FFFFFF;
+    }
+    .step.active .step-circle {
+      background-color: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #FFFFFF;
+      box-shadow: 0 0 0 4px var(--color-primary-light);
+    }
+    .step-label {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+      color: var(--color-text-secondary);
+      text-align: center;
+    }
+    .step.active .step-label {
+      color: var(--color-primary);
+    }
+
+    /* OCR document card list */
+    .ocr-card {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition-smooth);
+    }
+    .ocr-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-card);
+    }
+    .ocr-preview-box {
+      background-color: var(--color-bg);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    /* Score gauge */
+    .cibil-badge {
+      display: inline-block;
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--color-success);
+      margin: 10px 0;
+    }
+
+    /* Action icon buttons */
+    .action-icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--color-text-secondary);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
+    .action-icon-btn i { width: 14px; height: 14px; }
+  </style>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar -->
+      <div data-component="topbar"></div>
+      
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+      <!-- Back button and title -->
+      <div class="flex align-center gap-sm">
+        <a href="loan-applications.html" class="btn btn-outline" style="padding: 8px 12px;"><i class="lucide-arrow-left"></i> Back</a>
+        <div>
+          <h2 class="bold" id="applicantHeaderName">Amit Sharma — Application File</h2>
+          <span class="text-muted" style="font-size: 13px;" id="appFileId">File ID: APP-9201</span>
+        </div>
+      </div>
+
+      <!-- Stepper Progress Tracker -->
+      <div class="card" style="padding: 24px 12px 16px;">
+        <div class="stepper">
+          <div class="step">
+            <div class="step-circle">1</div>
+            <div class="step-label">New Lead</div>
+          </div>
+          <div class="step">
+            <div class="step-circle">2</div>
+            <div class="step-label">Verification</div>
+          </div>
+          <div class="step">
+            <div class="step-circle">3</div>
+            <div class="step-label">Under Process</div>
+          </div>
+          <div class="step">
+            <div class="step-circle">4</div>
+            <div class="step-label">Approved</div>
+          </div>
+          <div class="step">
+            <div class="step-circle">5</div>
+            <div class="step-circle-icon"><i class="lucide-check"></i></div>
+            <div class="step-label">Disbursed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detail Grid Layout -->
+      <div class="grid grid-3">
+        <!-- Left 2 Cols: Applicant & OCR Upload details -->
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 24px;">
+          <!-- Basic applicant metadata -->
+          <div class="card">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h3 class="card-title">Applicant Credentials & Financial Info</h3>
+              <span class="badge badge-warning" id="stageBadge">Under Process</span>
+            </div>
+            <div class="grid-2" style="font-size: 13px; row-gap: 16px;">
+              <div class="flex flex-column"><span class="text-secondary">Full Name</span><span class="bold" id="detailName">Amit Sharma</span></div>
+              <div class="flex flex-column"><span class="text-secondary">Phone Number</span><span class="bold" id="detailPhone">+91 98765 43210</span></div>
+              <div class="flex flex-column"><span class="text-secondary">Email Address</span><span class="bold" id="detailEmail">amit.sharma@example.com</span></div>
+              <div class="flex flex-column"><span class="text-secondary">Requested Loan Amount</span><span class="bold" id="detailAmount">₹5,00,000</span></div>
+              <div class="flex flex-column"><span class="text-secondary">Product Segment</span><span class="bold" id="detailProduct">Personal Loan</span></div>
+              <div class="flex flex-column"><span class="text-secondary">Assigned Relationship Officer</span><span class="bold" id="detailOfficer">Rahul Verma</span></div>
+            </div>
+          </div>
+
+          <!-- Document Upload & OCR Extracted Results -->
+          <div class="card">
+            <h3 class="card-title m-b-md">KYC OCR Extracted Metadata</h3>
+            
+            <div class="flex flex-column gap-md">
+              <div class="ocr-card">
+                <div class="flex align-center gap-sm">
+                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
+                    <i class="lucide-file-digit"></i>
+                  </div>
+                  <div>
+                    <h4 class="bold">PAN Card Document</h4>
+                    <span class="text-muted" style="font-size: 12px;">pan_card_amit.pdf (Verified)</span>
+                  </div>
+                </div>
+                <div class="ocr-preview-box">
+                  PAN Number: APS******8G<br>
+                  Name Match: 100%<br>
+                  Status: Valid Card
+                </div>
+              </div>
+
+              <div class="ocr-card">
+                <div class="flex align-center gap-sm">
+                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
+                    <i class="lucide-fingerprint"></i>
+                  </div>
+                  <div>
+                    <h4 class="bold">Aadhaar Card Document</h4>
+                    <span class="text-muted" style="font-size: 12px;">aadhaar_uidai_xml.pdf (Verified)</span>
+                  </div>
+                </div>
+                <div class="ocr-preview-box">
+                  UIDAI No: **** **** 1024<br>
+                  Address Match: Delhi NCR<br>
+                  E-KYC Status: Successful
+                </div>
+              </div>
+
+              <div class="ocr-card">
+                <div class="flex align-center gap-sm">
+                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
+                    <i class="lucide-landmark"></i>
+                  </div>
+                  <div>
+                    <h4 class="bold">Bank Statement OCR Parsing</h4>
+                    <span class="text-muted" style="font-size: 12px;">statement_6m.pdf (6 Months)</span>
+                  </div>
+                </div>
+                <div class="ocr-preview-box">
+                  Avg Balance: ₹42,500<br>
+                  Bounce Count: 0<br>
+                  Salary Credits: Verified
+                </div>
+              </div>
+            </div>
+
+            <!-- Upload drag drop field -->
+            <div class="file-upload-drag m-t-md" style="border: 2px dashed var(--color-border); padding: 24px; text-align: center; border-radius: var(--radius-md); cursor: pointer;" onclick="showToast('Select verification file popup...', 'info')">
+              <i class="lucide-upload-cloud" style="font-size: 32px; color: var(--color-primary);"></i>
+              <h4 class="bold m-t-md">Upload Additional Verification Document</h4>
+              <p class="text-muted" style="font-size: 12px; margin-top: 4px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 1 Col: Rule Engine & Audit Logs -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          <!-- CIBIL Credit score widget -->
+          <div class="card text-center" style="padding: 24px;">
+            <h3 class="card-title text-center">CIBIL Bureau Score</h3>
+            <span class="cibil-badge" id="cibilScore">765</span>
+            <p style="font-size: 13px; color: var(--color-success); font-weight: 600;"><i class="lucide-shield-alert"></i> Excellent Credit Profile</p>
+            <span style="font-size: 11px; color: var(--color-text-muted);">Fetched via Experian Bureau API</span>
+          </div>
+
+          <!-- Eligibility Rules list -->
+          <div class="card" style="padding: 24px;">
+            <h3 class="card-title m-b-md">Eligibility Check Rules</h3>
+            <div class="flex flex-column gap-sm" style="font-size: 13px;">
+              <div class="flex justify-between align-center">
+                <span>CIBIL Threshold (> 700)</span>
+                <span class="badge badge-success"><i class="lucide-check"></i> Pass</span>
+              </div>
+              <div class="flex justify-between align-center">
+                <span>Minimum Salary Criteria</span>
+                <span class="badge badge-success"><i class="lucide-check"></i> Pass</span>
+              </div>
+              <div class="flex justify-between align-center">
+                <span>FOIR Ratio Threshold</span>
+                <span class="badge badge-success"><i class="lucide-check"></i> Pass</span>
+              </div>
+              <div class="flex justify-between align-center">
+                <span>Cheque Bounce Check</span>
+                <span class="badge badge-success"><i class="lucide-check"></i> Pass</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action workflow submission -->
+          <div class="card flex flex-column gap-sm" style="padding: 24px;">
+            <h3 class="card-title">Workflow Actions</h3>
+            <button class="btn btn-primary" onclick="approveApplication()"><i class="lucide-check-circle"></i> Approve &amp; Disburse</button>
+            <button class="btn btn-danger" onclick="rejectApplication()"><i class="lucide-x-circle"></i> Reject Application</button>
+            <button class="btn btn-outline" onclick="openModal('assignTaskModal')"><i class="lucide-user-cog"></i> Assign Follow-up Task</button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Assign Task Modal -->
+      <div id="assignTaskModal" class="modal-overlay">
+        <div class="modal-container" style="max-width: 450px;">
+          <i class="lucide-x modal-close" onclick="closeModal('assignTaskModal')"></i>
+          <h3>Assign Follow-up Task</h3>
+          <p class="text-secondary" style="font-size: 13px; margin: 8px 0 16px;">Create a task for an officer regarding this file.</p>
+          
+          <div class="form-group">
+            <label class="form-label">Assign To</label>
+            <select class="form-control" id="taskAssignee">
+              <option value="Rahul Verma">Rahul Verma</option>
+              <option value="Kiran Das">Kiran Das</option>
+              <option value="Sunil Mehta">Sunil Mehta</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Task Details</label>
+            <textarea class="form-control" rows="3" id="taskDesc" placeholder="e.g. Call client for pending salary slip..."></textarea>
+          </div>
+          <div class="flex justify-end gap-sm m-t-md">
+            <button class="btn btn-outline" onclick="closeModal('assignTaskModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitTaskAssignment()">Assign Task</button>
+          </div>
+        </div>
+      </div>
+      
+      </div> <!-- End page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    let activeLeadId = 'LD-8902';
+
+    function loadApplicantDetail() {
+      const urlParams = new URLSearchParams(window.location.search);
+      let targetId = urlParams.get('id') || 'LD-8902';
+      
+      // Map APP-XXXX to LD-XXXX database
+      if (targetId.startsWith('APP-')) {
+        const mappings = {
+          'APP-9201': 'LD-8902',
+          'APP-9202': 'LD-8903',
+          'APP-9203': 'LD-8904',
+          'APP-9204': 'LD-8905',
+          'APP-9205': 'LD-8906',
+        };
+        if (mappings[targetId]) {
+          targetId = mappings[targetId];
+        }
+      }
+      activeLeadId = targetId;
+      
+      const leads = api.getLeads();
+      const lead = leads.find(l => l.id === targetId) || leads[0];
+      
+      if (lead) {
+        document.getElementById('applicantHeaderName').textContent = `${lead.name} — Application File`;
+        
+        const mappedAppId = lead.id.startsWith('LD-') 
+          ? lead.id.replace('LD-8902', 'APP-9201').replace('LD-8903', 'APP-9202').replace('LD-8904', 'APP-9203').replace('LD-8905', 'APP-9204').replace('LD-8906', 'APP-9205')
+          : lead.id;
+        
+        document.getElementById('appFileId').textContent = `File ID: ${mappedAppId}`;
+        document.getElementById('detailName').textContent = lead.name;
+        document.getElementById('detailPhone').textContent = lead.contact;
+        document.getElementById('detailEmail').textContent = lead.email;
+        document.getElementById('detailAmount').textContent = formatCurrency(lead.amount);
+        document.getElementById('detailProduct').textContent = lead.product;
+        document.getElementById('detailOfficer').textContent = lead.assignedTo;
+        
+        // Randomize score a bit for visual realism based on names
+        let score = 762;
+        if (lead.name.includes("Priya")) score = 718;
+        if (lead.name.includes("Rajesh")) score = 684;
+        if (lead.name.includes("Neha")) score = 794;
+        
+        const cibilEl = document.getElementById('cibilScore');
+        cibilEl.textContent = score;
+        if (score >= 750) {
+          cibilEl.style.color = 'var(--color-success)';
+        } else if (score >= 700) {
+          cibilEl.style.color = 'var(--color-warning)';
+        } else {
+          cibilEl.style.color = 'var(--color-danger)';
+        }
+
+        const badge = document.getElementById('stageBadge');
+        badge.textContent = lead.status;
+        
+        // Adjust stepper and badge color
+        const steps = document.querySelectorAll('.step');
+        steps.forEach(step => step.className = 'step');
+        
+        if (lead.status === 'New Lead') {
+          steps[0].className = 'step active';
+          badge.className = 'badge badge-info';
+        } else if (lead.status === 'Verification') {
+          steps[0].className = 'step completed';
+          steps[1].className = 'step active';
+          badge.className = 'badge badge-warning';
+        } else if (lead.status === 'Under Process') {
+          steps[0].className = 'step completed';
+          steps[1].className = 'step completed';
+          steps[2].className = 'step active';
+          badge.className = 'badge badge-warning';
+        } else if (lead.status === 'Approved') {
+          steps[0].className = 'step completed';
+          steps[1].className = 'step completed';
+          steps[2].className = 'step completed';
+          steps[3].className = 'step active';
+          badge.className = 'badge badge-success';
+        } else if (lead.status === 'Disbursed') {
+          steps[0].className = 'step completed';
+          steps[1].className = 'step completed';
+          steps[2].className = 'step completed';
+          steps[3].className = 'step completed';
+          steps[4].className = 'step completed';
+          badge.className = 'badge badge-success';
+        } else if (lead.status === 'Rejected') {
+          badge.className = 'badge badge-danger';
+        }
+      }
+    }
+
+    window.approveApplication = function() {
+      api.updateLeadStatus(activeLeadId, 'Approved');
+      showToast('Application Approved successfully!', 'success');
+      loadApplicantDetail();
+    };
+
+    window.rejectApplication = function() {
+      api.updateLeadStatus(activeLeadId, 'Rejected');
+      showToast('Application Rejected', 'danger');
+      loadApplicantDetail();
+    };
+
+    window.submitTaskAssignment = function() {
+      const officer = document.getElementById('taskAssignee').value;
+      const desc = document.getElementById('taskDesc').value;
+      if (!desc) {
+        showToast('Please provide task instructions.', 'warning');
+        return;
+      }
+
+      // Append task to a simulated tasks store in localStorage
+      let tasks = JSON.parse(localStorage.getItem('team_tasks') || '[]');
+      tasks.push({
+        id: 'T-' + Math.floor(1000 + Math.random() * 9000),
+        assignee: officer,
+        description: desc,
+        fileId: activeLeadId,
+        date: new Date().toISOString().split('T')[0],
+        status: 'Pending'
+      });
+      localStorage.setItem('team_tasks', JSON.stringify(tasks));
+
+      closeModal('assignTaskModal');
+      showToast(`Task assigned to ${officer} successfully!`, 'success');
+      document.getElementById('taskDesc').value = '';
+    };
+
+    loadApplicantDetail();
+  }
+  </script>
+
+</body>
+</html>
