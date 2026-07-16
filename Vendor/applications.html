@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Lending Partner — Received Applications</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header -->
+        <div class="flex justify-between align-center">
+          <div>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Received Applications</h1>
+            <p class="text-secondary" style="font-size: 13px;">Review credit folders, check candidate coordinates, and trace document upload states.</p>
+          </div>
+        </div>
+
+        <!-- Filter ledger -->
+        <div class="card flex justify-between align-center gap-md" style="padding: 16px; flex-wrap: wrap;">
+          <div class="flex align-center gap-md" style="flex: 1; min-width: 300px;">
+            <div class="search-bar" style="width: 100%; max-width: 320px; background-color: var(--color-bg);">
+              <i class="lucide-search"></i>
+              <input type="text" placeholder="Search applicant by name or ID..." id="appSearch">
+            </div>
+            
+            <select id="statusFilter" class="form-control" style="width: 160px; padding: 8px 12px; border-radius: var(--radius-md); font-size:13px;">
+              <option value="">All Statuses</option>
+              <option value="New Lead">New Lead</option>
+              <option value="Verification">Verification</option>
+              <option value="Under Process">Under Process</option>
+              <option value="Query Raised">Query Raised</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+              <option value="Disbursed">Disbursed</option>
+            </select>
+          </div>
+
+          <div style="font-size: 13px; color: var(--color-text-secondary); font-weight: 500;" id="recordsCount">
+            Showing 0 applications
+          </div>
+        </div>
+
+        <!-- Applications Table Card -->
+        <div class="card" style="padding: 0;">
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Application ID</th>
+                  <th>Applicant Name</th>
+                  <th>Loan Product</th>
+                  <th>Requested Amount</th>
+                  <th>Submission Date</th>
+                  <th>Status</th>
+                  <th>OCR Review</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applicationsTableBody">
+                <!-- Dynamically Rendered -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    function renderApplications() {
+      const vendorProfile = JSON.parse(localStorage.getItem('onkar_vendor_profile') || '{}');
+      const bankName = vendorProfile.bankName || 'HDFC Bank Ltd.';
+
+      const db = api.getDb();
+      const myLeads = db.leads.filter(l => l.sentTo === bankName);
+
+      const searchQuery = document.getElementById('appSearch').value.toLowerCase().trim();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      const tbody = document.getElementById('applicationsTableBody');
+      tbody.innerHTML = '';
+
+      let displayedCount = 0;
+
+      myLeads.forEach(lead => {
+        // Apply filters
+        const matchesSearch = lead.name.toLowerCase().includes(searchQuery) || lead.id.toLowerCase().includes(searchQuery);
+        const matchesStatus = !statusFilter || lead.status === statusFilter;
+
+        if (matchesSearch && matchesStatus) {
+          displayedCount++;
+          
+          let badgeClass = 'badge-info';
+          if (lead.status === 'Approved' || lead.status === 'Disbursed') badgeClass = 'badge-success';
+          else if (lead.status === 'Rejected') badgeClass = 'badge-danger';
+          else if (lead.status === 'Verification' || lead.status === 'Under Process' || lead.status === 'Query Raised') badgeClass = 'badge-warning';
+
+          // OCR Parser indicator
+          const docCount = (lead.documents || []).length;
+          const ocrText = docCount > 0 ? `<span style="color: var(--color-success); font-weight:600;"><i class="lucide-check-circle" style="font-size:12px; margin-right:4px;"></i>${docCount} Docs parsed</span>` : `<span class="text-muted" style="font-size:12px;"><i class="lucide-clock" style="font-size:12px; margin-right:4px;"></i>Waiting docs</span>`;
+
+          tbody.innerHTML += `
+            <tr>
+              <td class="bold">${lead.id.replace('LD', 'APP')}</td>
+              <td class="bold">${lead.name}</td>
+              <td>${lead.product}</td>
+              <td class="bold" style="color: var(--color-primary);">${formatCurrency(lead.amount)}</td>
+              <td>${formatDate(lead.date)}</td>
+              <td><span class="badge ${badgeClass}">${lead.status}</span></td>
+              <td>${ocrText}</td>
+              <td>
+                <a href="application-detail.html?id=${lead.id}" class="btn btn-outline" style="padding: 6px 12px; font-size:12px;" data-nav>
+                  <i class="lucide-eye"></i> Review File
+                </a>
+              </td>
+            </tr>
+          `;
+        }
+      });
+
+      document.getElementById('recordsCount').textContent = `Showing ${displayedCount} of ${myLeads.length} applications`;
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // Attach search and filter event listeners
+    document.getElementById('appSearch').addEventListener('input', renderApplications);
+    document.getElementById('statusFilter').addEventListener('change', renderApplications);
+
+    renderApplications();
+  }
+  </script>
+</body>
+</html>

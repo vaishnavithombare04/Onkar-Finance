@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="color-scheme" content="light dark">
+  <script>
+    (function () {
+      const saved = localStorage.getItem('onkar-theme');
+      const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.style.colorScheme = theme;
+    })();
+  </script>
+  <meta name="view-transition" content="same-origin">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onkar Lending Partner — Institution Profile</title>
+  <link rel="stylesheet" href="../assets/css/global.css">
+  <link rel="stylesheet" href="../assets/css/components.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <div class="admin-layout">
+    <!-- Sidebar component -->
+    <div data-component="sidebar"></div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+      <!-- Topbar component -->
+      <div data-component="topbar"></div>
+
+      <div id="page-content" class="w-full flex flex-column gap-lg">
+        <!-- Header -->
+        <div>
+          <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">institution Profile</h1>
+          <p class="text-secondary" style="font-size: 13px;">Manage representative contact coordinates, review credentials, and verify API channel keys.</p>
+        </div>
+
+        <div class="grid grid-3" style="align-items: start;">
+          <!-- Profile Card Summary -->
+          <div class="card flex flex-column gap-md align-center justify-center text-center" style="height: fit-content; padding: 30px;">
+            <div class="avatar" style="width: 80px; height: 80px; font-size: 32px; border-radius: 50%; background: var(--color-primary); color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto; overflow: hidden; position: relative; cursor: pointer;" id="vendorProfileInitials" onclick="document.getElementById('vendorAvatarUpload').click();" title="Click to upload profile picture">RS</div>
+            <input type="file" id="vendorAvatarUpload" style="display: none;" accept="image/*" onchange="handleVendorAvatarUpload(event);" />
+            <div style="margin-top: 10px; width: 100%;">
+              <h3 class="bold" style="font-size: 18px;" id="vendorCardName">Rajesh Saxena</h3>
+              <span class="badge badge-success" style="margin-top: 6px; display: inline-block;" id="vendorCardBank">HDFC Bank Ltd.</span>
+            </div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 8px;" onclick="document.getElementById('vendorAvatarUpload').click();"><i class="lucide-camera"></i> Change Photo</button>
+            
+            <div style="border-top: 1px solid var(--color-border); width: 100%; padding-top: 16px; margin-top: 8px;">
+              <div class="flex justify-between" style="font-size: 12.5px; margin-bottom: 8px;">
+                <span class="text-secondary">Role:</span>
+                <span class="bold">Lending Officer</span>
+              </div>
+              <div class="flex justify-between" style="font-size: 12.5px;">
+                <span class="text-secondary">API Channel:</span>
+                <span class="bold" style="color: var(--color-success)">Live Connected</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Info Form & API Settings -->
+          <div class="card" style="grid-column: span 2; display: flex; flex-direction: column; gap: var(--space-lg);">
+            <!-- Representative coordinates -->
+            <div class="flex flex-column gap-md">
+              <div>
+                <h3 class="bold" style="font-size: 16px;">Representative Details</h3>
+                <span class="text-secondary" style="font-size: 11px;">Update institutional coordinator contact info.</span>
+              </div>
+              <div class="grid grid-2" style="gap: var(--space-sm) var(--space-md);">
+                <div class="form-group">
+                  <label class="form-label">Full Name</label>
+                  <input type="text" id="vName" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Institution Name</label>
+                  <input type="text" id="vBank" class="form-control" disabled style="background-color: var(--color-bg); cursor: not-allowed;" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Email Address</label>
+                  <input type="email" id="vEmail" class="form-control" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Mobile Number</label>
+                  <input type="tel" id="vContact" class="form-control" />
+                </div>
+              </div>
+              <button class="btn btn-primary" style="width: fit-content; margin-top: 8px;" onclick="saveVendorDetails()">Save Profile Changes</button>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--color-border);" />
+
+            <!-- API Channel settings -->
+            <div class="flex flex-column gap-md">
+              <div>
+                <h3 class="bold" style="font-size: 16px;">API Key Integration</h3>
+                <span class="text-secondary" style="font-size: 11px;">Secure token used by Onkar Finance to push applications directly into your internal credit system.</span>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">API Secret Token</label>
+                <div class="flex gap-sm">
+                  <input type="password" id="vApiKey" class="form-control" disabled style="background-color: var(--color-bg); font-family: monospace;" />
+                  <button class="btn btn-outline" onclick="toggleApiKeyVisibility()" id="btnToggleKey">Reveal</button>
+                  <button class="btn btn-outline" onclick="regenerateApiKey()">Regenerate</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /page-content -->
+      <div data-component="footer"></div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="../assets/js/global.js"></script>
+  <script src="../assets/js/api.js"></script>
+  <script src="../assets/js/components.js"></script>
+  <script src="../assets/js/nav.js"></script>
+
+  <script data-page-init>
+  {
+    function getVendorProfile() {
+      return JSON.parse(localStorage.getItem('onkar_vendor_profile') || '{}');
+    }
+
+    function saveVendorProfile(p) {
+      localStorage.setItem('onkar_vendor_profile', JSON.stringify(p));
+    }
+
+    function loadVendorProfile() {
+      const p = getVendorProfile();
+      
+      document.getElementById('vName').value = p.name || '';
+      document.getElementById('vBank').value = p.bankName || 'HDFC Bank Ltd.';
+      document.getElementById('vEmail').value = p.email || '';
+      document.getElementById('vContact').value = p.contact || '';
+      document.getElementById('vApiKey').value = p.apiKey || 'hk_live_9a2f8b5c4d2e';
+
+      // Update Card UI
+      document.getElementById('vendorCardName').textContent = p.name || '';
+      document.getElementById('vendorCardBank').textContent = p.bankName || '';
+
+      const initials = (p.name || 'RS').split(' ').map(w => w[0]).join('').toUpperCase();
+      if (p.avatar) {
+        document.getElementById('vendorProfileInitials').innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover;" />`;
+      } else {
+        document.getElementById('vendorProfileInitials').textContent = initials;
+      }
+
+      // Sync with topbar
+      if (window.updateVendorTopbarProfile) {
+        window.updateVendorTopbarProfile();
+      }
+    }
+
+    window.saveVendorDetails = function() {
+      const p = getVendorProfile();
+      p.name = document.getElementById('vName').value.trim();
+      p.email = document.getElementById('vEmail').value.trim();
+      p.contact = document.getElementById('vContact').value.trim();
+
+      if (!p.name || !p.email || !p.contact) {
+        showToast('Please fill all profile fields.', 'danger');
+        return;
+      }
+
+      saveVendorProfile(p);
+      loadVendorProfile();
+      showToast('Representative profile coordinates saved.', 'success');
+    };
+
+    window.toggleApiKeyVisibility = function() {
+      const keyInput = document.getElementById('vApiKey');
+      const btn = document.getElementById('btnToggleKey');
+      if (keyInput.type === 'password') {
+        keyInput.type = 'text';
+        btn.textContent = 'Hide';
+      } else {
+        keyInput.type = 'password';
+        btn.textContent = 'Reveal';
+      }
+    };
+
+    window.regenerateApiKey = function() {
+      if (confirm('Regenerating your API token will break any active connection tunnels until they are updated. Proceed?')) {
+        const p = getVendorProfile();
+        const randHex = Math.floor(Math.random()*16777215).toString(16) + Math.floor(Math.random()*16777215).toString(16);
+        p.apiKey = `hk_live_${randHex}`;
+        saveVendorProfile(p);
+        loadVendorProfile();
+        showToast('API Key regenerated successfully.', 'success');
+      }
+    };
+
+    window.handleVendorAvatarUpload = function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        showToast('Please select a valid image file.', 'danger');
+        return;
+      }
+
+      if (file.size > 1024 * 1024) {
+        showToast('Image size should be less than 1MB.', 'danger');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const p = getVendorProfile();
+        p.avatar = e.target.result;
+        saveVendorProfile(p);
+        loadVendorProfile();
+        showToast('Institution avatar updated.', 'success');
+      };
+      reader.readAsDataURL(file);
+    };
+
+    function showToast(msg, type = 'success') {
+      const icons = { success: 'lucide-check-circle', danger: 'lucide-alert-circle', info: 'lucide-info' };
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<i class="${icons[type] || 'lucide-info'}"></i><span>${msg}</span>`;
+      document.getElementById('toastContainer').appendChild(toast);
+      if (window.lucide) lucide.createIcons();
+      setTimeout(() => {
+        toast.style.cssText = 'opacity:0;transform:translateX(30px);transition:.3s;';
+        setTimeout(() => toast.remove(), 350);
+      }, 3500);
+    }
+
+    loadVendorProfile();
+  }
+  </script>
+</body>
+</html>
