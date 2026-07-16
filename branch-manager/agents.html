@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      (function() {
+        const saved = localStorage.getItem('theme');
+        const theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attached Agents - Onkar Finance Branch Manager</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Shared Global CSS -->
+    <link rel="stylesheet" href="../shared/global.css">
+</head>
+<body data-theme="light">
+    <!-- App Header -->
+        <!-- App Header -->
+    <header class="app-header">
+        <div class="header-brand">
+            <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+            <span class="brand-title"><i class="bi bi-currency-rupee text-primary"></i> Onkar Finance</span>
+        </div>
+        <div class="header-search d-none d-md-block">
+            <i class="bi bi-search header-search-icon"></i>
+            <input type="text" placeholder="Search branch files, loans, agents...">
+        </div>
+        <div class="header-actions">
+            <!-- Notification Bell Dropdown -->
+            <div class="dropdown">
+                <button class="icon-btn" id="notificationBell" data-bs-toggle="dropdown" aria-expanded="false" style="position: relative; border: none; background: none;">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="notifBadge" style="font-size: 9px; padding: 3px 6px;">3</span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow py-2" id="notificationList" style="width: 280px; max-height: 350px; overflow-y: auto;">
+                    <li class="dropdown-header border-bottom pb-2 font-weight-700">Notifications</li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Verification request for Amit Sharma', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">New lead &quot;Amit Sharma&quot; registered</span><small class="text-muted d-block mt-1">2 mins ago</small></a></li>
+                    <li><a class="dropdown-item py-2 border-bottom text-wrap" href="#" onclick="showToast('Application approved successfully', 'success')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Personal Loan APP-8902 is approved</span><small class="text-muted d-block mt-1">1 hour ago</small></a></li>
+                    <li><a class="dropdown-item py-2 text-wrap" href="#" onclick="showToast('File escalated to audit committee', 'warning')" style="display: block; white-space: normal;"><span style="font-size: 12px; font-weight: 500; display: block;">Lead APP-8904 is escalated to audit</span><small class="text-muted d-block mt-1">Yesterday</small></a></li>
+                </ul>
+            </div>
+            
+            <div class="dropdown">
+                <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border: none;">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=80&h=80&q=80" alt="Avatar" width="32" height="32" class="rounded-circle border">
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end text-small shadow">
+                    <li><a class="dropdown-item" href="profile.html">Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#" onclick="showToast('Signed out successfully', 'success')">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+                <aside class="app-sidebar">
+            <div class="sidebar-header" style="display: flex; align-items: center; gap: 12px; padding: 16px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); transition: var(--transition-smooth); justify-content: center;">
+                <div id="sidebarToggleBtn" style="cursor: pointer; color: #94a3b8; width: 24px; text-align: center;"><i class="bi bi-three-dots"></i></div>
+                <span class="brand-title sidebar-label-text" style="color: #ffffff; font-weight: 800; font-size: 15px; white-space: nowrap;">Onkar Finance</span>
+            </div>
+            <nav class="sidebar-menu">
+                <span class="sidebar-label">Branch Workspace</span>
+                <a href="index.html" class="sidebar-item">
+                    <i class="bi bi-speedometer2"></i> <span>Dashboard</span>
+                </a>
+                <a href="leads.html" class="sidebar-item">
+                    <i class="bi bi-funnel"></i> <span>CRM Leads</span>
+                </a>
+                <a href="customers.html" class="sidebar-item">
+                    <i class="bi bi-people"></i> <span>Customers</span>
+                </a>
+                <a href="applications.html" class="sidebar-item">
+                    <i class="bi bi-file-earmark-medical"></i> <span>Loan Applications</span>
+                </a>
+                <a href="application-detail.html" class="sidebar-item">
+                    <i class="bi bi-info-circle"></i> <span>Application Detail</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">Operations</span>
+                <a href="employees.html" class="sidebar-item">
+                    <i class="bi bi-person-badge"></i> <span>Branch Employees</span>
+                </a>
+                <a href="agents.html" class="sidebar-item active">
+                    <i class="bi bi-person-workspace"></i> <span>Attached Agents</span>
+                </a>
+                <a href="communication.html" class="sidebar-item">
+                    <i class="bi bi-chat-left-text"></i> <span>Communication Center</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <span class="sidebar-label">Analytics</span>
+                <a href="reports.html" class="sidebar-item">
+                    <i class="bi bi-graph-up-arrow"></i> <span>Branch Reports</span>
+                </a>
+                <a href="profile.html" class="sidebar-item">
+                    <i class="bi bi-gear"></i> <span>Profile & Settings</span>
+                </a>
+                <div class="sidebar-divider"></div>
+                <div class="sidebar-item" id="themeToggleBtn" style="cursor: pointer;">
+                    <i class="bi bi-moon"></i> <span>Dark Mode</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 font-weight-bold mb-0">Attached Field Agents Directory</h1>
+                    <p class="text-muted font-13 mb-0">Track agent commission rates, generated client leads, and verify payouts.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="openModal('createAgentModal')">
+                    <i class="bi bi-plus-lg me-1"></i> Add Agent
+                </button>
+            </div>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <input type="text" class="form-control" placeholder="Search agents by name, ID, or phone...">
+            </div>
+
+            <!-- Agents Content Grid -->
+            <div class="row g-4">
+                <!-- Table Column -->
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body p-0">
+                            <div class="data-table-container">
+                                <table class="data-table" id="agentsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Agent Name</th>
+                                            <th>Leads Generated</th>
+                                            <th>Closed Conversions</th>
+                                            <th>Commission Earned</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="agentListBody">
+                                        <!-- Dynamically generated rows -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detail Panel Column -->
+                <div class="col-lg-4">
+                    <div class="card" id="agentDetailCard">
+                        <div class="card-body">
+                            <h5 class="card-title font-weight-bold mb-1" id="detAgentName">Select Agent</h5>
+                            <p class="text-secondary font-12 mb-3" id="detAgentContact">Choose a field agent from the directory to load details.</p>
+                            <hr>
+                            
+                            <div id="agentPerformance" style="display: none;">
+                                <div class="d-flex flex-column gap-2 mb-3 font-13 text-secondary">
+                                    <div><strong>Agent ID:</strong> <span id="detAgentId">N/A</span></div>
+                                    <div><strong>Mobile Phone:</strong> <span id="detAgentPhone">N/A</span></div>
+                                    <div><strong>Leads Generated:</strong> <span id="detAgentLeads">N/A</span></div>
+                                    <div><strong>Closed Deals:</strong> <span id="detAgentConversions">N/A</span></div>
+                                    <div><strong>Total Commission Paid:</strong> <strong id="detAgentCommission" class="text-success">N/A</strong></div>
+                                    <div><strong>Branch Office:</strong> <span>Pune City Branch</span></div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm w-100 mb-2" onclick="showToast('Initiating commission payout transfer...', 'success')">Pay Commission</button>
+                                <button class="btn btn-danger btn-sm w-100" onclick="deleteAgent()"><i class="bi bi-trash"></i> Detach Agent</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Create Agent Modal -->
+    <div class="modal fade" id="createAgentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title font-weight-bold">Register Field Agent</h5>
+                    <button class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createAgentForm" onsubmit="createNewAgent(event)">
+                    <div class="modal-body d-flex flex-column gap-3">
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Agent Full Name</label>
+                            <input type="text" name="name" class="form-control" placeholder="e.g. Nilesh Phalke" required>
+                        </div>
+                        <div>
+                            <label class="form-label font-12 font-weight-600">Mobile Phone Number</label>
+                            <input type="text" name="phone" class="form-control" placeholder="e.g. +91 99..." required>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label font-12 font-weight-600">Leads Generated</label>
+                                <input type="number" name="leadsGenerated" class="form-control" placeholder="e.g. 10" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label font-12 font-weight-600">Closed Conversions</label>
+                                <input type="number" name="conversions" class="form-control" placeholder="e.g. 5" required>
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <label class="form-label font-12 font-weight-600">Commission Earned</label>
+                                <input type="text" name="commission" class="form-control" placeholder="e.g. ₹50,000" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label font-12 font-weight-600">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Agent</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Shared Global Logic -->
+    <script src="../shared/global.js"></script>
+
+    <script>
+        let selectedAgentId = null;
+
+        function renderAgents() {
+            const body = document.getElementById('agentListBody');
+            body.innerHTML = mockDB.agents.map(a => `
+                <tr class="agent-row ${a.id === selectedAgentId ? 'table-primary' : ''}" style="cursor:pointer;" onclick="selectAgent('${a.id}')">
+                    <td>${a.id}</td>
+                    <td class="font-weight-600">${a.name}</td>
+                    <td>${a.leadsGenerated}</td>
+                    <td>${a.conversions}</td>
+                    <td class="text-success fw-bold">${a.commission}</td>
+                    <td><span class="status-badge badge-active">${a.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function selectAgent(id) {
+            selectedAgentId = id;
+            renderAgents();
+
+            const agent = mockDB.agents.find(a => a.id === id);
+            if (!agent) return;
+
+            document.getElementById('detAgentName').innerText = agent.name;
+            document.getElementById('detAgentContact').innerText = agent.phone || '+91 99011 22334';
+            
+            document.getElementById('detAgentId').innerText = agent.id;
+            document.getElementById('detAgentPhone').innerText = agent.phone || '+91 99011 22334';
+            document.getElementById('detAgentLeads').innerText = agent.leadsGenerated;
+            document.getElementById('detAgentConversions').innerText = agent.conversions;
+            document.getElementById('detAgentCommission').innerText = agent.commission;
+
+            document.getElementById('agentPerformance').style.display = 'block';
+        }
+
+        function createNewAgent(e) {
+            e.preventDefault();
+            const form = document.getElementById('createAgentForm');
+            const data = new FormData(form);
+
+            const newId = `AGT60${mockDB.agents.length + 1}`;
+            const newAgent = {
+                id: newId,
+                name: data.get('name'),
+                leadsGenerated: parseInt(data.get('leadsGenerated')) || 0,
+                conversions: parseInt(data.get('conversions')) || 0,
+                commission: data.get('commission') || '₹0',
+                status: data.get('status') || 'Active',
+                phone: data.get('phone')
+            };
+
+            mockDB.agents.push(newAgent);
+            saveMockDB();
+            logAudit('Amit Deshmukh', 'Agents', 'Attach Agent', `Attached field agent ${newId} - ${newAgent.name}`);
+            showToast('New agent attached successfully!', 'success');
+
+            closeModal('createAgentModal');
+            form.reset();
+            renderAgents();
+            selectAgent(newId);
+        }
+
+        function deleteAgent() {
+            if (confirm("Are you sure you want to detach this agent from the branch?")) {
+                mockDB.agents = mockDB.agents.filter(a => a.id !== selectedAgentId);
+                saveMockDB();
+                logAudit('Amit Deshmukh', 'Agents', 'Detach Agent', `Detached agent ID ${selectedAgentId}`);
+                showToast('Agent record detached.', 'success');
+
+                selectedAgentId = null;
+                document.getElementById('detAgentName').innerText = 'Select Agent';
+                document.getElementById('detAgentContact').innerText = 'Choose a field agent to view details.';
+                document.getElementById('agentPerformance').style.display = 'none';
+                renderAgents();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAgents();
+            initDataTable('#agentsTable');
+            initFilterBar('.filter-bar', '#agentsTable');
+        });
+    </script>
+</body>
+</html>
