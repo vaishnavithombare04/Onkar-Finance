@@ -179,66 +179,30 @@
           <div class="card">
             <h3 class="card-title m-b-md">KYC OCR Extracted Metadata</h3>
             
-            <div class="flex flex-column gap-md" id="documentsContainer">
-              <div class="ocr-card">
-                <div class="flex align-center gap-sm">
-                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
-                    <i class="lucide-file-digit"></i>
-                  </div>
-                  <div>
-                    <h4 class="bold">PAN Card Document</h4>
-                    <span class="text-muted" style="font-size: 12px;">pan_card_amit.pdf (Verified)</span>
-                  </div>
-                </div>
-                <div class="ocr-preview-box">
-                  PAN Number: APS******8G<br>
-                  Name Match: 100%<br>
-                  Status: Valid Card
-                </div>
-              </div>
+            <div class="flex flex-column gap-md" id="ocrDocsContainer">
+              <!-- Dynamically populated from lead.documents -->
+            </div>
 
-              <div class="ocr-card">
-                <div class="flex align-center gap-sm">
-                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
-                    <i class="lucide-fingerprint"></i>
-                  </div>
-                  <div>
-                    <h4 class="bold">Aadhaar Card Document</h4>
-                    <span class="text-muted" style="font-size: 12px;">aadhaar_uidai_xml.pdf (Verified)</span>
-                  </div>
-                </div>
-                <div class="ocr-preview-box">
-                  UIDAI No: **** **** 1024<br>
-                  Address Match: Delhi NCR<br>
-                  E-KYC Status: Successful
-                </div>
-              </div>
-
-              <div class="ocr-card">
-                <div class="flex align-center gap-sm">
-                  <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
-                    <i class="lucide-landmark"></i>
-                  </div>
-                  <div>
-                    <h4 class="bold">Bank Statement OCR Parsing</h4>
-                    <span class="text-muted" style="font-size: 12px;">hdfc_stmt_6m.pdf (6 Months)</span>
-                  </div>
-                </div>
-                <div class="ocr-preview-box">
-                  Avg Balance: ₹42,500<br>
-                  Bounce Count: 0<br>
-                  Salary Credits: Verified
-                </div>
-              </div>
+            <div class="form-group m-t-lg" style="margin-bottom: 12px;">
+              <label class="form-label">Document Type <span class="text-danger">*</span></label>
+              <select id="adminUploadDocType" class="form-control" style="max-width: 300px;">
+                <option value="">Select document type</option>
+                <option>PAN Card</option>
+                <option>Aadhaar Card</option>
+                <option>Bank Statements (Last 6 Mos)</option>
+                <option>Salary Slips (Last 3 Mos)</option>
+                <option>IT Returns (Form 16)</option>
+                <option>Other Verification File</option>
+              </select>
             </div>
 
             <!-- Upload drag drop field -->
-            <div class="file-upload-drag m-t-md" style="border: 2px dashed var(--color-border); padding: 24px; text-align: center; border-radius: var(--radius-md); cursor: pointer;" onclick="triggerDocUpload()">
+            <div class="file-upload-drag m-t-md" onclick="document.getElementById('adminRealFileInput').click();">
               <i class="lucide-upload-cloud" style="font-size: 32px; color: var(--color-primary);"></i>
               <h4 class="bold m-t-md">Upload Additional Verification Document</h4>
-              <p class="text-muted" style="font-size: 12px; margin-top: 4px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
-              <input type="file" id="additionalDocInput" style="display: none;" onchange="handleDocSelected(this)" accept=".pdf,.png,.jpg,.jpeg" />
+              <p class="text-muted" style="font-size: 12px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
             </div>
+            <input type="file" id="adminRealFileInput" style="display: none;" accept=".pdf,.png,.jpg,.jpeg" onchange="handleAdminDocumentUpload(event);" />
           </div>
         </div>
 
@@ -314,10 +278,10 @@
   <script src="../assets/js/nav.js"></script>
   <script data-page-init>
   {
+    const urlParams = new URLSearchParams(window.location.search);
+    const leadId = urlParams.get('id') || 'LD-8902';
+
     function loadApplicantDetail() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const leadId = urlParams.get('id') || 'LD-8902';
-      
       const leads = api.getLeads();
       const lead = leads.find(l => l.id === leadId);
       
@@ -329,7 +293,7 @@
         document.getElementById('detailEmail').textContent = lead.email;
         document.getElementById('detailAmount').textContent = formatCurrency(lead.amount);
         document.getElementById('detailProduct').textContent = lead.product;
-        document.getElementById('detailOfficer').textContent = lead.assignedTo;
+        document.getElementById('detailOfficer').textContent = lead.assignedTo || 'Unassigned';
         
         const badge = document.getElementById('stageBadge');
         badge.textContent = lead.status;
@@ -364,68 +328,142 @@
           steps[4].classList.add('completed');
           badge.className = 'badge badge-success';
         }
+
+        renderOcrDocuments(lead);
       }
     }
 
-    window.approveApplication = function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const leadId = urlParams.get('id') || 'LD-8902';
-      api.updateLeadStatus(leadId, 'Approved');
-      showToast('Application Approved successfully!', 'success');
-      loadApplicantDetail();
-    };
- 
-    window.rejectApplication = function() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const leadId = urlParams.get('id') || 'LD-8902';
-      api.updateLeadStatus(leadId, 'Rejected');
-      showToast('Application Rejected', 'danger');
-      loadApplicantDetail();
-    };
- 
-    window.submitEscalation = function() {
-      closeModal('escalateModal');
-      showToast('Application escalated to senior review', 'warning');
-    };
- 
-    window.triggerDocUpload = function() {
-      const input = document.getElementById('additionalDocInput');
-      if (input) input.click();
-    };
- 
-    window.handleDocSelected = function(input) {
-      if (!input.files || input.files.length === 0) return;
-      const file = input.files[0];
-      const name = file.name;
-      
-      const container = document.getElementById('documentsContainer');
-      if (container) {
+    function renderOcrDocuments(lead) {
+      const container = document.getElementById('ocrDocsContainer');
+      if (!container) return;
+      container.innerHTML = '';
+
+      // Default documents if lead has no documents
+      const docs = lead.documents || [
+        { fileName: 'pan_card_amit.pdf', type: 'PAN Card', status: 'Completed', date: '2026-07-10' },
+        { fileName: 'aadhaar_uidai_xml.pdf', type: 'Aadhaar Card', status: 'Completed', date: '2026-07-10' },
+        { fileName: 'hdfc_stmt_6m.pdf', type: 'Bank Statements (Last 6 Mos)', status: 'Completed', date: '2026-07-10' }
+      ];
+
+      docs.forEach(doc => {
+        let icon = 'lucide-file-earmark-text';
+        let previewHtml = '';
+
+        if (doc.type === 'PAN Card') {
+          icon = 'lucide-card-heading';
+          previewHtml = `PAN Number: APS******8G<br>Name Match: 100%<br>Status: Valid Card`;
+        } else if (doc.type === 'Aadhaar Card') {
+          icon = 'lucide-fingerprint';
+          previewHtml = `UIDAI No: **** **** 1024<br>Address Match: Delhi NCR<br>E-KYC Status: Successful`;
+        } else if (doc.type === 'Bank Statements (Last 6 Mos)') {
+          icon = 'lucide-bank';
+          previewHtml = `Avg Balance: ₹42,500<br>Bounce Count: 0<br>Salary Credits: Verified`;
+        } else {
+          icon = 'lucide-file-earmark-text';
+          previewHtml = `File Size: ${(Math.random() * 2 + 0.5).toFixed(1)} MB<br>OCR Read: Successful<br>Review: Awaiting Match`;
+        }
+
         container.innerHTML += `
           <div class="ocr-card">
             <div class="flex align-center gap-sm">
-              <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
-                <i class="lucide-file-text"></i>
+              <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary); display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">
+                <i class="${icon}"></i>
               </div>
               <div>
-                <h4 class="bold">Uploaded Document</h4>
-                <span class="text-muted" style="font-size: 12px;">\${name} (Processed)</span>
+                <h4 class="bold">${doc.type}</h4>
+                <span class="text-muted" style="font-size: 12px;">${doc.fileName} (${doc.status})</span>
               </div>
             </div>
             <div class="ocr-preview-box">
-              File Size: \${(file.size / 1024).toFixed(1)} KB<br>
-              OCR Status: Automated Parsing Complete<br>
-              Verification: Pending Audit
+              ${previewHtml}
             </div>
           </div>
         `;
-        if (window.initializeLucideIcons) window.initializeLucideIcons();
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    window.handleAdminDocumentUpload = function(event) {
+      const type = document.getElementById('adminUploadDocType').value;
+      if (!type) {
+        showToast('Please select a document type first.', 'danger');
+        event.target.value = '';
+        return;
       }
       
-      showToast(\`Document "\${name}" uploaded and parsed successfully!\`, "success");
-      input.value = '';
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const newDoc = {
+        fileName: file.name,
+        type: type,
+        status: 'Completed',
+        date: new Date().toISOString().split('T')[0]
+      };
+
+      const db = api.getDb();
+      const lead = db.leads.find(l => l.id === leadId);
+      if (lead) {
+        if (!lead.documents) lead.documents = [];
+        lead.documents.push(newDoc);
+        api.saveDb(db);
+        
+        showToast(`"${file.name}" uploaded and parsed via OCR successfully.`, 'success');
+        document.getElementById('adminUploadDocType').value = '';
+        event.target.value = '';
+        loadApplicantDetail();
+      }
     };
- 
+
+    window.approveApplication = function() {
+      api.updateLeadStatus(leadId, 'Approved');
+      showToast('Application Approved successfully!', 'success');
+      loadApplicantDetail();
+    }
+
+    window.rejectApplication = function() {
+      api.updateLeadStatus(leadId, 'Rejected');
+      showToast('Application Rejected', 'danger');
+      loadApplicantDetail();
+    }
+
+    window.submitEscalation = function() {
+      closeModal('escalateModal');
+      showToast('Application escalated to senior review', 'warning');
+    }
+
     loadApplicantDetail();
+
+    // Drag and Drop implementation
+    const dropZone = document.querySelector('.file-upload-drag');
+    if (dropZone) {
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }, false);
+      });
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('highlight'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('highlight'), false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+          const fileInput = document.getElementById('adminRealFileInput');
+          fileInput.files = files;
+          const event = new Event('change', { bubbles: true });
+          fileInput.dispatchEvent(event);
+        }
+      }, false);
+    }
   }
   </script>
 </body>

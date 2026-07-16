@@ -642,7 +642,8 @@ select.form-control {
   transition: var(--transition-smooth);
 }
 
-.file-upload-drag:hover {
+.file-upload-drag:hover,
+.file-upload-drag.highlight {
   border-color: var(--color-primary);
   background-color: var(--color-primary-light);
 }

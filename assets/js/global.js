@@ -56,14 +56,26 @@ const iconMapping = {
   'arrow-down-left': 'arrow-down-left-circle',
   'arrow-up-right': 'arrow-up-right-circle',
   'home': 'house',
-  'banknote': 'cash',
+  'banknote': 'cash-stack',
   'loader-circle': 'arrow-clockwise',
   'badge-check': 'patch-check',
   'filter-x': 'funnel',
   'more-vertical': 'three-dots-vertical',
   'more-horizontal': 'three-dots',
-  'clipboard-list': 'clipboard-check',
-  'clock': 'clock'
+  'clipboard-list': 'clipboard',
+  'clock': 'clock',
+  'loader': 'arrow-repeat',
+  'upload-cloud': 'cloud-arrow-up',
+  'file': 'file-earmark',
+  'message-circle': 'chat-dots',
+  'mail': 'envelope',
+  'phone-call': 'telephone-forward',
+  'phone': 'telephone',
+  'layout-template': 'layout-text-window',
+  'send': 'send',
+  'calendar-check': 'calendar-check',
+  'search-x': 'search',
+  'check-check': 'check2-all'
 };
 
 function initTheme() {

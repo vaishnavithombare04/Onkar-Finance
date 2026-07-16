@@ -192,7 +192,7 @@
       if (window.lucide) lucide.createIcons();
     }
 
-    function openDrawer(id) {
+    window.openDrawer = function(id) {
       const customers = api.getDb().customers;
       const cust = customers.find(c => c.id === id);
       if (!cust) return;
@@ -219,7 +219,7 @@
             <div class="flex justify-between"><span class="text-secondary">Branch</span><span>${cust.branch}</span></div>
           </div>
         </div>
-
+ 
         <div>
           <h5 class="bold" style="margin-bottom: 8px;">Documents Verified (KYC)</h5>
           <div class="flex gap-sm">
@@ -228,7 +228,7 @@
             <span class="badge badge-success"><i class="lucide-check-check"></i> ITR V</span>
           </div>
         </div>
-
+ 
         <div>
           <h5 class="bold" style="margin-bottom: 12px;">Timeline Activity</h5>
           <div>
@@ -250,11 +250,11 @@
       
       drawer.classList.add('open');
       if (window.lucide) lucide.createIcons();
-    }
-
-    function closeDrawer() {
+    };
+ 
+    window.closeDrawer = function() {
       document.getElementById('customerDrawer').classList.remove('open');
-    }
+    };
 
     document.getElementById('customerSearch').addEventListener('keyup', renderCustomers);
     document.getElementById('kycFilter').addEventListener('change', renderCustomers);

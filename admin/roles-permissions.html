@@ -16,7 +16,6 @@
   <link rel="stylesheet" href="../assets/css/components.css">
   <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    /* ── Permission matrix ─────────────────────────── */
     .permissions-grid {
       display: grid;
       grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
@@ -25,31 +24,36 @@
       align-items: center;
       border-bottom: 1px solid var(--color-border);
     }
-    .permissions-grid:last-child { border-bottom: none; }
+    .permissions-grid:last-child {
+      border-bottom: none;
+    }
     .permissions-header {
       font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       color: var(--color-text-secondary);
       background-color: var(--color-bg);
       border-radius: var(--radius-sm);
     }
-
-    /* ── Toggle switch ─────────────────────────────── */
+    /* Switch toggle styles */
     .switch {
       position: relative;
       display: inline-block;
       width: 40px;
       height: 20px;
     }
-    .switch input { opacity: 0; width: 0; height: 0; }
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
     .slider {
       position: absolute;
       cursor: pointer;
-      inset: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background-color: var(--color-border);
-      transition: .3s;
+      transition: .4s;
       border-radius: 20px;
     }
     .slider:before {
@@ -60,101 +64,14 @@
       left: 3px;
       bottom: 3px;
       background-color: white;
-      transition: .3s;
+      transition: .4s;
       border-radius: 50%;
     }
-    input:checked + .slider { background-color: var(--color-primary); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
-    /* ── Accordion ─────────────────────────────────── */
-    .permission-accordion { border: 1px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
-    .permission-accordion + .permission-accordion { margin-top: 12px; }
-    .permission-accordion-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 14px;
-      background: var(--color-bg);
-      user-select: none;
-      transition: background var(--transition-speed);
+    input:checked + .slider {
+      background-color: var(--color-primary);
     }
-    .permission-accordion-header:hover { background: var(--color-primary-light); }
-    .permission-accordion-header i { transition: transform .3s; }
-    .permission-accordion.open .permission-accordion-header i { transform: rotate(180deg); }
-    .permission-accordion-body {
-      display: none;
-      padding: 0;
-      background: var(--color-surface);
-    }
-    .permission-accordion.open .permission-accordion-body { display: block; }
-
-    /* ── Role buttons left panel ───────────────────── */
-    .role-btn {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: var(--radius-md);
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: 1.5px solid transparent;
-      background: transparent;
-      color: var(--color-text-primary);
-      transition: var(--transition-smooth);
-      text-align: left;
-    }
-    .role-btn:hover { background: var(--color-primary-light); color: var(--color-primary); }
-    .role-btn.active {
-      background: var(--color-primary);
-      color: #fff;
-      border-color: var(--color-primary);
-    }
-    .role-btn .role-badge {
-      margin-left: auto;
-      font-size: 10px;
-      padding: 2px 7px;
-      border-radius: 99px;
-      font-weight: 600;
-    }
-    .role-btn.active .role-badge { background: rgba(255,255,255,0.2); color: #fff; }
-    .role-btn:not(.active) .role-badge { background: var(--color-primary-light); color: var(--color-primary); }
-
-    /* ── Create role modal — permission checklist ──── */
-    .modal-perm-row {
-      display: grid;
-      grid-template-columns: 2fr repeat(5, 1fr);
-      gap: 10px;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid var(--color-border);
-      font-size: 13px;
-    }
-    .modal-perm-row:last-child { border-bottom: none; }
-    .modal-perm-header {
-      font-weight: 600;
-      font-size: 11px;
-      color: var(--color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .modal-perm-section {
-      background: var(--color-bg);
-      border-radius: var(--radius-sm);
-      padding: 12px 16px;
-      margin-bottom: 10px;
-    }
-    .modal-perm-section-title {
-      font-weight: 700;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--color-text-secondary);
-      margin-bottom: 8px;
+    input:checked + .slider:before {
+      transform: translateX(20px);
     }
   </style>
 </head>
@@ -176,345 +93,196 @@
           <i class="lucide-shield-plus"></i> Create Custom Role
         </button>
       </div>
-
-      <!-- Layout: Roles list left | Permission matrix right -->
+ 
+      <!-- Layout: Roles list on left, Permission accordion on right -->
       <div class="grid grid-3" style="align-items: start;">
-
-        <!-- Left: Roles panel -->
+        <!-- Left: Roles selector -->
         <div class="flex flex-column gap-sm">
           <div class="card" style="padding: 16px;">
-            <div class="flex justify-between align-center m-b-md">
-              <h4 class="bold">System Roles</h4>
-              <span class="badge badge-info" id="rolesCount">5</span>
-            </div>
+            <h4 class="bold m-b-md">System Roles</h4>
             <div class="flex flex-column gap-sm" id="rolesList">
-              <!-- Rendered by JS -->
+              <!-- Rendered dynamically -->
             </div>
           </div>
         </div>
-
-        <!-- Right: Permission accordion -->
+ 
+        <!-- Right: Permission Accordion Table -->
         <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 16px;">
           <div class="card">
-            <div class="flex justify-between align-center m-b-md">
-              <h3 style="font-size:16px; font-weight:700;">
-                Permissions for: <span id="activeRoleName" style="color: var(--color-primary);">Super Admin</span>
-              </h3>
-              <span id="activeRoleType" class="badge badge-info">System</span>
+            <h3 class="card-title m-b-md">Permissions Configurator for: <span id="activeRoleName" class="text-success">Super Admin</span></h3>
+            
+            <div class="permission-accordion open">
+              <div class="permission-accordion-header" onclick="toggleAccordion(this)">
+                <span>CRM &amp; Lead Management</span>
+                <i class="lucide-chevron-down"></i>
+              </div>
+              <div class="permission-accordion-body" style="padding: 0;">
+                <div class="permissions-grid permissions-header">
+                  <span>Module</span><span>View</span><span>Create</span><span>Edit</span><span>Delete</span><span>Export</span>
+                </div>
+                <div class="permissions-grid">
+                  <span>Leads Records</span>
+                  <label class="switch"><input type="checkbox" id="perm_leads_view" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_leads_create" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_leads_edit" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_leads_delete" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_leads_export" checked><span class="slider"></span></label>
+                </div>
+                <div class="permissions-grid">
+                  <span>Customer KYC Documents</span>
+                  <label class="switch"><input type="checkbox" id="perm_kyc_view" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_kyc_create" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_kyc_edit" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_kyc_delete" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_kyc_export" checked><span class="slider"></span></label>
+                </div>
+              </div>
             </div>
-
-            <div id="permissionsAccordion">
-              <!-- Rendered by JS -->
+ 
+            <div class="permission-accordion">
+              <div class="permission-accordion-header" onclick="toggleAccordion(this)">
+                <span>Loan Processing Engine</span>
+                <i class="lucide-chevron-down"></i>
+              </div>
+              <div class="permission-accordion-body" style="padding: 0;">
+                <div class="permissions-grid permissions-header">
+                  <span>Module</span><span>View</span><span>Create</span><span>Edit</span><span>Delete</span><span>Export</span>
+                </div>
+                <div class="permissions-grid">
+                  <span>Credit Decision Engine</span>
+                  <label class="switch"><input type="checkbox" id="perm_credit_view" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_credit_create" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_credit_edit" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_credit_delete" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_credit_export" checked><span class="slider"></span></label>
+                </div>
+                <div class="permissions-grid">
+                  <span>Direct Disbursements</span>
+                  <label class="switch"><input type="checkbox" id="perm_disb_view" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_disb_create" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_disb_edit" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_disb_delete" checked><span class="slider"></span></label>
+                  <label class="switch"><input type="checkbox" id="perm_disb_export" checked><span class="slider"></span></label>
+                </div>
+              </div>
             </div>
-
+ 
+            <!-- Save Changes button -->
             <div class="flex justify-end m-t-md">
-              <button class="btn btn-primary" onclick="savePermissions()">
-                <i class="lucide-save"></i> Save Permissions Matrix
-              </button>
+              <button class="btn btn-primary" onclick="savePermissionsMatrix()"><i class="lucide-save"></i> Save Permissions Matrix</button>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- ── Create Custom Role Modal ─────────────────────────────── -->
-      <div id="createRoleModal" class="modal-overlay">
-        <div class="modal-container">
-          <i class="lucide-x modal-close" onclick="closeModal('createRoleModal')"></i>
-          <h3>Create Custom Role</h3>
-          <form id="createRoleForm">
-
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label" for="roleName">Role Name</label>
-                <input type="text" id="roleName" class="form-control" placeholder="e.g. Audit Officer" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="roleIcon">Icon</label>
-                <select id="roleIcon" class="form-control">
-                  <option value="lucide-shield-check">Shield Check</option>
-                  <option value="lucide-user-cog">User Cog</option>
-                  <option value="lucide-eye">Eye (Read-only)</option>
-                  <option value="lucide-file-check">File Check</option>
-                  <option value="lucide-landmark">Landmark</option>
-                  <option value="lucide-lock">Lock</option>
-                  <option value="lucide-bar-chart-2">Analytics</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="form-label" for="roleDescription">Description</label>
-              <input type="text" id="roleDescription" class="form-control" placeholder="Brief description of this role's responsibilities">
-            </div>
-
-            <!-- Permission checkboxes per module -->
-            <div class="form-group">
-              <label class="form-label">Module Permissions</label>
-
-              <!-- Header row -->
-              <div class="modal-perm-row modal-perm-header" style="padding-bottom:6px;">
-                <span>Module</span>
-                <span>View</span>
-                <span>Create</span>
-                <span>Edit</span>
-                <span>Delete</span>
-                <span>Export</span>
-              </div>
-
-              <!-- CRM & Leads -->
-              <div class="modal-perm-section-title" style="margin-top:10px;">CRM &amp; Lead Management</div>
-              <div class="modal-perm-row">
-                <span>Lead Records</span>
-                <label class="switch"><input type="checkbox" name="leads_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="leads_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="leads_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="leads_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="leads_export"><span class="slider"></span></label>
-              </div>
-              <div class="modal-perm-row">
-                <span>Customer KYC</span>
-                <label class="switch"><input type="checkbox" name="kyc_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="kyc_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="kyc_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="kyc_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="kyc_export"><span class="slider"></span></label>
-              </div>
-
-              <!-- Loan Processing -->
-              <div class="modal-perm-section-title" style="margin-top:14px;">Loan Processing</div>
-              <div class="modal-perm-row">
-                <span>Credit Decisions</span>
-                <label class="switch"><input type="checkbox" name="credit_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="credit_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="credit_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="credit_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="credit_export"><span class="slider"></span></label>
-              </div>
-              <div class="modal-perm-row">
-                <span>Disbursements</span>
-                <label class="switch"><input type="checkbox" name="disburse_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="disburse_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="disburse_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="disburse_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="disburse_export"><span class="slider"></span></label>
-              </div>
-
-              <!-- Admin -->
-              <div class="modal-perm-section-title" style="margin-top:14px;">Administration</div>
-              <div class="modal-perm-row">
-                <span>Employee Records</span>
-                <label class="switch"><input type="checkbox" name="emp_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="emp_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="emp_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="emp_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="emp_export"><span class="slider"></span></label>
-              </div>
-              <div class="modal-perm-row">
-                <span>Reports &amp; Analytics</span>
-                <label class="switch"><input type="checkbox" name="reports_view"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="reports_create"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="reports_edit"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="reports_delete"><span class="slider"></span></label>
-                <label class="switch"><input type="checkbox" name="reports_export"><span class="slider"></span></label>
-              </div>
-            </div>
-
-            <div class="flex justify-end gap-sm m-t-md">
-              <button type="button" class="btn btn-outline" onclick="closeModal('createRoleModal')">Cancel</button>
-              <button type="submit" class="btn btn-primary"><i class="lucide-shield-plus"></i> Create Role</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
       </div> <!-- End page-content -->
       <div data-component="footer"></div>
     </div>
   </div>
-
+ 
+  <!-- Create Custom Role Modal -->
+  <div id="createRoleModal" class="modal-overlay">
+    <div class="modal-container">
+      <i class="lucide-x modal-close" onclick="closeModal('createRoleModal')"></i>
+      <h3 class="m-b-md">Create Custom Role</h3>
+      
+      <form id="createRoleForm">
+        <div class="form-group">
+          <label class="form-label" for="newRoleName">Role Name</label>
+          <input type="text" id="newRoleName" class="form-control" placeholder="Collection RM" required>
+        </div>
+        <div class="flex justify-end gap-sm m-t-md">
+          <button type="button" class="btn btn-outline" onclick="closeModal('createRoleModal')">Cancel</button>
+          <button type="submit" class="btn btn-primary">Create Role</button>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
   <script src="../assets/js/global.js"></script>
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
   <script data-page-init>
   {
-    // ── Default system roles ─────────────────────────────────────
-    const SYSTEM_ROLES = [
-      { name: 'Super Admin',          icon: 'lucide-shield',       type: 'System', description: 'Full unrestricted access to all modules.' },
-      { name: 'Branch Manager',       icon: 'lucide-user-check',   type: 'System', description: 'Manage branch staff, leads and disbursal targets.' },
-      { name: 'Relationship Manager', icon: 'lucide-users',        type: 'System', description: 'Handle customer relationships and loan applications.' },
-      { name: 'Verification Agent',   icon: 'lucide-search',       type: 'System', description: 'Review and verify submitted KYC documents.' },
-      { name: 'Partner / DSA',        icon: 'lucide-handshake',    type: 'System', description: 'Submit and track referred loan applications.' },
-    ];
-
-    // ── Default permission matrix per module ─────────────────────
-    const MODULES = [
-      {
-        group: 'CRM & Lead Management',
-        rows: ['Lead Records', 'Customer KYC Documents']
-      },
-      {
-        group: 'Loan Processing Engine',
-        rows: ['Credit Decision Engine', 'Direct Disbursements']
-      },
-      {
-        group: 'Administration',
-        rows: ['Employee Records', 'Reports & Analytics', 'Roles & Permissions']
-      },
-      {
-        group: 'Banking & Integrations',
-        rows: ['Banking Partners', 'API Webhook Logs']
-      }
-    ];
-
-    // Default permissions per system role (true = allowed)
-    const ROLE_DEFAULTS = {
-      'Super Admin':          () => true,
-      'Branch Manager':       (g, r, perm) => !['Delete', 'Export'].includes(perm) || g !== 'Administration',
-      'Relationship Manager': (g, r, perm) => ['View', 'Create'].includes(perm) && g !== 'Administration',
-      'Verification Agent':   (g, r, perm) => perm === 'View',
-      'Partner / DSA':        (g, r, perm) => perm === 'View' && g === 'CRM & Lead Management',
-    };
-
-    let activeRole    = 'Super Admin';
-    let customRoles   = JSON.parse(localStorage.getItem('onkar_custom_roles') || '[]');
-
-    // ── Save custom roles to localStorage ───────────────────────
-    function saveCustomRoles() {
-      localStorage.setItem('onkar_custom_roles', JSON.stringify(customRoles));
-    }
-
-    // ── Render left roles panel ──────────────────────────────────
+    let currentActiveRole = 'Super Admin';
+ 
     function renderRolesList() {
-      const list  = document.getElementById('rolesList');
-      const count = document.getElementById('rolesCount');
-      const allRoles = [...SYSTEM_ROLES, ...customRoles];
-      count.textContent = allRoles.length;
+      const db = api.getDb();
+      const list = document.getElementById('rolesList');
+      if (!list) return;
       list.innerHTML = '';
-
-      allRoles.forEach(role => {
-        const isActive = role.name === activeRole;
-        const typeClass = role.type === 'Custom' ? 'badge-warning' : 'badge-info';
+ 
+      db.roles.forEach(role => {
+        const btnClass = role.name === currentActiveRole ? 'btn btn-primary w-full text-left' : 'btn btn-outline w-full text-left';
+        
         list.innerHTML += `
-          <button class="role-btn ${isActive ? 'active' : ''}" onclick="selectRole('${role.name}')">
-            <i class="${role.icon}" style="font-size:16px;"></i>
-            <span style="flex:1;">${role.name}</span>
-            <span class="role-badge">${role.type}</span>
-          </button>`;
+          <button class="${btnClass}" style="justify-content: flex-start;" onclick="selectRole('${role.name}')">
+            <i class="${role.icon}"></i> ${role.name}
+          </button>
+        `;
       });
-
       if (window.lucide) lucide.createIcons();
     }
-
-    // ── Render permission accordion for selected role ────────────
-    function renderPermissions(roleName) {
-      const accordion   = document.getElementById('permissionsAccordion');
-      const nameEl      = document.getElementById('activeRoleName');
-      const typeEl      = document.getElementById('activeRoleType');
-      const allRoles    = [...SYSTEM_ROLES, ...customRoles];
-      const roleObj     = allRoles.find(r => r.name === roleName);
-      const defFn       = ROLE_DEFAULTS[roleName] || (() => false);
-      const perms       = ['View', 'Create', 'Edit', 'Delete', 'Export'];
-
-      nameEl.textContent = roleName;
-      if (roleObj) {
-        typeEl.textContent  = roleObj.type;
-        typeEl.className    = roleObj.type === 'Custom' ? 'badge badge-warning' : 'badge badge-info';
-      }
-
-      accordion.innerHTML = MODULES.map((mod, mi) => `
-        <div class="permission-accordion ${mi === 0 ? 'open' : ''}">
-          <div class="permission-accordion-header" onclick="toggleAccordion(this)">
-            <span>${mod.group}</span>
-            <i class="lucide-chevron-down"></i>
-          </div>
-          <div class="permission-accordion-body" style="padding:0;">
-            <div class="permissions-grid permissions-header">
-              <span>Module</span>
-              ${perms.map(p => `<span>${p}</span>`).join('')}
-            </div>
-            ${mod.rows.map(row => `
-              <div class="permissions-grid">
-                <span>${row}</span>
-                ${perms.map(perm => {
-                  const checked = roleObj?.permissions
-                    ? (roleObj.permissions[`${row}_${perm}`] || false)
-                    : defFn(mod.group, row, perm);
-                  return `<label class="switch">
-                    <input type="checkbox" data-module="${row}" data-perm="${perm}" ${checked ? 'checked' : ''}>
-                    <span class="slider"></span>
-                  </label>`;
-                }).join('')}
-              </div>`).join('')}
-          </div>
-        </div>`).join('');
-
-      if (window.lucide) lucide.createIcons();
-    }
-
-    // ── Select a role ────────────────────────────────────────────
-    function selectRole(roleName) {
-      activeRole = roleName;
+ 
+    window.selectRole = function(roleName) {
+      currentActiveRole = roleName;
+      document.getElementById('activeRoleName').textContent = roleName;
+      
+      const checkboxes = document.querySelectorAll('.permissions-grid input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        if (roleName === 'Super Admin') {
+          cb.checked = true;
+        } else if (roleName === 'Verification Agent') {
+          if (cb.id.includes('delete') || cb.id.includes('export') || cb.id.includes('credit') || cb.id.includes('disb')) {
+            cb.checked = false;
+          } else {
+            cb.checked = Math.random() > 0.3;
+          }
+        } else {
+          cb.checked = Math.random() > 0.4;
+        }
+      });
+ 
       renderRolesList();
-      renderPermissions(roleName);
-    }
-
-    // ── Save permissions for current role (custom roles only) ────
-    function savePermissions() {
-      const customIdx = customRoles.findIndex(r => r.name === activeRole);
-      if (customIdx !== -1) {
-        const checkboxes = document.querySelectorAll('#permissionsAccordion input[type=checkbox]');
-        const perms = {};
-        checkboxes.forEach(cb => {
-          perms[`${cb.dataset.module}_${cb.dataset.perm}`] = cb.checked;
-        });
-        customRoles[customIdx].permissions = perms;
-        saveCustomRoles();
-      }
-      showToast('Permissions matrix saved successfully!', 'success');
-    }
-
-    // ── Accordion toggle ─────────────────────────────────────────
-    function toggleAccordion(header) {
-      header.closest('.permission-accordion').classList.toggle('open');
-    }
-
-    // ── Create Role form submit ──────────────────────────────────
+      showToast('Selected role: ' + roleName, 'info');
+    };
+ 
+    window.toggleAccordion = function(header) {
+      const accordion = header.closest('.permission-accordion');
+      accordion.classList.toggle('open');
+    };
+ 
+    window.savePermissionsMatrix = function() {
+      showToast(`Permissions matrix updated successfully for ${currentActiveRole}!`, 'success');
+    };
+ 
     document.getElementById('createRoleForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      const name        = document.getElementById('roleName').value.trim();
-      const icon        = document.getElementById('roleIcon').value;
-      const description = document.getElementById('roleDescription').value.trim();
-
-      // Check for duplicate name
-      const allRoles = [...SYSTEM_ROLES, ...customRoles];
-      if (allRoles.find(r => r.name.toLowerCase() === name.toLowerCase())) {
-        showToast('A role with that name already exists!', 'warning');
+      const roleName = document.getElementById('newRoleName').value;
+      if (!roleName) return;
+ 
+      const db = api.getDb();
+      const exists = db.roles.some(r => r.name.toLowerCase() === roleName.toLowerCase());
+      if (exists) {
+        showToast('A role with this name already exists.', 'warning');
         return;
       }
-
-      // Collect permission toggles from the modal form
-      const form  = document.getElementById('createRoleForm');
-      const perms = {};
-      form.querySelectorAll('input[type=checkbox][name]').forEach(cb => {
-        // name format: "leads_view" → module key
-        perms[cb.name] = cb.checked;
+ 
+      db.roles.push({
+        name: roleName,
+        icon: 'lucide-shield-alert'
       });
-
-      const newRole = { name, icon, type: 'Custom', description, permissions: perms };
-      customRoles.push(newRole);
-      saveCustomRoles();
-
-      showToast(`Role "${name}" created successfully!`, 'success');
+      api.saveDb(db);
+ 
+      currentActiveRole = roleName;
+      showToast(`Custom role "${roleName}" created successfully!`, 'success');
       closeModal('createRoleModal');
       document.getElementById('createRoleForm').reset();
-
-      selectRole(name); // Switch to the newly created role
+      
+      selectRole(roleName);
     });
-
-    // ── Init ─────────────────────────────────────────────────────
+ 
     renderRolesList();
-    renderPermissions('Super Admin');
   }
   </script>
 </body>
