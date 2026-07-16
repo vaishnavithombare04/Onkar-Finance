@@ -97,68 +97,177 @@
       
       <!-- Add Lead Modal -->
       <div id="addLeadModal" class="modal-overlay">
-        <div class="modal-container">
+        <div class="modal-container" style="max-width: 620px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column;">
           <i class="lucide-x modal-close" onclick="closeModal('addLeadModal')"></i>
-          <h3 class="m-b-md">Create New Team Lead Entry</h3>
+          <h3 style="margin-bottom: 4px;">Create New Team Lead Entry</h3>
+          <p style="font-size: 13px; color: var(--color-text-secondary); margin-bottom: 20px;">Fill in applicant details to register a new lead in the CRM.</p>
+
+          <!-- Tab Toggle -->
+          <div style="display: flex; background: var(--color-bg); border-radius: var(--radius-md); padding: 4px; margin-bottom: 24px; gap: 4px;">
+            <button type="button" id="tabIndividual" class="lead-tab-btn lead-tab-active" onclick="switchLeadTab('individual')">
+              <i class="lucide-user"></i> Individual
+            </button>
+            <button type="button" id="tabBusiness" class="lead-tab-btn" onclick="switchLeadTab('business')">
+              <i class="lucide-briefcase"></i> Business
+            </button>
+          </div>
+
+          <!-- Individual Tab Form -->
           <form id="addLeadForm">
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label" for="leadName">Full Name</label>
-                <input type="text" id="leadName" class="form-control" placeholder="Amit Sharma" required>
+            <div id="tabContentIndividual">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="leadName">Full Name <span style="color:var(--color-danger)">*</span></label>
+                  <input type="text" id="leadName" class="form-control" placeholder="e.g. Amit Sharma" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="leadEmail">Email Address <span style="color:var(--color-danger)">*</span></label>
+                  <input type="email" id="leadEmail" class="form-control" placeholder="amit@gmail.com" required>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="leadPhone">Phone Number <span style="color:var(--color-danger)">*</span></label>
+                  <input type="text" id="leadPhone" class="form-control" placeholder="+91 99999 88888" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="leadAmount">Loan Amount (INR) <span style="color:var(--color-danger)">*</span></label>
+                  <input type="number" id="leadAmount" class="form-control" placeholder="500000" required>
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="leadProduct">Loan Product</label>
+                  <select id="leadProduct" class="form-control">
+                    <option value="Personal Loan">Personal Loan</option>
+                    <option value="Home Loan">Home Loan</option>
+                    <option value="Business Loan">Business Loan</option>
+                    <option value="Gold Loan">Gold Loan</option>
+                    <option value="Vehicle Loan">Vehicle Loan</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="leadSource">Lead Source</label>
+                  <select id="leadSource" class="form-control">
+                    <option value="Website">Website</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Google Ads">Google Ads</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Direct">Direct</option>
+                  </select>
+                </div>
               </div>
               <div class="form-group">
-                <label class="form-label" for="leadEmail">Email Address</label>
-                <input type="email" id="leadEmail" class="form-control" placeholder="amit@gmail.com" required>
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label" for="leadPhone">Phone Number</label>
-                <input type="text" id="leadPhone" class="form-control" placeholder="+91 99999 88888" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="leadAmount">Required Loan Amount (INR)</label>
-                <input type="number" id="leadAmount" class="form-control" placeholder="500000" required>
-              </div>
-            </div>
-            <div class="grid-2">
-              <div class="form-group">
-                <label class="form-label" for="leadProduct">Loan Product</label>
-                <select id="leadProduct" class="form-control">
-                  <option value="Personal Loan">Personal Loan</option>
-                  <option value="Home Loan">Home Loan</option>
-                  <option value="Business Loan">Business Loan</option>
-                  <option value="Gold Loan">Gold Loan</option>
-                  <option value="Vehicle Loan">Vehicle Loan</option>
+                <label class="form-label" for="leadAssigned">Assign Team Officer</label>
+                <select id="leadAssigned" class="form-control">
+                  <option value="Rahul Verma">Rahul Verma</option>
+                  <option value="Kiran Das">Kiran Das</option>
+                  <option value="Sunil Mehta">Sunil Mehta</option>
+                  <option value="Priya N.">Priya N. (Self)</option>
                 </select>
               </div>
+            </div>
+
+            <!-- Business Tab Form -->
+            <div id="tabContentBusiness" style="display: none;">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="bizName">Business / Company Name <span style="color:var(--color-danger)">*</span></label>
+                  <input type="text" id="bizName" class="form-control" placeholder="e.g. Sharma Enterprises Pvt. Ltd.">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bizContact">Contact Person</label>
+                  <input type="text" id="bizContact" class="form-control" placeholder="e.g. Amit Sharma">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="bizPhone">Phone Number <span style="color:var(--color-danger)">*</span></label>
+                  <input type="text" id="bizPhone" class="form-control" placeholder="+91 99999 88888">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bizEmail">Business Email</label>
+                  <input type="email" id="bizEmail" class="form-control" placeholder="info@sharma.co.in">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="bizGst">GSTIN</label>
+                  <input type="text" id="bizGst" class="form-control" placeholder="22AAAAA0000A1Z5">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bizAmount">Loan Amount (INR) <span style="color:var(--color-danger)">*</span></label>
+                  <input type="number" id="bizAmount" class="form-control" placeholder="2000000">
+                </div>
+              </div>
+              <div class="grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="bizProduct">Loan Product</label>
+                  <select id="bizProduct" class="form-control">
+                    <option value="Business Loan">Business Loan</option>
+                    <option value="Working Capital">Working Capital</option>
+                    <option value="Equipment Finance">Equipment Finance</option>
+                    <option value="Overdraft Facility">Overdraft Facility</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="bizSource">Lead Source</label>
+                  <select id="bizSource" class="form-control">
+                    <option value="Referral">Referral</option>
+                    <option value="Agent">Agent</option>
+                    <option value="Direct">Direct</option>
+                    <option value="Google Ads">Google Ads</option>
+                    <option value="Website">Website</option>
+                  </select>
+                </div>
+              </div>
               <div class="form-group">
-                <label class="form-label" for="leadSource">Lead Source</label>
-                <select id="leadSource" class="form-control">
-                  <option value="Website">Website</option>
-                  <option value="Agent">Agent</option>
-                  <option value="Google Ads">Google Ads</option>
-                  <option value="Referral">Referral</option>
-                  <option value="Direct">Direct</option>
+                <label class="form-label" for="bizAssigned">Assign Team Officer</label>
+                <select id="bizAssigned" class="form-control">
+                  <option value="Rahul Verma">Rahul Verma</option>
+                  <option value="Kiran Das">Kiran Das</option>
+                  <option value="Sunil Mehta">Sunil Mehta</option>
+                  <option value="Priya N.">Priya N. (Self)</option>
                 </select>
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="leadAssigned">Assign Team Officer</label>
-              <select id="leadAssigned" class="form-control">
-                <option value="Rahul Verma">Rahul Verma</option>
-                <option value="Kiran Das">Kiran Das</option>
-                <option value="Sunil Mehta">Sunil Mehta</option>
-                <option value="Priya N.">Priya N. (Self)</option>
-              </select>
-            </div>
-            <div class="flex justify-end gap-sm m-t-md">
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px; padding-top: 16px; border-top: 1px solid var(--color-border);">
               <button type="button" class="btn btn-outline" onclick="closeModal('addLeadModal')">Cancel</button>
-              <button type="submit" class="btn btn-primary">Save Lead</button>
+              <button type="submit" class="btn btn-primary"><i class="lucide-save"></i> Save Lead</button>
             </div>
           </form>
         </div>
       </div>
+
+      <style>
+        .lead-tab-btn {
+          flex: 1;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 7px;
+          padding: 9px 16px;
+          border-radius: 10px;
+          font-size: 13px;
+          font-weight: 500;
+          cursor: pointer;
+          color: var(--color-text-secondary);
+          background: transparent;
+          border: none;
+          transition: all 0.2s ease;
+        }
+        .lead-tab-btn:hover {
+          color: var(--color-primary);
+          background: var(--color-primary-light);
+        }
+        .lead-tab-active {
+          background: var(--color-surface) !important;
+          color: var(--color-primary) !important;
+          box-shadow: 0 2px 8px rgba(67, 97, 238, 0.15);
+          font-weight: 600;
+        }
+      </style>
       </div> <!-- End page-content -->
       
       <div data-component="footer"></div>

@@ -30,7 +30,7 @@
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Banking Partners &amp; API Integrations</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage associated banks, financial products offered, and track sanction ratios.</p>
         </div>
-        <button class="btn btn-primary" onclick="showToast('Add partner dialog coming soon', 'info')">
+        <button class="btn btn-primary" onclick="openModal('addBankModal')">
           <i class="lucide-plus"></i> Add Banking Partner
         </button>
       </div>
@@ -38,59 +38,146 @@
       <!-- Partner cards / list -->
       <div class="card" style="padding: 0;">
         <div class="table-responsive">
-          <table class="data-table">
+          <table class="data-table" id="banksTable">
             <thead>
               <tr>
                 <th>Bank / Vendor Name</th>
                 <th>Products Offered</th>
                 <th>Applications Routed</th>
-                <th>Sanktion / Approval Rate</th>
+                <th>Sanction / Approval Rate</th>
                 <th>API Integration Status</th>
                 <th>Support Contact</th>
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td class="bold">HDFC Bank Ltd.</td>
-                <td>Home Loan, Personal Loan</td>
-                <td class="bold">142</td>
-                <td>
-                  <span class="bold">82%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 82%;"></div></div>
-                </td>
-                <td><span class="badge badge-success">API Connected</span></td>
-                <td>hdfc.support@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
-              <tr>
-                <td class="bold">ICICI Bank Ltd.</td>
-                <td>Business Loan, Auto Loan</td>
-                <td class="bold">98</td>
-                <td>
-                  <span class="bold">75%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 75%;"></div></div>
-                </td>
-                <td><span class="badge badge-success">API Connected</span></td>
-                <td>icici.api@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
-              <tr>
-                <td class="bold">State Bank of India (SBI)</td>
-                <td>Agriculture Loan, Home Loan</td>
-                <td class="bold">210</td>
-                <td>
-                  <span class="bold">64%</span>
-                  <div class="progress-bar-container" style="height:4px; margin-top:4px;"><div class="progress-bar-fill" style="width: 64%; background-color: var(--color-warning);"></div></div>
-                </td>
-                <td><span class="badge badge-warning">Manual Routing</span></td>
-                <td>sbi.manual@onkar.com</td>
-                <td><button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;">Configure</button></td>
-              </tr>
+            <tbody id="banksTableBody">
+              <!-- Rendered dynamically -->
             </tbody>
           </table>
         </div>
       </div>
+
+      <!-- ── Add Banking Partner Modal ────────────────────────────── -->
+      <div id="addBankModal" class="modal-overlay">
+        <div class="modal-container">
+          <i class="lucide-x modal-close" onclick="closeModal('addBankModal')"></i>
+          <h3>Add Banking Partner</h3>
+          <form id="addBankForm">
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="bankName">Bank / Vendor Name</label>
+                <input type="text" id="bankName" class="form-control" placeholder="e.g. Axis Bank Ltd." required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bankSupport">Support Email</label>
+                <input type="email" id="bankSupport" class="form-control" placeholder="support@bank.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="bankProducts">Products Offered</label>
+              <input type="text" id="bankProducts" class="form-control" placeholder="e.g. Home Loan, Personal Loan" required>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="bankRoutingMode">Routing Mode</label>
+                <select id="bankRoutingMode" class="form-control">
+                  <option value="API">API Integration</option>
+                  <option value="Manual">Manual Routing</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bankApiStatus">API Status</label>
+                <select id="bankApiStatus" class="form-control">
+                  <option value="API Connected">API Connected</option>
+                  <option value="Manual Routing">Manual Routing</option>
+                  <option value="Pending Setup">Pending Setup</option>
+                  <option value="Disconnected">Disconnected</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="bankApiKey">API Key</label>
+                <input type="text" id="bankApiKey" class="form-control" placeholder="Optional – e.g. axis_live_xxxxx">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="bankWebhookUrl">Webhook URL</label>
+                <input type="url" id="bankWebhookUrl" class="form-control" placeholder="https://api.bank.com/webhook">
+              </div>
+            </div>
+            <div class="flex justify-end gap-sm m-t-md">
+              <button type="button" class="btn btn-outline" onclick="closeModal('addBankModal')">Cancel</button>
+              <button type="submit" class="btn btn-primary"><i class="lucide-plus-circle"></i> Add Partner</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- ── Configure Bank Modal ──────────────────────────────────── -->
+      <div id="configureBankModal" class="modal-overlay">
+        <div class="modal-container">
+          <i class="lucide-x modal-close" onclick="closeModal('configureBankModal')"></i>
+          <h3>Configure Partner</h3>
+          <form id="configureBankForm">
+            <input type="hidden" id="configBankId">
+
+            <!-- Read-only summary row -->
+            <div class="card" style="background: var(--color-bg); padding: 14px 16px; margin-bottom: 20px; border-radius: var(--radius-sm);">
+              <div class="flex align-center gap-md">
+                <div class="stat-icon" style="width:40px; height:40px; font-size:18px;"><i class="lucide-landmark"></i></div>
+                <div>
+                  <div class="bold" id="configBankNameDisplay" style="font-size:15px;"></div>
+                  <div class="text-secondary" id="configBankProductsDisplay" style="font-size:12px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="configBankSupport">Support Email</label>
+                <input type="email" id="configBankSupport" class="form-control" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="configBankProducts">Products Offered</label>
+                <input type="text" id="configBankProducts" class="form-control" required>
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label class="form-label" for="configRoutingMode">Routing Mode</label>
+                <select id="configRoutingMode" class="form-control">
+                  <option value="API">API Integration</option>
+                  <option value="Manual">Manual Routing</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="configApiStatus">API Status</label>
+                <select id="configApiStatus" class="form-control">
+                  <option value="API Connected">API Connected</option>
+                  <option value="Manual Routing">Manual Routing</option>
+                  <option value="Pending Setup">Pending Setup</option>
+                  <option value="Disconnected">Disconnected</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="configApiKey">API Key</label>
+              <input type="text" id="configApiKey" class="form-control" placeholder="Enter API key (leave blank if manual)">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="configWebhookUrl">Webhook URL</label>
+              <input type="url" id="configWebhookUrl" class="form-control" placeholder="https://api.bank.com/webhook/onkar">
+            </div>
+            <div class="flex justify-end gap-sm m-t-md">
+              <button type="button" class="btn btn-outline" onclick="closeModal('configureBankModal')">Cancel</button>
+              <button type="submit" class="btn btn-primary"><i class="lucide-save"></i> Save Configuration</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
       </div> <!-- End page-content -->
       <div data-component="footer"></div>
     </div>
@@ -100,5 +187,122 @@
   <script src="../assets/js/api.js"></script>
   <script src="../assets/js/components.js"></script>
   <script src="../assets/js/nav.js"></script>
+  <script data-page-init>
+  {
+    // ── Ensure banks exist in db (migrate old saves) ────────────
+    (function seedBanks() {
+      const db = api.getDb();
+      if (!db.banks) {
+        db.banks = [
+          { id: "BNK-001", name: "HDFC Bank Ltd.", products: "Home Loan, Personal Loan", routed: 142, approvalRate: 82, apiStatus: "API Connected", support: "hdfc.support@onkar.com", apiKey: "hdfc_live_k9x2m", webhookUrl: "https://api.hdfcbank.com/webhook/onkar", routingMode: "API" },
+          { id: "BNK-002", name: "ICICI Bank Ltd.", products: "Business Loan, Auto Loan", routed: 98, approvalRate: 75, apiStatus: "API Connected", support: "icici.api@onkar.com", apiKey: "icici_prod_p4r7t", webhookUrl: "https://gateway.icicibank.com/hook/onkar", routingMode: "API" },
+          { id: "BNK-003", name: "State Bank of India (SBI)", products: "Agriculture Loan, Home Loan", routed: 210, approvalRate: 64, apiStatus: "Manual Routing", support: "sbi.manual@onkar.com", apiKey: "", webhookUrl: "", routingMode: "Manual" }
+        ];
+        api.saveDb(db);
+      }
+    })();
+
+    // ── Render banks table ───────────────────────────────────────
+    function renderBanks() {
+      const db     = api.getDb();
+      const banks  = db.banks || [];
+      const tbody  = document.getElementById('banksTableBody');
+      tbody.innerHTML = '';
+
+      if (banks.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:40px; color:var(--color-text-muted);">No banking partners added yet.</td></tr>`;
+        return;
+      }
+
+      banks.forEach(b => {
+        const rate        = b.approvalRate || 0;
+        const barColor    = rate >= 75 ? 'var(--color-success)' : rate >= 50 ? 'var(--color-warning)' : 'var(--color-danger)';
+        const statusClass = b.apiStatus === 'API Connected' ? 'badge-success'
+                          : b.apiStatus === 'Manual Routing' ? 'badge-warning'
+                          : b.apiStatus === 'Pending Setup'  ? 'badge-info'
+                          : 'badge-danger';
+
+        tbody.innerHTML += `
+          <tr>
+            <td class="bold">${b.name}</td>
+            <td>${b.products}</td>
+            <td class="bold">${b.routed}</td>
+            <td>
+              <span class="bold">${rate}%</span>
+              <div class="progress-bar-container" style="height:4px; margin-top:4px;">
+                <div class="progress-bar-fill" style="width:${rate}%; background-color:${barColor};"></div>
+              </div>
+            </td>
+            <td><span class="badge ${statusClass}">${b.apiStatus}</span></td>
+            <td>${b.support}</td>
+            <td>
+              <button class="btn btn-outline" style="padding:6px 14px; font-size:12px; gap:6px;" onclick="openConfigureModal('${b.id}')">
+                <i class="lucide-settings-2"></i> Configure
+              </button>
+            </td>
+          </tr>`;
+      });
+
+      if (window.lucide) lucide.createIcons();
+    }
+
+    // ── Add Banking Partner form ─────────────────────────────────
+    document.getElementById('addBankForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name        = document.getElementById('bankName').value.trim();
+      const support     = document.getElementById('bankSupport').value.trim();
+      const products    = document.getElementById('bankProducts').value.trim();
+      const routingMode = document.getElementById('bankRoutingMode').value;
+      const apiStatus   = document.getElementById('bankApiStatus').value;
+      const apiKey      = document.getElementById('bankApiKey').value.trim();
+      const webhookUrl  = document.getElementById('bankWebhookUrl').value.trim();
+
+      api.addBank({ name, support, products, routingMode, apiStatus, apiKey, webhookUrl });
+      showToast(`${name} added as a banking partner!`, 'success');
+      closeModal('addBankModal');
+      document.getElementById('addBankForm').reset();
+      renderBanks();
+    });
+
+    // ── Configure modal: open pre-filled ────────────────────────
+    function openConfigureModal(id) {
+      const db   = api.getDb();
+      const bank = (db.banks || []).find(b => b.id === id);
+      if (!bank) return;
+
+      document.getElementById('configBankId').value           = bank.id;
+      document.getElementById('configBankNameDisplay').textContent    = bank.name;
+      document.getElementById('configBankProductsDisplay').textContent = bank.products;
+      document.getElementById('configBankSupport').value      = bank.support    || '';
+      document.getElementById('configBankProducts').value     = bank.products   || '';
+      document.getElementById('configRoutingMode').value      = bank.routingMode || 'Manual';
+      document.getElementById('configApiStatus').value        = bank.apiStatus  || 'Pending Setup';
+      document.getElementById('configApiKey').value           = bank.apiKey     || '';
+      document.getElementById('configWebhookUrl').value       = bank.webhookUrl || '';
+
+      openModal('configureBankModal');
+    }
+
+    // ── Configure form: save ─────────────────────────────────────
+    document.getElementById('configureBankForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const id = document.getElementById('configBankId').value;
+      api.updateBank(id, {
+        support:     document.getElementById('configBankSupport').value.trim(),
+        products:    document.getElementById('configBankProducts').value.trim(),
+        routingMode: document.getElementById('configRoutingMode').value,
+        apiStatus:   document.getElementById('configApiStatus').value,
+        apiKey:      document.getElementById('configApiKey').value.trim(),
+        webhookUrl:  document.getElementById('configWebhookUrl').value.trim(),
+      });
+      showToast('Partner configuration saved successfully!', 'success');
+      closeModal('configureBankModal');
+      renderBanks();
+    });
+
+    // ── Init ─────────────────────────────────────────────────────
+    renderBanks();
+  }
+  </script>
 </body>
 </html>

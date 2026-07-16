@@ -56,7 +56,14 @@ const iconMapping = {
   'arrow-down-left': 'arrow-down-left-circle',
   'arrow-up-right': 'arrow-up-right-circle',
   'home': 'house',
-  'more-horizontal': 'three-dots'
+  'banknote': 'cash',
+  'loader-circle': 'arrow-clockwise',
+  'badge-check': 'patch-check',
+  'filter-x': 'funnel',
+  'more-vertical': 'three-dots-vertical',
+  'more-horizontal': 'three-dots',
+  'clipboard-list': 'clipboard-check',
+  'clock': 'clock'
 };
 
 function initTheme() {

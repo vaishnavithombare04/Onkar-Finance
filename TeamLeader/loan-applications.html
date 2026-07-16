@@ -425,6 +425,122 @@
             <i class="lucide-file-search"></i>
             <p>No applications match your filters.</p>
           </div>
+      <!-- Stage Update Modal -->
+      <div class="modal-overlay" id="stageModal">
+        <div class="modal-container">
+          <i class="lucide-x modal-close" onclick="closeModal('stageModal')"></i>
+          <div class="modal-header">
+            <div>
+              <h3 class="modal-title bold" style="font-size: 18px;">Update Application Stage</h3>
+              <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Change workflow stage for this application</p>
+            </div>
+          </div>
+          <div class="modal-app-info" style="margin-top: 16px;">
+            <div class="info-item"><div class="info-label">App ID</div><div class="info-val" id="smAppId">—</div></div>
+            <div class="info-item"><div class="info-label">Applicant</div><div class="info-val" id="smApplicant">—</div></div>
+            <div class="info-item"><div class="info-label">Product</div><div class="info-val" id="smProduct">—</div></div>
+            <div class="info-item"><div class="info-label">Current Stage</div><div class="info-val" id="smCurrentStage">—</div></div>
+          </div>
+          <div class="form-group" style="margin-top: 16px;">
+            <label class="form-label">New Stage <span class="text-danger">*</span></label>
+            <select id="smNewStage" class="form-control">
+              <option>New Lead</option>
+              <option>Verification</option>
+              <option>Under Process</option>
+              <option>Approved</option>
+              <option>Disbursed</option>
+              <option>Rejected</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Priority</label>
+            <select id="smPriority" class="form-control">
+              <option>Normal</option>
+              <option>High</option>
+              <option>Urgent</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notes / Remarks</label>
+            <textarea id="smNotes" class="form-control" placeholder="Add any remarks about this stage change…" style="min-height: 80px;"></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Notify Applicant</label>
+            <select id="smNotify" class="form-control">
+              <option value="yes">Yes – Send SMS &amp; Email</option>
+              <option value="sms">SMS Only</option>
+              <option value="email">Email Only</option>
+              <option value="no">No Notification</option>
+            </select>
+          </div>
+          <div class="modal-actions" style="margin-top: 24px;">
+            <button class="btn btn-outline" onclick="closeModal('stageModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitStageUpdate()"><i class="lucide-check"></i> Update Stage</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- New Application Modal -->
+      <div class="modal-overlay" id="newAppModal">
+        <div class="modal-container" style="max-width:560px;">
+          <i class="lucide-x modal-close" onclick="closeModal('newAppModal')"></i>
+          <div class="modal-header">
+            <div>
+              <h3 class="modal-title bold" style="font-size: 18px;">New Loan Application</h3>
+              <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Create a new application for Sales Team A</p>
+            </div>
+          </div>
+          <div class="grid-2-form" style="margin-top: 16px; margin-bottom: 12px;">
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Applicant Name <span class="text-danger">*</span></label>
+              <input type="text" id="naName" class="form-control" placeholder="Full name" />
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+              <input type="tel" id="naMobile" class="form-control" placeholder="10-digit mobile" />
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Loan Product <span class="text-danger">*</span></label>
+              <select id="naProduct" class="form-control">
+                <option value="">Select product</option>
+                <option>Personal Loan</option>
+                <option>Home Loan</option>
+                <option>Business Loan</option>
+                <option>Gold Loan</option>
+                <option>Vehicle Loan</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
+              <input type="number" id="naAmount" class="form-control" placeholder="e.g. 500000" min="10000" />
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Assign To <span class="text-danger">*</span></label>
+              <select id="naAssignee" class="form-control">
+                <option value="">Select agent</option>
+                <option>Kiran Das</option>
+                <option>Meera Joshi</option>
+                <option>Ravi Tiwari</option>
+                <option>Sunil Mehta</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label class="form-label">Tenure (Months)</label>
+              <input type="number" id="naTenure" class="form-control" placeholder="e.g. 36" min="6" max="360" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label">Applicant Address</label>
+            <textarea id="naAddress" class="form-control" placeholder="Full address..." style="min-height:60px;"></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label class="form-label">Initial Notes</label>
+            <textarea id="naNote" class="form-control" placeholder="Any initial observations…" style="min-height:60px;"></textarea>
+          </div>
+          <div class="modal-actions" style="margin-top: 20px;">
+            <button class="btn btn-outline" onclick="closeModal('newAppModal')">Cancel</button>
+            <button class="btn btn-primary" onclick="submitNewApp()"><i class="lucide-plus"></i> Create Application</button>
+          </div>
         </div>
       </div>
 
@@ -433,125 +549,6 @@
     <div data-component="footer"></div>
   </div><!-- /main-content -->
 </div><!-- /admin-layout -->
-
-<!-- Stage Update Modal -->
-<div class="modal-overlay" id="stageModal">
-  <div class="modal-container">
-    <i class="lucide-x modal-close" onclick="closeModal('stageModal')"></i>
-    <div class="modal-header">
-      <div>
-        <h3 class="modal-title bold" style="font-size: 18px;">Update Application Stage</h3>
-        <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Change workflow stage for this application</p>
-      </div>
-    </div>
-    <div class="modal-app-info" style="margin-top: 16px;">
-      <div class="info-item"><div class="info-label">App ID</div><div class="info-val" id="smAppId">—</div></div>
-      <div class="info-item"><div class="info-label">Applicant</div><div class="info-val" id="smApplicant">—</div></div>
-      <div class="info-item"><div class="info-label">Product</div><div class="info-val" id="smProduct">—</div></div>
-      <div class="info-item"><div class="info-label">Current Stage</div><div class="info-val" id="smCurrentStage">—</div></div>
-    </div>
-    <div class="form-group" style="margin-top: 16px;">
-      <label class="form-label">New Stage <span class="text-danger">*</span></label>
-      <select id="smNewStage" class="form-control">
-        <option>New Lead</option>
-        <option>Verification</option>
-        <option>Under Process</option>
-        <option>Approved</option>
-        <option>Disbursed</option>
-        <option>Rejected</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Priority</label>
-      <select id="smPriority" class="form-control">
-        <option>Normal</option>
-        <option>High</option>
-        <option>Urgent</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes / Remarks</label>
-      <textarea id="smNotes" class="form-control" placeholder="Add any remarks about this stage change…" style="min-height: 80px;"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notify Applicant</label>
-      <select id="smNotify" class="form-control">
-        <option value="yes">Yes – Send SMS &amp; Email</option>
-        <option value="sms">SMS Only</option>
-        <option value="email">Email Only</option>
-        <option value="no">No Notification</option>
-      </select>
-    </div>
-    <div class="modal-actions" style="margin-top: 24px;">
-      <button class="btn btn-outline" onclick="closeModal('stageModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitStageUpdate()"><i class="lucide-check"></i> Update Stage</button>
-    </div>
-  </div>
-</div>
-
-<!-- New Application Modal -->
-<div class="modal-overlay" id="newAppModal">
-  <div class="modal-container" style="max-width:560px;">
-    <i class="lucide-x modal-close" onclick="closeModal('newAppModal')"></i>
-    <div class="modal-header">
-      <div>
-        <h3 class="modal-title bold" style="font-size: 18px;">New Loan Application</h3>
-        <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Create a new application for Sales Team A</p>
-      </div>
-    </div>
-    <div class="grid-2-form" style="margin-top: 16px; margin-bottom: 12px;">
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Applicant Name <span class="text-danger">*</span></label>
-        <input type="text" id="naName" class="form-control" placeholder="Full name" />
-      </div>
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
-        <input type="tel" id="naMobile" class="form-control" placeholder="10-digit mobile" />
-      </div>
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Loan Product <span class="text-danger">*</span></label>
-        <select id="naProduct" class="form-control">
-          <option value="">Select product</option>
-          <option>Personal Loan</option>
-          <option>Home Loan</option>
-          <option>Business Loan</option>
-          <option>Gold Loan</option>
-          <option>Vehicle Loan</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
-        <input type="number" id="naAmount" class="form-control" placeholder="e.g. 500000" min="10000" />
-      </div>
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Assign To <span class="text-danger">*</span></label>
-        <select id="naAssignee" class="form-control">
-          <option value="">Select agent</option>
-          <option>Kiran Das</option>
-          <option>Meera Joshi</option>
-          <option>Ravi Tiwari</option>
-          <option>Sunil Mehta</option>
-        </select>
-      </div>
-      <div class="form-group" style="margin-bottom: 12px;">
-        <label class="form-label">Tenure (Months)</label>
-        <input type="number" id="naTenure" class="form-control" placeholder="e.g. 36" min="6" max="360" />
-      </div>
-    </div>
-    <div class="form-group" style="margin-bottom: 12px;">
-      <label class="form-label">Applicant Address</label>
-      <textarea id="naAddress" class="form-control" placeholder="Full address..." style="min-height:60px;"></textarea>
-    </div>
-    <div class="form-group" style="margin-bottom: 12px;">
-      <label class="form-label">Initial Notes</label>
-      <textarea id="naNote" class="form-control" placeholder="Any initial observations…" style="min-height:60px;"></textarea>
-    </div>
-    <div class="modal-actions" style="margin-top: 20px;">
-      <button class="btn btn-outline" onclick="closeModal('newAppModal')">Cancel</button>
-      <button class="btn btn-primary" onclick="submitNewApp()"><i class="lucide-plus"></i> Create Application</button>
-    </div>
-  </div>
-</div>
 
 <!-- Toast Container -->
 <div class="toast-container" id="toastContainer"></div>

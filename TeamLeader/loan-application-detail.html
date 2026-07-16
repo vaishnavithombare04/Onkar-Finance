@@ -200,7 +200,7 @@
           <div class="card">
             <h3 class="card-title m-b-md">KYC OCR Extracted Metadata</h3>
             
-            <div class="flex flex-column gap-md">
+            <div class="flex flex-column gap-md" id="documentsContainer">
               <div class="ocr-card">
                 <div class="flex align-center gap-sm">
                   <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
@@ -254,10 +254,16 @@
             </div>
 
             <!-- Upload drag drop field -->
-            <div class="file-upload-drag m-t-md" style="border: 2px dashed var(--color-border); padding: 24px; text-align: center; border-radius: var(--radius-md); cursor: pointer;" onclick="showToast('Select verification file popup...', 'info')">
-              <i class="lucide-upload-cloud" style="font-size: 32px; color: var(--color-primary);"></i>
+            <div class="file-upload-drag m-t-md" id="uploadDropZone" style="border: 2px dashed var(--color-border); padding: 24px; text-align: center; border-radius: var(--radius-md); cursor: pointer; transition: border-color 0.2s, background 0.2s;"
+              onclick="triggerDocUpload(event)"
+              ondragover="handleDragOver(event)"
+              ondragleave="handleDragLeave(event)"
+              ondrop="handleDrop(event)">
+              <i class="lucide-upload-cloud" style="width:40px; height:40px; color: var(--color-primary); display:block; margin: 0 auto;"></i>
               <h4 class="bold m-t-md">Upload Additional Verification Document</h4>
               <p class="text-muted" style="font-size: 12px; margin-top: 4px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
+              <p class="text-muted" style="font-size: 11px; margin-top: 6px;">— or click to browse —</p>
+              <input type="file" id="additionalDocInput" style="display: none;" onchange="handleDocSelected(this)" accept=".pdf,.png,.jpg,.jpeg" multiple />
             </div>
           </div>
         </div>
@@ -472,6 +478,85 @@
       document.getElementById('taskDesc').value = '';
     };
 
+    window.triggerDocUpload = function(e) {
+      // Prevent bubbling from the hidden input's own click re-triggering this
+      if (e && e.target && e.target.type === 'file') return;
+      const input = document.getElementById('additionalDocInput');
+      if (input) input.click();
+    };
+
+    window.handleDragOver = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const zone = document.getElementById('uploadDropZone');
+      if (zone) {
+        zone.style.borderColor = 'var(--color-primary)';
+        zone.style.background = 'var(--color-primary-light)';
+      }
+    };
+
+    window.handleDragLeave = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const zone = document.getElementById('uploadDropZone');
+      if (zone) {
+        zone.style.borderColor = 'var(--color-border)';
+        zone.style.background = '';
+      }
+    };
+
+    window.handleDrop = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const zone = document.getElementById('uploadDropZone');
+      if (zone) {
+        zone.style.borderColor = 'var(--color-border)';
+        zone.style.background = '';
+      }
+      const files = e.dataTransfer && e.dataTransfer.files;
+      if (files && files.length > 0) {
+        processUploadedFiles(files);
+      }
+    };
+ 
+    window.handleDocSelected = function(input) {
+      if (!input.files || input.files.length === 0) return;
+      processUploadedFiles(input.files);
+      input.value = '';
+    };
+
+    function processUploadedFiles(files) {
+      const container = document.getElementById('documentsContainer');
+      if (!container) return;
+      Array.from(files).forEach(function(file) {
+        const name = file.name;
+        const ext = name.split('.').pop().toLowerCase();
+        const iconMap = { pdf: 'lucide-file-text', png: 'lucide-image', jpg: 'lucide-image', jpeg: 'lucide-image' };
+        const icon = iconMap[ext] || 'lucide-file';
+        const newCard = document.createElement('div');
+        newCard.className = 'ocr-card';
+        newCard.innerHTML = `
+          <div class="flex align-center gap-sm">
+            <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
+              <i class="${icon}"></i>
+            </div>
+            <div>
+              <h4 class="bold">Uploaded Document</h4>
+              <span class="text-muted" style="font-size: 12px;">${name} (Processed)</span>
+            </div>
+          </div>
+          <div class="ocr-preview-box">
+            File Size: ${(file.size / 1024).toFixed(1)} KB<br>
+            OCR Status: Automated Parsing Complete<br>
+            Verification: Pending Audit
+          </div>
+        `;
+        container.appendChild(newCard);
+        if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
+      });
+      showToast(`${files.length} document(s) uploaded and parsed successfully!`, 'success');
+    }
+ 
     loadApplicantDetail();
   }
   </script>

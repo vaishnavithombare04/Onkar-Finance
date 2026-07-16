@@ -84,10 +84,6 @@ async function loadComponent(selector, path) {
           }
         }
       });
-      const userProfile = element.querySelector('.user-profile');
-      if (userProfile) {
-        userProfile.setAttribute('onclick', "location.href='profile.html'");
-      }
     }
     
     // Auto-highlight active link in sidebar
@@ -98,6 +94,38 @@ async function loadComponent(selector, path) {
         sidebarEl.classList.toggle('sidebar--expanded', isExpanded);
       }
       highlightActiveSidebar();
+    }
+ 
+    if (selector === '[data-component="topbar"]') {
+      const isDashboard = window.location.pathname.includes('dashboard.html');
+      const isEmployees = window.location.pathname.includes('employees.html');
+      const tabsContainer = element.querySelector('.topbar-tabs');
+      if (tabsContainer) {
+        if (window.location.pathname.includes('/TeamLeader/')) {
+          const pills = tabsContainer.querySelectorAll('.tab-pill');
+          pills.forEach(pill => pill.classList.remove('active'));
+          // Targets tab is only active on employees.html, Overview is active everywhere else
+          if (isEmployees) {
+            pills.forEach(pill => {
+              if (pill.textContent.trim().toLowerCase() === 'targets') pill.classList.add('active');
+            });
+          } else {
+            pills.forEach(pill => {
+              if (pill.textContent.trim().toLowerCase() === 'overview') pill.classList.add('active');
+            });
+          }
+          // Add visual toggle on click (active state switches before navigation)
+          pills.forEach(pill => {
+            pill.addEventListener('click', () => {
+              pills.forEach(p => p.classList.remove('active'));
+              pill.classList.add('active');
+            });
+          });
+        } else if (!isDashboard) {
+          const pageTitle = document.title.split('—')[1] || 'Overview';
+          tabsContainer.innerHTML = `<div class="tab-pill active">${pageTitle.trim()}</div>`;
+        }
+      }
     }
     
     // Initialize Lucide icons
@@ -244,7 +272,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="topbar">
           <div class="topbar-tabs">
-            <div class="tab-pill active">Overview</div>
+            <div class="tab-pill active" onclick="location.href='dashboard.html'">Overview</div>
             <div class="tab-pill" onclick="location.href='employees.html'">Targets</div>
           </div>
           <div class="topbar-actions">
@@ -256,7 +284,7 @@ function fallbackComponentRenderer(selector) {
               <i class="lucide-bell"></i>
               <div class="badge-dot"></div>
             </div>
-            <div class="user-profile" onclick="location.href='${rootPrefix}${tlPrefix}profile.html'">
+            <div class="user-profile">
               <div class="avatar">PN</div>
               <div class="text-secondary bold" style="font-size: 13px;">Priya N.</div>
             </div>
@@ -312,6 +340,31 @@ function fallbackComponentRenderer(selector) {
           </div>
         </div>
       `;
+    }
+ 
+    const isEmployees = window.location.pathname.includes('employees.html');
+    const isDashboard = window.location.pathname.includes('dashboard.html');
+    const tabsContainer = element.querySelector('.topbar-tabs');
+    if (tabsContainer && isInsideTeamLeader) {
+      const pills = tabsContainer.querySelectorAll('.tab-pill');
+      pills.forEach(pill => pill.classList.remove('active'));
+      // Targets is active only on employees.html, Overview everywhere else
+      if (isEmployees) {
+        pills.forEach(pill => {
+          if (pill.textContent.trim().toLowerCase() === 'targets') pill.classList.add('active');
+        });
+      } else {
+        pills.forEach(pill => {
+          if (pill.textContent.trim().toLowerCase() === 'overview') pill.classList.add('active');
+        });
+      }
+      // Visual toggle on click before navigation fires
+      pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+          pills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+        });
+      });
     }
   } else if (selector === '[data-component="footer"]') {
     element.innerHTML = `
@@ -419,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // 1. Notification Dropdown Toggle
     const bellBtn = e.target.closest('.topbar .icon-btn');
-    if (bellBtn && bellBtn.querySelector('.lucide-bell')) {
+    if (bellBtn && (bellBtn.querySelector('.lucide-bell') || bellBtn.querySelector('.bi-bell'))) {
       e.stopPropagation();
       let dropdown = bellBtn.querySelector('.dropdown-menu');
       if (!dropdown) {

@@ -179,7 +179,7 @@
           <div class="card">
             <h3 class="card-title m-b-md">KYC OCR Extracted Metadata</h3>
             
-            <div class="flex flex-column gap-md">
+            <div class="flex flex-column gap-md" id="documentsContainer">
               <div class="ocr-card">
                 <div class="flex align-center gap-sm">
                   <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
@@ -233,10 +233,11 @@
             </div>
 
             <!-- Upload drag drop field -->
-            <div class="file-upload-drag m-t-md">
+            <div class="file-upload-drag m-t-md" style="border: 2px dashed var(--color-border); padding: 24px; text-align: center; border-radius: var(--radius-md); cursor: pointer;" onclick="triggerDocUpload()">
               <i class="lucide-upload-cloud" style="font-size: 32px; color: var(--color-primary);"></i>
               <h4 class="bold m-t-md">Upload Additional Verification Document</h4>
-              <p class="text-muted" style="font-size: 12px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
+              <p class="text-muted" style="font-size: 12px; margin-top: 4px;">Drag and drop PDF, PNG, or JPG formats to run automated OCR parser.</p>
+              <input type="file" id="additionalDocInput" style="display: none;" onchange="handleDocSelected(this)" accept=".pdf,.png,.jpg,.jpeg" />
             </div>
           </div>
         </div>
@@ -366,27 +367,64 @@
       }
     }
 
-    function approveApplication() {
+    window.approveApplication = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const leadId = urlParams.get('id') || 'LD-8902';
       api.updateLeadStatus(leadId, 'Approved');
       showToast('Application Approved successfully!', 'success');
       loadApplicantDetail();
-    }
-
-    function rejectApplication() {
+    };
+ 
+    window.rejectApplication = function() {
       const urlParams = new URLSearchParams(window.location.search);
       const leadId = urlParams.get('id') || 'LD-8902';
       api.updateLeadStatus(leadId, 'Rejected');
       showToast('Application Rejected', 'danger');
       loadApplicantDetail();
-    }
-
-    function submitEscalation() {
+    };
+ 
+    window.submitEscalation = function() {
       closeModal('escalateModal');
       showToast('Application escalated to senior review', 'warning');
-    }
-
+    };
+ 
+    window.triggerDocUpload = function() {
+      const input = document.getElementById('additionalDocInput');
+      if (input) input.click();
+    };
+ 
+    window.handleDocSelected = function(input) {
+      if (!input.files || input.files.length === 0) return;
+      const file = input.files[0];
+      const name = file.name;
+      
+      const container = document.getElementById('documentsContainer');
+      if (container) {
+        container.innerHTML += `
+          <div class="ocr-card">
+            <div class="flex align-center gap-sm">
+              <div style="background-color: var(--color-primary-light); padding: 10px; border-radius: var(--radius-sm); color: var(--color-primary);">
+                <i class="lucide-file-text"></i>
+              </div>
+              <div>
+                <h4 class="bold">Uploaded Document</h4>
+                <span class="text-muted" style="font-size: 12px;">\${name} (Processed)</span>
+              </div>
+            </div>
+            <div class="ocr-preview-box">
+              File Size: \${(file.size / 1024).toFixed(1)} KB<br>
+              OCR Status: Automated Parsing Complete<br>
+              Verification: Pending Audit
+            </div>
+          </div>
+        `;
+        if (window.initializeLucideIcons) window.initializeLucideIcons();
+      }
+      
+      showToast(\`Document "\${name}" uploaded and parsed successfully!\`, "success");
+      input.value = '';
+    };
+ 
     loadApplicantDetail();
   }
   </script>

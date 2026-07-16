@@ -104,7 +104,7 @@
         <!-- ── Page Header ── -->
         <div class="flex justify-between align-center">
           <div>
-            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Customer Management</h1>
+            <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Customer Management (<span id="custCount">0</span>)</h1>
             <p class="text-secondary" style="font-size: 13px;">View borrower history, check KYC validations, and track active loan portfolios.</p>
           </div>
         </div>
@@ -166,6 +166,9 @@
 
     </div><!-- end .main-content -->
   </div><!-- end .admin-layout -->
+
+  <!-- Drawer backdrop -->
+  <div id="drawerBackdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:1049; backdrop-filter: blur(2px);" onclick="closeDrawer()"></div>
 
   <!-- Sliding Details Drawer -->
   <div id="customerDrawer" class="drawer-overlay">
@@ -331,7 +334,8 @@
 
       const tbody = document.getElementById('customerTableBody');
       const empty = document.getElementById('emptyState');
-      document.getElementById('custCount').textContent = filtered.length;
+      const countEl = document.getElementById('custCount');
+      if (countEl) countEl.textContent = filtered.length;
 
       if (filtered.length === 0) {
         tbody.innerHTML = '';
@@ -358,15 +362,28 @@
             <td><span class="badge badge-info">${c.activeLoans} Active</span></td>
             <td>Mumbai Main</td>
             <td><span class="badge ${badgeClass}">${c.kycStatus}</span></td>
-            <td>
-              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openDrawer('${c.id}')">
+      <td>
+              <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" data-customer-id="${c.id}">
                 View Profile
               </button>
             </td>
           </tr>
         `;
       }).join('');
-
+ 
+      const pills = document.querySelectorAll('.topbar .tab-pill');
+      if (pills.length > 0) {
+        pills.forEach((p, idx) => {
+          if (kycVal === 'Pending' && idx === 1) {
+            p.classList.add('active');
+          } else if (kycVal !== 'Pending' && idx === 0) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+      }
+ 
       if (window.lucide) lucide.createIcons();
     }
 
@@ -426,11 +443,13 @@
       `;
       
       drawer.classList.add('open');
+      document.getElementById('drawerBackdrop').style.display = 'block';
       if (window.lucide) lucide.createIcons();
     };
 
     window.closeDrawer = function() {
       document.getElementById('customerDrawer').classList.remove('open');
+      document.getElementById('drawerBackdrop').style.display = 'none';
     };
 
     /* ─────────────── Listeners ─────────────── */
@@ -438,31 +457,57 @@
     document.getElementById('kycFilter').addEventListener('change', renderCustomerTable);
     document.getElementById('loanFilter').addEventListener('change', renderCustomerTable);
 
-    /* ─────────────── Topbar Tab Pills ─────────────── */
-    document.querySelectorAll('.topbar .tab-pill').forEach(function(pill, idx) {
-      pill.addEventListener('click', function () {
-        document.querySelectorAll('.topbar .tab-pill').forEach(function(p) { p.classList.remove('active'); });
-        this.classList.add('active');
-        if (idx === 0) {
-          document.getElementById('kycFilter').value = '';
-          document.getElementById('loanFilter').value = '';
-        } else if (idx === 1) {
-          document.getElementById('kycFilter').value = 'Pending';
-          document.getElementById('loanFilter').value = '';
-        } else if (idx === 2) {
-          document.getElementById('kycFilter').value = '';
-          document.getElementById('loanFilter').value = 'active';
-        }
-        renderCustomerTable();
-      });
+    // Delegated click for View Profile buttons (works even after table re-render)
+    document.getElementById('customerTableBody').addEventListener('click', function(e) {
+      const btn = e.target.closest('[data-customer-id]');
+      if (btn) openDrawer(btn.getAttribute('data-customer-id'));
     });
-
+ 
     /* ─────────────── Global Search Sync ─────────────── */
-    document.getElementById('globalSearch').addEventListener('input', function () {
-      document.getElementById('customerSearch').value = this.value;
-      renderCustomerTable();
+    document.body.addEventListener('input', function (e) {
+      if (e.target && e.target.id === 'globalSearch') {
+        const custSearch = document.getElementById('customerSearch');
+        if (custSearch) {
+          custSearch.value = e.target.value;
+          renderCustomerTable();
+        }
+      }
     });
-
+ 
+    /* ─────────────── Topbar Tab Interceptor ─────────────── */
+    function setupTopbarTabs() {
+      const pills = document.querySelectorAll('.topbar .tab-pill');
+      if (pills.length === 0) {
+        setTimeout(setupTopbarTabs, 50);
+        return;
+      }
+ 
+      pills.forEach((pill, idx) => {
+        pill.removeAttribute('onclick');
+        
+        if (idx === 0) {
+          pill.classList.add('active');
+        } else {
+          pill.classList.remove('active');
+        }
+ 
+        pill.addEventListener('click', function(e) {
+          pills.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+ 
+          const kycFilter = document.getElementById('kycFilter');
+          if (idx === 0) {
+            if (kycFilter) kycFilter.value = '';
+          } else {
+            if (kycFilter) kycFilter.value = 'Pending';
+          }
+          renderCustomerTable();
+        });
+      });
+    }
+ 
+    setupTopbarTabs();
+ 
     /* ─────────────── Initial render ─────────────── */
     renderCustomerTable();
   }
