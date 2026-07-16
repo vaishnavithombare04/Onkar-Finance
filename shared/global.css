@@ -1127,4 +1127,32 @@ label, .form-label { color: var(--text-primary) !important; }
     margin-top: 80px !important;
 }
 
+/* Global button styles to match the Admin portal buttons (Royal Blue) */
+.btn-primary {
+    background-color: #4361EE !important;
+    border-color: #4361EE !important;
+    color: #ffffff !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #2E4BC7 !important;
+    border-color: #2E4BC7 !important;
+}
+.btn-outline-primary {
+    color: #4361EE !important;
+    border-color: #4361EE !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    background-color: #4361EE !important;
+    border-color: #4361EE !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   Role-Based Accent Theme Overrides
+   ========================================================================== */
+
 
