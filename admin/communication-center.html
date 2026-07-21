@@ -105,6 +105,57 @@
       color: var(--color-primary);
       border-bottom-color: var(--color-primary);
     }
+
+    @media (max-width: 768px) {
+      .channel-tab {
+        padding: 8px 6px;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+      .card.flex {
+        overflow-x: auto;
+      }
+      .inbox-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 520px !important;
+      }
+      .thread-list {
+        max-height: 160px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--color-border) !important;
+      }
+      .thread-item {
+        padding: 10px 12px !important;
+      }
+      .chat-view {
+        height: 420px !important;
+      }
+      .chat-header {
+        padding: 10px 14px !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+      .chat-header .flex.gap-sm {
+        width: 100% !important;
+        justify-content: flex-end !important;
+      }
+      .chat-header .btn {
+        padding: 5px 10px !important;
+        font-size: 11px !important;
+      }
+      .chat-messages {
+        padding: 12px 14px !important;
+      }
+      .msg {
+        max-width: 85% !important;
+      }
+      .chat-input-area {
+        padding: 10px 14px !important;
+        gap: 8px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -116,7 +167,7 @@
       <div data-component="topbar"></div>
       
       <div id="page-content" class="w-full flex flex-column gap-lg">
-      <div class="flex justify-between align-center">
+      <div class="flex justify-between align-center flex-wrap-mobile gap-sm">
         <div>
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Unified Communications</h1>
           <p class="text-secondary" style="font-size: 13px;">Interact with leads and customers across Email, WhatsApp, SMS, and Voice Calls.</p>
@@ -195,11 +246,13 @@
   <div id="templatesModal" class="modal-overlay">
     <div class="modal-container" style="max-width: 500px;">
       <i class="lucide-x modal-close" onclick="closeModal('templatesModal')"></i>
-      <h3 class="m-b-md">Select Message Template</h3>
-      <p class="text-secondary m-b-md" style="font-size: 13px;">Choose a pre-approved template for the current channel.</p>
-      
-      <div id="templatesListContainer" class="flex flex-column gap-sm">
-        <!-- Rendered dynamically depending on channel -->
+      <div class="modal-body" style="padding-top: 0;">
+        <h3 class="m-b-md">Select Message Template</h3>
+        <p class="text-secondary m-b-md" style="font-size: 13px;">Choose a pre-approved template for the current channel.</p>
+        
+        <div id="templatesListContainer" class="flex flex-column gap-sm">
+          <!-- Rendered dynamically depending on channel -->
+        </div>
       </div>
     </div>
   </div>

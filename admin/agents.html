@@ -18,6 +18,51 @@
   <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/components.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @media (max-width: 768px) {
+      .data-table tbody tr {
+        display: block !important;
+        background-color: var(--color-surface) !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: var(--radius-md) !important;
+        padding: 10px 12px !important;
+        margin-bottom: 10px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+      }
+      .data-table thead {
+        display: none !important;
+      }
+      .data-table td {
+        display: grid !important;
+        grid-template-columns: 110px 1fr !important;
+        align-items: center !important;
+        padding: 5px 0 !important;
+        border: none !important;
+        border-bottom: 1px dashed var(--color-border) !important;
+        font-size: 12px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        overflow-wrap: anywhere;
+      }
+      .data-table td:last-child {
+        border-bottom: none !important;
+        padding-top: 8px !important;
+      }
+      .data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .data-table td {
+        grid-template-columns: 95px 1fr !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -28,12 +73,12 @@
       <div data-component="topbar"></div>
       
       <div id="page-content" class="w-full flex flex-column gap-lg">
-      <div class="flex justify-between align-center">
+      <div class="flex justify-between align-center flex-wrap-mobile gap-sm">
         <div>
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Agent &amp; DSA Partners</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage external sourcing channels, track conversions, and monitor commission allocations.</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('onboardAgentModal')">
+        <button class="btn btn-primary w-full-mobile" onclick="openModal('onboardAgentModal')">
           <i class="lucide-user-plus"></i> Onboard New Agent
         </button>
       </div>
@@ -94,42 +139,44 @@
   <div id="commissionModal" class="modal-overlay">
     <div class="modal-container">
       <i class="lucide-x modal-close" onclick="closeModal('commissionModal')"></i>
-      <h3>DSA Commission Statement</h3>
-      <p class="text-secondary m-b-md" style="font-size: 13px;">Breakdown of payouts for <span class="bold" id="modalAgentName">Suresh Patil</span>.</p>
-      
-      <div class="table-responsive">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>App ID</th>
-              <th>Applicant</th>
-              <th>Sanctioned Amount</th>
-              <th>Payout %</th>
-              <th>Commission</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="bold">APP-8902</td>
-              <td>Amit Sharma</td>
-              <td>₹5,00,000</td>
-              <td>1.2%</td>
-              <td class="bold text-success">₹6,000</td>
-            </tr>
-            <tr>
-              <td class="bold">APP-8906</td>
-              <td>Vikram Malhotra</td>
-              <td>₹8,00,000</td>
-              <td>1.5%</td>
-              <td class="bold text-success">₹12,000</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      
-      <div class="flex justify-end gap-sm m-t-md">
-        <button class="btn btn-outline" onclick="closeModal('commissionModal')">Close Statement</button>
-        <button class="btn btn-primary" onclick="payAgentCommission()"><i class="lucide-credit-card"></i> Pay Now</button>
+      <div class="modal-body" style="padding-top: 0;">
+        <h3>DSA Commission Statement</h3>
+        <p class="text-secondary m-b-md" style="font-size: 13px;">Breakdown of payouts for <span class="bold" id="modalAgentName">Suresh Patil</span>.</p>
+        
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>App ID</th>
+                <th>Applicant</th>
+                <th>Sanctioned Amount</th>
+                <th>Payout %</th>
+                <th>Commission</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="bold" data-label="App ID">APP-8902</td>
+                <td data-label="Applicant">Amit Sharma</td>
+                <td data-label="Sanctioned Amount">₹5,00,000</td>
+                <td data-label="Payout %">1.2%</td>
+                <td class="bold text-success" data-label="Commission">₹6,000</td>
+              </tr>
+              <tr>
+                <td class="bold" data-label="App ID">APP-8906</td>
+                <td data-label="Applicant">Vikram Malhotra</td>
+                <td data-label="Sanctioned Amount">₹8,00,000</td>
+                <td data-label="Payout %">1.5%</td>
+                <td class="bold text-success" data-label="Commission">₹12,000</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="flex justify-end gap-sm m-t-md">
+          <button class="btn btn-outline" onclick="closeModal('commissionModal')">Close Statement</button>
+          <button class="btn btn-primary" onclick="payAgentCommission()"><i class="lucide-credit-card"></i> Pay Now</button>
+        </div>
       </div>
     </div>
   </div>
@@ -138,50 +185,52 @@
   <div id="onboardAgentModal" class="modal-overlay">
     <div class="modal-container">
       <i class="lucide-x modal-close" onclick="closeModal('onboardAgentModal')"></i>
-      <h3 class="m-b-md">Onboard New Agent Partner</h3>
-      
-      <form id="onboardAgentForm">
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label" for="agentName">Agent Full Name</label>
-            <input type="text" id="agentName" class="form-control" placeholder="Suresh Patil" required>
+      <div class="modal-body" style="padding-top: 0;">
+        <h3 class="m-b-md">Onboard New Agent Partner</h3>
+        
+        <form id="onboardAgentForm">
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="agentName">Agent Full Name</label>
+              <input type="text" id="agentName" class="form-control" placeholder="Suresh Patil" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="agentContact">Contact Number</label>
+              <input type="text" id="agentContact" class="form-control" placeholder="+91 95555 44444" required>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="agentContact">Contact Number</label>
-            <input type="text" id="agentContact" class="form-control" placeholder="+91 95555 44444" required>
+   
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="agentReferred">Initial Referred Leads</label>
+              <input type="number" id="agentReferred" class="form-control" value="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="agentConversion">Conversion Rate (%)</label>
+              <input type="text" id="agentConversion" class="form-control" value="0%" required>
+            </div>
           </div>
-        </div>
- 
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label" for="agentReferred">Initial Referred Leads</label>
-            <input type="number" id="agentReferred" class="form-control" value="0" required>
+   
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="agentCommission">Initial Commission Paid (INR)</label>
+              <input type="number" id="agentCommission" class="form-control" value="0" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="agentStatus">Status</label>
+              <select id="agentStatus" class="form-control">
+                <option value="Active">Active</option>
+                <option value="Suspended">Suspended</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="agentConversion">Conversion Rate (%)</label>
-            <input type="text" id="agentConversion" class="form-control" value="0%" required>
+   
+          <div class="flex justify-end gap-sm m-t-md">
+            <button type="button" class="btn btn-outline" onclick="closeModal('onboardAgentModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Onboard Agent</button>
           </div>
-        </div>
- 
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label" for="agentCommission">Initial Commission Paid (INR)</label>
-            <input type="number" id="agentCommission" class="form-control" value="0" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="agentStatus">Status</label>
-            <select id="agentStatus" class="form-control">
-              <option value="Active">Active</option>
-              <option value="Suspended">Suspended</option>
-            </select>
-          </div>
-        </div>
- 
-        <div class="flex justify-end gap-sm m-t-md">
-          <button type="button" class="btn btn-outline" onclick="closeModal('onboardAgentModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Onboard Agent</button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -199,18 +248,18 @@
       agents.forEach(agent => {
         tbody.innerHTML += `
           <tr>
-            <td class="bold">
+            <td class="bold" data-label="Agent Name">
               <div class="flex align-center gap-sm">
                 <div class="avatar" style="width:32px; height:32px;">${agent.name.split(' ').map(n => n[0]).join('')}</div>
                 <span>${agent.name}</span>
               </div>
             </td>
-            <td>${agent.contact}</td>
-            <td class="bold">${agent.referred}</td>
-            <td>${agent.conversion}</td>
-            <td class="bold text-success">${formatCurrency(agent.commission)}</td>
-            <td><span class="badge badge-success">${agent.status}</span></td>
-            <td>
+            <td data-label="Contact">${agent.contact}</td>
+            <td class="bold" data-label="Leads Referred">${agent.referred}</td>
+            <td data-label="Conversion Rate">${agent.conversion}</td>
+            <td class="bold text-success" data-label="Commission Earned">${formatCurrency(agent.commission)}</td>
+            <td data-label="Status"><span class="badge badge-success">${agent.status}</span></td>
+            <td data-label="Actions">
               <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="openCommissionModal('${agent.name}')">
                 Commission Report
               </button>

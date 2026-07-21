@@ -20,6 +20,131 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Shared Global CSS -->
     <link rel="stylesheet" href="../shared/global.css">
+    <style>
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+      }
+      .app-container, .main-content {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 12px !important;
+          gap: 16px !important;
+        }
+        .main-content > .d-flex {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 12px !important;
+        }
+        .main-content > .d-flex .btn {
+          width: 100% !important;
+        }
+        .filter-bar {
+          display: flex !important;
+          flex-direction: column !important;
+          width: 100% !important;
+          gap: 8px !important;
+        }
+        .filter-bar input, .filter-bar select {
+          width: 100% !important;
+        }
+        .data-table-container, .table-responsive {
+          overflow-x: hidden !important;
+          width: 100% !important;
+        }
+        #leadsTable {
+          width: 100% !important;
+          display: block !important;
+        }
+        #leadsTable thead {
+          display: none !important;
+        }
+        #leadsTable tbody {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100% !important;
+        }
+        #leadsTable tbody tr {
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 12px !important;
+          background-color: var(--bg-sidebar-hover);
+          border-radius: 8px !important;
+          border: 1px solid var(--border-color) !important;
+          gap: 4px !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        #leadsTable tbody td {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: 4px 0 !important;
+          border: none !important;
+          width: 100% !important;
+          font-size: 12px !important;
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+        #leadsTable tbody td:nth-child(1)::before {
+          content: "Lead ID:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #leadsTable tbody td:nth-child(2)::before {
+          content: "Applicant:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #leadsTable tbody td:nth-child(3)::before {
+          content: "Product:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #leadsTable tbody td:nth-child(4)::before {
+          content: "Loan Value:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #leadsTable tbody td:nth-child(5)::before {
+          content: "Assigned Executive:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #leadsTable tbody td:nth-child(6)::before {
+          content: "Status:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        #createLeadModal .col-6 {
+          width: 100% !important;
+          flex: 0 0 100% !important;
+        }
+      }
+    </style>
 </head>
 <body data-theme="light">
     <!-- App Header -->

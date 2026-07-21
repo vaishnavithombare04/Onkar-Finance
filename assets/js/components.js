@@ -55,7 +55,7 @@ const componentCache = {};
 
 // Mobile Sidebar Drawer Toggle & Overlay Controller
 function initMobileSidebar() {
-  const toggleBtn = document.querySelector('#sidebarMobileToggle, .sidebar-mobile-toggle');
+  const toggleBtns = document.querySelectorAll('#sidebarMobileToggle, .sidebar-mobile-toggle, .sidebar-toggle');
   const sidebarNav = document.querySelector('.sidebar-nav');
   
   if (!sidebarNav) return;
@@ -77,18 +77,31 @@ function initMobileSidebar() {
     backdrop.classList.add('active');
   };
   
-  if (toggleBtn) {
+  const toggleSidebar = () => {
+    const isOpen = sidebarNav.classList.contains('sidebar-mobile-open') || sidebarNav.classList.contains('show');
+    if (isOpen) {
+      closeSidebar();
+    } else {
+      openSidebar();
+    }
+  };
+  
+  toggleBtns.forEach(toggleBtn => {
     const newBtn = toggleBtn.cloneNode(true);
-    toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    if (toggleBtn.parentNode) {
+      toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    }
     newBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      if (sidebarNav.classList.contains('sidebar-mobile-open') || sidebarNav.classList.contains('show')) {
-        closeSidebar();
+      if (window.innerWidth <= 992) {
+        toggleSidebar();
       } else {
-        openSidebar();
+        const isExpanded = sidebarNav.classList.contains('sidebar--expanded');
+        sidebarNav.classList.toggle('sidebar--expanded', !isExpanded);
+        localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
       }
     });
-  }
+  });
   
   backdrop.addEventListener('click', closeSidebar);
   
@@ -584,21 +597,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close mobile sidebar when clicking outside it
     const sidebarEl = document.querySelector('.sidebar-nav');
-    if (sidebarEl && sidebarEl.classList.contains('show')) {
-      const mobileToggleBtn = e.target.closest('#sidebarMobileToggle');
+    if (sidebarEl && (sidebarEl.classList.contains('show') || sidebarEl.classList.contains('sidebar-mobile-open'))) {
+      const mobileToggleBtn = e.target.closest('#sidebarMobileToggle, .sidebar-mobile-toggle, .sidebar-toggle');
       if (!sidebarEl.contains(e.target) && !mobileToggleBtn) {
-        sidebarEl.classList.remove('show');
+        sidebarEl.classList.remove('show', 'sidebar-mobile-open');
+        const backdrop = document.querySelector('.sidebar-backdrop');
+        if (backdrop) backdrop.classList.remove('active');
       }
     }
 
     // Sidebar toggle control
-    const sidebarToggle = e.target.closest('.sidebar-toggle');
+    const sidebarToggle = e.target.closest('.sidebar-toggle, #sidebarMobileToggle, .sidebar-mobile-toggle');
     if (sidebarToggle) {
       const sidebarEl = document.querySelector('.sidebar-nav');
       if (sidebarEl) {
-        const isExpanded = sidebarEl.classList.contains('sidebar--expanded');
-        sidebarEl.classList.toggle('sidebar--expanded', !isExpanded);
-        localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
+        let backdrop = document.querySelector('.sidebar-backdrop');
+        if (!backdrop) {
+          backdrop = document.createElement('div');
+          backdrop.className = 'sidebar-backdrop';
+          document.body.appendChild(backdrop);
+        }
+        
+        if (window.innerWidth <= 992) {
+          const isOpen = sidebarEl.classList.contains('sidebar-mobile-open') || sidebarEl.classList.contains('show');
+          if (isOpen) {
+            sidebarEl.classList.remove('sidebar-mobile-open', 'show');
+            backdrop.classList.remove('active');
+          } else {
+            sidebarEl.classList.add('sidebar-mobile-open');
+            backdrop.classList.add('active');
+          }
+        } else {
+          const isExpanded = sidebarEl.classList.contains('sidebar--expanded');
+          sidebarEl.classList.toggle('sidebar--expanded', !isExpanded);
+          localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
+        }
       }
       return;
     }

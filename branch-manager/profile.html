@@ -20,6 +20,109 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Shared Global CSS -->
     <link rel="stylesheet" href="../shared/global.css">
+    <style>
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+      }
+      .app-container, .main-content {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 12px !important;
+          gap: 16px !important;
+        }
+        .main-content > .d-flex {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 12px !important;
+        }
+        #profileForm .col-md-6 {
+          width: 100% !important;
+        }
+        .data-table-container, .table-responsive {
+          overflow-x: hidden !important;
+          width: 100% !important;
+        }
+        #sessionsTable {
+          width: 100% !important;
+          display: block !important;
+        }
+        #sessionsTable thead {
+          display: none !important;
+        }
+        #sessionsTable tbody {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100% !important;
+        }
+        #sessionsTable tbody tr {
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 12px !important;
+          background-color: var(--bg-sidebar-hover);
+          border-radius: 8px !important;
+          border: 1px solid var(--border-color) !important;
+          gap: 4px !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        #sessionsTable tbody td {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: 4px 0 !important;
+          border: none !important;
+          width: 100% !important;
+          font-size: 12px !important;
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+        #sessionsTable tbody td:nth-child(1)::before {
+          content: "Device:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #sessionsTable tbody td:nth-child(2)::before {
+          content: "Browser:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #sessionsTable tbody td:nth-child(3)::before {
+          content: "IP Address:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #sessionsTable tbody td:nth-child(4)::before {
+          content: "Last Login:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #sessionsTable tbody td:nth-child(5)::before {
+          content: "Status:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+      }
+    </style>
 </head>
 <body data-theme="light">
     <!-- App Header -->

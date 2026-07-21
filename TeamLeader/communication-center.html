@@ -132,6 +132,119 @@
       70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(99, 102, 241, 0); }
       100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
     }
+
+    /* ── Global overflow guard ─────────────────────────────── */
+    html, body {
+      overflow-x: hidden !important;
+      max-width: 100vw !important;
+    }
+    .admin-layout, .main-content, #page-content {
+      max-width: 100% !important;
+      overflow-x: hidden !important;
+      box-sizing: border-box !important;
+    }
+
+    /* ── Responsive: ≤ 768px ───────────────────────────────── */
+    @media (max-width: 768px) {
+
+      /* Page header: stack title block */
+      #page-content > .flex.justify-between.align-center {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+      }
+
+      /* Channel tabs: wrap into a 2×2 grid */
+      .card.flex[style*="flex-direction: row"] {
+        flex-wrap: wrap !important;
+        border-radius: var(--radius-lg) !important;
+      }
+      .channel-tab {
+        flex: 1 1 45% !important;
+        min-width: 0 !important;
+        font-size: 12px !important;
+        padding: 10px 6px !important;
+        border-bottom: 1px solid var(--color-border) !important;
+      }
+
+      /* Inbox layout: switch from side-by-side grid to stacked column */
+      .inbox-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        height: auto !important;
+        min-height: 0 !important;
+      }
+
+      /* Thread list: cap height so chat pane is still visible */
+      .thread-list {
+        border-right: none !important;
+        border-bottom: 1px solid var(--color-border) !important;
+        max-height: 220px !important;
+        overflow-y: auto !important;
+        flex-shrink: 0 !important;
+      }
+
+      /* Chat view: fill remaining space with a sensible min height */
+      .chat-view {
+        min-height: 380px !important;
+        flex: 1 !important;
+      }
+
+      /* Chat header: wrap buttons onto second line */
+      .chat-header {
+        flex-wrap: wrap !important;
+        gap: 10px !important;
+        padding: 12px 16px !important;
+      }
+      .chat-header > .flex.gap-sm {
+        width: 100% !important;
+        gap: 8px !important;
+      }
+      .chat-header > .flex.gap-sm .btn {
+        flex: 1 !important;
+        font-size: 12px !important;
+        justify-content: center !important;
+      }
+
+      /* Chat messages: full-width bubbles */
+      .chat-messages {
+        padding: 16px !important;
+      }
+      .msg {
+        max-width: 90% !important;
+      }
+
+      /* Chat input: wrap send button below input on very narrow */
+      .chat-input-area {
+        padding: 12px 16px !important;
+        gap: 8px !important;
+      }
+    }
+
+    /* ── Responsive: ≤ 480px ───────────────────────────────── */
+    @media (max-width: 480px) {
+
+      /* Channel tabs: each tab full width */
+      .channel-tab {
+        flex: 1 1 100% !important;
+        border-bottom: 1px solid var(--color-border) !important;
+      }
+
+      /* Thread list: slightly taller on small phones */
+      .thread-list {
+        max-height: 180px !important;
+      }
+
+      /* Chat input: stack vertically */
+      .chat-input-area {
+        flex-direction: column !important;
+        align-items: stretch !important;
+      }
+      .chat-input-area .btn {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+    }
   </style>
 </head>
 <body>
