@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="light dark">
   <script>
     (function() {
@@ -22,7 +25,7 @@
       align-items: flex-end;
       gap: 12px;
       height: 150px;
-      padding-top: 20px;
+      padding-top: 24px;
     }
     .chart-col {
       flex: 1;
@@ -30,6 +33,8 @@
       flex-direction: column;
       align-items: center;
       gap: 8px;
+      height: 100%;
+      justify-content: flex-end;
     }
     .chart-bar {
       width: 100%;
@@ -49,6 +54,44 @@
       font-size: 11px;
       color: var(--color-text-secondary);
       font-weight: 500;
+    }
+    
+    /* Top value labels */
+    .chart-bar .chart-val {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--color-text-secondary);
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+    
+    /* Tooltip */
+    .chart-bar::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background-color: var(--color-dark);
+      color: #ffffff;
+      padding: 6px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 100;
+      box-shadow: var(--shadow-hover);
+    }
+    
+    .chart-bar:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
     }
   </style>
 </head>
@@ -137,27 +180,39 @@
               
               <div class="dashboard-chart-bar">
                 <div class="chart-col">
-                  <div class="chart-bar" style="height: 40%;"></div>
+                  <div class="chart-bar" style="height: 40%;" data-tooltip="Disbursed: ₹1.92 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹1.92 Cr</span>
+                  </div>
                   <span class="chart-label">Feb</span>
                 </div>
                 <div class="chart-col">
-                  <div class="chart-bar" style="height: 65%;"></div>
+                  <div class="chart-bar" style="height: 65%;" data-tooltip="Disbursed: ₹3.12 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹3.12 Cr</span>
+                  </div>
                   <span class="chart-label">Mar</span>
                 </div>
                 <div class="chart-col">
-                  <div class="chart-bar" style="height: 55%;"></div>
+                  <div class="chart-bar" style="height: 55%;" data-tooltip="Disbursed: ₹2.64 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹2.64 Cr</span>
+                  </div>
                   <span class="chart-label">Apr</span>
                 </div>
                 <div class="chart-col">
-                  <div class="chart-bar" style="height: 80%;"></div>
+                  <div class="chart-bar" style="height: 80%;" data-tooltip="Disbursed: ₹3.84 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹3.84 Cr</span>
+                  </div>
                   <span class="chart-label">May</span>
                 </div>
                 <div class="chart-col">
-                  <div class="chart-bar chart-bar-active" style="height: 95%;"></div>
+                  <div class="chart-bar chart-bar-active" style="height: 95%;" data-tooltip="Disbursed: ₹4.56 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹4.56 Cr</span>
+                  </div>
                   <span class="chart-label">Jun</span>
                 </div>
                 <div class="chart-col">
-                  <div class="chart-bar" style="height: 70%;"></div>
+                  <div class="chart-bar" style="height: 70%;" data-tooltip="Disbursed: ₹3.36 Cr / Target: ₹4.80 Cr">
+                    <span class="chart-val">₹3.36 Cr</span>
+                  </div>
                   <span class="chart-label">Jul</span>
                 </div>
               </div>

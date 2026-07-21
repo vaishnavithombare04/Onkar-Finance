@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script>
     (function () {
       const t = localStorage.getItem('onkar-theme') || 'light';
@@ -405,7 +407,8 @@
           </div>
         </div>
         <div class="app-table-wrap">
-          <table class="app-table" id="appTable">
+          <div class="table-responsive">
+<table class="app-table" id="appTable">
             <thead>
               <tr>
                 <th style="width:40px;"><input type="checkbox" id="masterCheck" onchange="toggleAllRows(this)" /></th>
@@ -421,6 +424,7 @@
             </thead>
             <tbody id="appTableBody"></tbody>
           </table>
+</div>
           <div id="emptyState" class="empty-state" style="display:none;">
             <i class="lucide-file-search"></i>
             <p>No applications match your filters.</p>

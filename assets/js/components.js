@@ -50,15 +50,71 @@ function closeModal(modalId) {
   }
 }
 
+// In-memory cache for loaded component templates
+const componentCache = {};
+
+// Mobile Sidebar Drawer Toggle & Overlay Controller
+function initMobileSidebar() {
+  const toggleBtn = document.querySelector('#sidebarMobileToggle, .sidebar-mobile-toggle');
+  const sidebarNav = document.querySelector('.sidebar-nav');
+  
+  if (!sidebarNav) return;
+  
+  let backdrop = document.querySelector('.sidebar-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    document.body.appendChild(backdrop);
+  }
+  
+  const closeSidebar = () => {
+    sidebarNav.classList.remove('sidebar-mobile-open', 'show');
+    backdrop.classList.remove('active');
+  };
+  
+  const openSidebar = () => {
+    sidebarNav.classList.add('sidebar-mobile-open');
+    backdrop.classList.add('active');
+  };
+  
+  if (toggleBtn) {
+    const newBtn = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    newBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebarNav.classList.contains('sidebar-mobile-open') || sidebarNav.classList.contains('show')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
+  
+  backdrop.addEventListener('click', closeSidebar);
+  
+  sidebarNav.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 992) {
+        closeSidebar();
+      }
+    });
+  });
+}
+window.initMobileSidebar = initMobileSidebar;
+
 // Dynamic Component Loader (Sidebar & Topbar)
 async function loadComponent(selector, path) {
   const element = document.querySelector(selector);
   if (!element) return;
   
   try {
-    const response = await fetch(path);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const html = await response.text();
+    let html = componentCache[path];
+    if (!html) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      html = await response.text();
+      componentCache[path] = html;
+    }
     element.innerHTML = html;
     
     // Rewrite URLs dynamically if inside admin, branch-manager, TeamLeader, Agent or Vendor folder
@@ -143,7 +199,7 @@ async function loadComponent(selector, path) {
       }
     }
     
-    // Initialize Lucide icons
+    // Initialize Lucide icons & Mobile Navigation
     if (window.initializeLucideIcons) {
       initializeLucideIcons();
     }
@@ -153,6 +209,7 @@ async function loadComponent(selector, path) {
     if (window.updateVendorTopbarProfile) {
       window.updateVendorTopbarProfile();
     }
+    initMobileSidebar();
   } catch (error) {
     console.warn(`Failed to dynamically load ${path} (usually due to CORS or local filesystem restrictions):`, error);
     // Graceful fallback for local file:/// usage
@@ -208,7 +265,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
@@ -232,7 +289,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Partner</span>
           </div>
           <ul class="sidebar-menu">
@@ -254,7 +311,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
@@ -292,6 +349,9 @@ function fallbackComponentRenderer(selector) {
     if (isInsideTeamLeader) {
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill active" onclick="location.href='dashboard.html'">Overview</div>
             <div class="tab-pill" onclick="location.href='employees.html'">Targets</div>
@@ -315,6 +375,9 @@ function fallbackComponentRenderer(selector) {
     } else if (isInsideAgent) {
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill active">Overview</div>
             <div class="tab-pill" onclick="location.href='commission.html'">Payouts</div>
@@ -340,6 +403,9 @@ function fallbackComponentRenderer(selector) {
       const name = isInsideBM ? 'Amit D.' : 'Aditya S.';
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill ${currentPath.includes('dashboard') ? 'active' : ''}" onclick="location.href='dashboard.html'" style="cursor: pointer;">Overview</div>
             <div class="tab-pill ${currentPath.includes('loan-applications') || currentPath.includes('branches') ? 'active' : ''}" onclick="location.href='loan-applications.html'" style="cursor: pointer;">Manage</div>
@@ -497,6 +563,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Setup dropdown delegations
   document.body.addEventListener('click', (e) => {
+    // Mobile sidebar toggle control
+    const mobileToggle = e.target.closest('#sidebarMobileToggle');
+    if (mobileToggle) {
+      const sidebarEl = document.querySelector('.sidebar-nav');
+      if (sidebarEl) {
+        sidebarEl.classList.toggle('show');
+      }
+      return;
+    }
+
+    // Close mobile sidebar when clicking a navigation link inside it
+    const sidebarLink = e.target.closest('.sidebar-menu a');
+    if (sidebarLink) {
+      const sidebarEl = document.querySelector('.sidebar-nav');
+      if (sidebarEl && sidebarEl.classList.contains('show')) {
+        sidebarEl.classList.remove('show');
+      }
+    }
+
+    // Close mobile sidebar when clicking outside it
+    const sidebarEl = document.querySelector('.sidebar-nav');
+    if (sidebarEl && sidebarEl.classList.contains('show')) {
+      const mobileToggleBtn = e.target.closest('#sidebarMobileToggle');
+      if (!sidebarEl.contains(e.target) && !mobileToggleBtn) {
+        sidebarEl.classList.remove('show');
+      }
+    }
+
     // Sidebar toggle control
     const sidebarToggle = e.target.closest('.sidebar-toggle');
     if (sidebarToggle) {
@@ -531,9 +625,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (badgeDot) {
         badgeDot.style.display = 'none';
       }
-
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
     }
 
     // 2. Profile Dropdown Toggle
@@ -576,6 +676,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
     }
 
     // 3. Row action "⋯" context menu toggle
