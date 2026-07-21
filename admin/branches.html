@@ -28,7 +28,7 @@
       <div data-component="topbar"></div>
       
       <div id="page-content" class="w-full flex flex-column gap-lg">
-      <div class="flex justify-between align-center">
+      <div class="flex justify-between align-center flex-wrap gap-md">
         <div>
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Branches &amp; Regions</h1>
           <p class="text-secondary" style="font-size: 13px;">Monitor localized performance metrics, branch managers, and regional disbursal goals.</p>
@@ -188,27 +188,37 @@
  
         grid.innerHTML += `
           <div class="card flex flex-column gap-md">
-            <div class="flex justify-between align-center">
+            <div class="flex justify-between align-center flex-wrap gap-xs">
               <div>
-                <h3 class="bold" style="font-size: 16px;">${branch.name}</h3>
+                <h3 class="bold" style="font-size: 16px; margin: 0;">${branch.name}</h3>
                 <span class="text-muted" style="font-size: 12px;">Manager: ${branch.manager}</span>
               </div>
               <span class="badge ${badgeClass}">${branch.status}</span>
             </div>
             
-            <hr style="border:none; border-top: 1px solid var(--color-border);">
+            <hr style="border:none; border-top: 1px solid var(--color-border); margin: 0;">
             
             <div class="flex flex-column gap-sm" style="font-size: 13px;">
-              <div class="flex justify-between"><span class="text-secondary">Staff Members</span><span class="bold">${branch.staffCount} Employees</span></div>
-              <div class="flex justify-between"><span class="text-secondary">Disbursed (MTD)</span><span class="bold">₹${branch.disbursed} Cr</span></div>
-              <div class="flex justify-between"><span class="text-secondary">Branch Target</span><span class="bold">₹${branch.target} Cr</span></div>
+              <div class="flex justify-between align-center flex-wrap gap-xs">
+                <span class="text-secondary">Staff Members</span>
+                <span class="bold">${branch.staffCount} Employees</span>
+              </div>
+              <div class="flex justify-between align-center flex-wrap gap-xs">
+                <span class="text-secondary">Disbursed (MTD)</span>
+                <span class="bold">₹${branch.disbursed} Cr</span>
+              </div>
+              <div class="flex justify-between align-center flex-wrap gap-xs">
+                <span class="text-secondary">Branch Target</span>
+                <span class="bold">₹${branch.target} Cr</span>
+              </div>
             </div>
             
-            <div class="progress-bar-container m-t-md">
+            <div class="progress-bar-container m-t-sm">
               <div class="progress-bar-fill" style="width: ${percentage}%; ${progressBg}"></div>
             </div>
- 
-            <div class="flex justify-end m-t-sm">
+
+            <div class="flex justify-between align-center flex-wrap gap-xs m-t-sm">
+              <span class="text-muted" style="font-size: 11px;">${percentage}% Target Achieved</span>
               <button class="btn btn-outline" style="padding: 6px 12px; font-size:11px;" onclick="openConfigBranchModal(${index})">
                 Configure Branch
               </button>

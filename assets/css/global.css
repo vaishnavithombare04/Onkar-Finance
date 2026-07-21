@@ -154,10 +154,12 @@ input, select, textarea, button {
 .justify-between { justify-content: space-between; }
 .flex-column { flex-direction: column; }
 .flex-wrap { flex-wrap: wrap; }
+.gap-xs { gap: 4px; }
 .gap-sm { gap: 8px; }
 .gap-md { gap: 16px; }
 .gap-lg { gap: 24px; }
 .w-full { width: 100%; }
+.m-t-sm { margin-top: 8px; }
 .m-t-md { margin-top: 16px; }
 .m-b-md { margin-bottom: 16px; }
 .p-md { padding: 16px; }
@@ -170,9 +172,9 @@ input, select, textarea, button {
 
 /* Grid systems */
 .grid { display: grid; }
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
 
 /* Responsive Table Wrapper */
 .table-responsive {
@@ -207,16 +209,10 @@ input, select, textarea, button {
   visibility: visible;
 }
 
-/* Performance Optimizations */
-.card, .panel, .data-section {
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 300px;
-}
-
 /* Responsive Media Queries */
 @media (max-width: 1024px) {
   .grid-4, .grid-3 {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 }
 
