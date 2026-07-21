@@ -1137,7 +1137,8 @@ label, .form-label { color: var(--text-primary) !important; }
 }
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
-.btn-outline-primary:active {
+.btn-outline-primary:active,
+.btn-check:checked + .btn-outline-primary {
     background-color: #4361EE !important;
     border-color: #4361EE !important;
     color: #ffffff !important;
