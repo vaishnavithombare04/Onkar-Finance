@@ -1,4 +1,13 @@
-// Authentication Flow (Validation, Password Strength Tracker, OTP Mocking)
+// Hardcoded role redirection paths
+const ROLE_PATHS = {
+  'Admin': 'admin/dashboard.html',
+  'BranchManager': 'branch-manager/index.html',
+  'TeamLeader': 'TeamLeader/dashboard.html',
+  'Employee': 'employee/index.html',
+  'Agent': 'Agent/dashboard.html',
+  'Vendor': 'Vendor/dashboard.html',
+  'Customer': 'customer/index.html'
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   // Login Form Handler
@@ -9,6 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
       
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
+      const roleSelect = document.getElementById('loginRole');
+      const selectedRole = roleSelect ? roleSelect.value : 'Admin';
+      
       let isValid = true;
       
       if (!email) {
@@ -26,19 +38,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       if (isValid) {
-        showToast('Login successful! Redirecting...', 'success');
+        // Hardcoded authentication session in localStorage
+        const user = {
+          name: email.split('@')[0] || 'Logged In User',
+          email: email,
+          role: selectedRole,
+          isLoggedIn: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem('onkar_user', JSON.stringify(user));
+
+        showToast(`Login successful as ${selectedRole}! Redirecting...`, 'success');
+        
         setTimeout(() => {
-          const emailLower = email.toLowerCase();
-          if (emailLower.includes('amit.d') || emailLower.includes('manager')) {
-            window.location.href = 'branch-manager/index.html';
-          } else if (emailLower.includes('karan.j') || emailLower.includes('employee') || emailLower.includes('emp')) {
-            window.location.href = 'employee/index.html';
-          } else if (emailLower.includes('customer') || emailLower.includes('cust') || emailLower.includes('client') || emailLower.includes('abhijit.r') || emailLower.includes('milind') || emailLower.includes('sneha')) {
-            window.location.href = 'customer/index.html';
-          } else {
-            window.location.href = 'admin/dashboard.html';
-          }
-        }, 1500);
+          const targetUrl = ROLE_PATHS[selectedRole] || 'admin/dashboard.html';
+          window.location.href = targetUrl;
+        }, 1200);
       }
     });
   }
@@ -69,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Signup Form Handler
+  // Signup Form Handler (All roles except Admin)
   const signupForm = document.getElementById('signupForm');
   if (signupForm) {
     signupForm.addEventListener('submit', (e) => {
@@ -78,6 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const name = document.getElementById('fullname').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const phone = document.getElementById('phone').value.trim();
+      const role = document.getElementById('roleSelect').value;
       const password = document.getElementById('signupPassword').value;
       const confirmPass = document.getElementById('confirmPassword').value;
       const terms = document.getElementById('terms').checked;
@@ -92,10 +108,19 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!terms) { showToast('You must agree to the Terms & Conditions', 'warning'); isValid = false; }
       
       if (isValid) {
-        // Redirect directly to dashboard on successful signup for seamless frontend flow
-        showToast('Account created successfully! Redirecting...', 'success');
+        // Save new user in mock DB array and current active session
+        const newUser = { name, email, phone, role, isLoggedIn: true };
+        
+        const existingUsers = JSON.parse(localStorage.getItem('onkar_users') || '[]');
+        existingUsers.push(newUser);
+        localStorage.setItem('onkar_users', JSON.stringify(existingUsers));
+        localStorage.setItem('onkar_user', JSON.stringify(newUser));
+
+        showToast(`Account created as ${role}! Redirecting...`, 'success');
+        
         setTimeout(() => {
-          window.location.href = 'admin/dashboard.html';
+          const targetUrl = ROLE_PATHS[role] || 'index.html';
+          window.location.href = targetUrl;
         }, 1500);
       }
     });

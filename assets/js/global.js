@@ -172,3 +172,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// Global logout helper function
+window.logout = function() {
+  localStorage.removeItem('onkar_user');
+  if (window.showToast) {
+    showToast('Signed out successfully', 'success');
+  }
+  setTimeout(() => {
+    const path = window.location.pathname;
+    if (path.includes('/admin/') || path.includes('/branch-manager/') || path.includes('/TeamLeader/') || path.includes('/employee/') || path.includes('/Agent/') || path.includes('/Vendor/') || path.includes('/customer/')) {
+      window.location.href = '../index.html';
+    } else {
+      window.location.href = 'index.html';
+    }
+  }, 500);
+};
