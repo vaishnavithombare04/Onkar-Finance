@@ -50,15 +50,170 @@ function closeModal(modalId) {
   }
 }
 
+// In-memory cache for loaded component templates
+const componentCache = {};
+
+// Mobile Sidebar Drawer Toggle & Overlay Controller
+function initMobileSidebar() {
+  const toggleBtn = document.querySelector('#sidebarMobileToggle, .sidebar-mobile-toggle');
+  const sidebarNav = document.querySelector('.sidebar-nav');
+  
+  if (!sidebarNav) return;
+  
+  let backdrop = document.querySelector('.sidebar-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+    document.body.appendChild(backdrop);
+  }
+  
+  const closeSidebar = () => {
+    sidebarNav.classList.remove('sidebar-mobile-open', 'show');
+    backdrop.classList.remove('active');
+  };
+  
+  const openSidebar = () => {
+    sidebarNav.classList.add('sidebar-mobile-open');
+    backdrop.classList.add('active');
+  };
+
+  // Shared with other handlers (e.g. the sidebar-header "..." button) so
+  // there's a single close implementation instead of duplicated logic.
+  window.closeMobileSidebar = closeSidebar;
+  
+  if (toggleBtn) {
+    const newBtn = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
+    newBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (sidebarNav.classList.contains('sidebar-mobile-open') || sidebarNav.classList.contains('show')) {
+        closeSidebar();
+      } else {
+        openSidebar();
+      }
+    });
+  }
+  
+  backdrop.addEventListener('click', closeSidebar);
+  
+  sidebarNav.querySelectorAll('.nav-item').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 992) {
+        closeSidebar();
+      }
+    });
+  });
+}
+window.initMobileSidebar = initMobileSidebar;
+
+// Custom Select Dropdown Controller
+// Native <select> popups can't be styled or reliably made responsive
+// across browsers/OSes - this swaps every <select> for the app's own
+// themed dropdown (built from .custom-select-* CSS) while keeping the
+// original <select> in the DOM so existing code that reads `.value` or
+// listens for the 'change' event keeps working unchanged.
+function initCustomSelects() {
+  const nativeSelects = document.querySelectorAll('select:not([data-custom-select])');
+
+  nativeSelects.forEach(select => {
+    select.setAttribute('data-custom-select', 'true');
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'custom-select-wrapper';
+    // Preserve inline sizing (e.g. style="width: 160px") used to lay
+    // out filter bars, so swapping the trigger in doesn't reflow
+    // surrounding elements.
+    if (select.style.width) {
+      wrapper.style.width = select.style.width;
+      wrapper.style.flex = '0 0 auto';
+    }
+    select.parentNode.insertBefore(wrapper, select);
+    wrapper.appendChild(select);
+
+    // Hide the native select visually but keep it functional.
+    select.style.position = 'absolute';
+    select.style.width = '1px';
+    select.style.height = '1px';
+    select.style.overflow = 'hidden';
+    select.style.opacity = '0';
+    select.style.pointerEvents = 'none';
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'custom-select-trigger';
+
+    const triggerText = document.createElement('span');
+    const activeOption = select.options[select.selectedIndex];
+    triggerText.textContent = activeOption ? activeOption.text : 'Select...';
+    trigger.appendChild(triggerText);
+
+    const chevron = document.createElement('i');
+    chevron.className = 'lucide-chevron-down';
+    trigger.appendChild(chevron);
+    wrapper.appendChild(trigger);
+
+    const optionsList = document.createElement('div');
+    optionsList.className = 'custom-select-options';
+    wrapper.appendChild(optionsList);
+
+    const buildOptions = () => {
+      optionsList.innerHTML = '';
+      Array.from(select.options).forEach(opt => {
+        const optEl = document.createElement('div');
+        optEl.className = 'custom-select-option';
+        optEl.textContent = opt.text;
+        if (opt.value === select.value) optEl.classList.add('selected');
+        optEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.value = opt.value;
+          triggerText.textContent = opt.text;
+          select.dispatchEvent(new Event('change'));
+          optionsList.classList.remove('show');
+        });
+        optionsList.appendChild(optEl);
+      });
+    };
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isShown = optionsList.classList.contains('show');
+      document.querySelectorAll('.custom-select-options').forEach(el => el.classList.remove('show'));
+      if (!isShown) {
+        buildOptions();
+        optionsList.classList.add('show');
+        const rect = optionsList.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          optionsList.style.left = 'auto';
+          optionsList.style.right = '0';
+        }
+      }
+    });
+
+    select.addEventListener('change', () => {
+      const currentOption = select.options[select.selectedIndex];
+      triggerText.textContent = currentOption ? currentOption.text : 'Select...';
+    });
+  });
+
+  if (window.initializeLucideIcons) {
+    window.initializeLucideIcons();
+  }
+}
+window.initCustomSelects = initCustomSelects;
+
 // Dynamic Component Loader (Sidebar & Topbar)
 async function loadComponent(selector, path) {
   const element = document.querySelector(selector);
   if (!element) return;
   
   try {
-    const response = await fetch(path);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const html = await response.text();
+    let html = componentCache[path];
+    if (!html) {
+      const response = await fetch(path);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      html = await response.text();
+      componentCache[path] = html;
+    }
     element.innerHTML = html;
     
     // Rewrite URLs dynamically if inside admin, branch-manager, TeamLeader, Agent or Vendor folder
@@ -143,7 +298,7 @@ async function loadComponent(selector, path) {
       }
     }
     
-    // Initialize Lucide icons
+    // Initialize Lucide icons & Mobile Navigation
     if (window.initializeLucideIcons) {
       initializeLucideIcons();
     }
@@ -153,6 +308,7 @@ async function loadComponent(selector, path) {
     if (window.updateVendorTopbarProfile) {
       window.updateVendorTopbarProfile();
     }
+    initMobileSidebar();
   } catch (error) {
     console.warn(`Failed to dynamically load ${path} (usually due to CORS or local filesystem restrictions):`, error);
     // Graceful fallback for local file:/// usage
@@ -208,7 +364,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
@@ -232,7 +388,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Partner</span>
           </div>
           <ul class="sidebar-menu">
@@ -254,7 +410,7 @@ function fallbackComponentRenderer(selector) {
       element.innerHTML = `
         <div class="sidebar-nav">
           <div class="sidebar-header">
-            <div class="logo-icon">O</div>
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
@@ -292,6 +448,9 @@ function fallbackComponentRenderer(selector) {
     if (isInsideTeamLeader) {
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill active" onclick="location.href='dashboard.html'">Overview</div>
             <div class="tab-pill" onclick="location.href='employees.html'">Targets</div>
@@ -315,6 +474,9 @@ function fallbackComponentRenderer(selector) {
     } else if (isInsideAgent) {
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill active">Overview</div>
             <div class="tab-pill" onclick="location.href='commission.html'">Payouts</div>
@@ -340,6 +502,9 @@ function fallbackComponentRenderer(selector) {
       const name = isInsideBM ? 'Amit D.' : 'Aditya S.';
       element.innerHTML = `
         <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
           <div class="topbar-tabs">
             <div class="tab-pill ${currentPath.includes('dashboard') ? 'active' : ''}" onclick="location.href='dashboard.html'" style="cursor: pointer;">Overview</div>
             <div class="tab-pill ${currentPath.includes('loan-applications') || currentPath.includes('branches') ? 'active' : ''}" onclick="location.href='loan-applications.html'" style="cursor: pointer;">Manage</div>
@@ -495,16 +660,46 @@ document.addEventListener('DOMContentLoaded', () => {
   loadComponent('[data-component="topbar"]', topbarPath);
   loadComponent('[data-component="footer"]', `${rootPrefix}components/footer.html`);
 
+  // Replace native <select> filter dropdowns with the styled, responsive
+  // custom dropdown (page markup is already in the DOM at this point,
+  // this doesn't need to wait on the async component loads above).
+  initCustomSelects();
+
   // Setup dropdown delegations
   document.body.addEventListener('click', (e) => {
-    // Sidebar toggle control
+    // NOTE: Mobile sidebar open/close is handled exclusively by
+    // initMobileSidebar() (see top of this file). A second handler used
+    // to live here and also toggle/remove the same '.show' class on
+    // every click. That raced with initMobileSidebar()'s own listener:
+    // opening worked, but on the close click this handler's toggle()
+    // ran right after initMobileSidebar() had already removed the
+    // class, flipping it back on - so the sidebar looked stuck open
+    // on mobile. Removed to keep a single source of truth.
+
+    // Sidebar toggle control ("..." button in the sidebar header)
     const sidebarToggle = e.target.closest('.sidebar-toggle');
     if (sidebarToggle) {
       const sidebarEl = document.querySelector('.sidebar-nav');
       if (sidebarEl) {
-        const isExpanded = sidebarEl.classList.contains('sidebar--expanded');
-        sidebarEl.classList.toggle('sidebar--expanded', !isExpanded);
-        localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
+        // In mobile view this button sits inside the open off-canvas
+        // drawer, so tapping it should close the drawer - toggling the
+        // desktop-only 'sidebar--expanded' class here has no visible
+        // effect on mobile (that class only controls the collapsed/
+        // expanded width of the fixed desktop sidebar), which is why
+        // it looked like the "..." button did nothing on mobile.
+        const isMobileView = window.innerWidth <= 768;
+        if (isMobileView) {
+          if (window.closeMobileSidebar) {
+            window.closeMobileSidebar();
+          } else {
+            sidebarEl.classList.remove('sidebar-mobile-open', 'show');
+            document.querySelector('.sidebar-backdrop')?.classList.remove('active');
+          }
+        } else {
+          const isExpanded = sidebarEl.classList.contains('sidebar--expanded');
+          sidebarEl.classList.toggle('sidebar--expanded', !isExpanded);
+          localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
+        }
       }
       return;
     }
@@ -531,9 +726,15 @@ document.addEventListener('DOMContentLoaded', () => {
       if (badgeDot) {
         badgeDot.style.display = 'none';
       }
-
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
     }
 
     // 2. Profile Dropdown Toggle
@@ -576,6 +777,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
     }
 
     // 3. Row action "⋯" context menu toggle
@@ -586,7 +794,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!dropdown) {
         dropdown = document.createElement('div');
         dropdown.className = 'dropdown-menu';
-        dropdown.style.position = 'absolute';
+        dropdown.style.right = '0';
         dropdown.innerHTML = `
           <div class="dropdown-item" onclick="showToast('Viewing record details', 'info')"><i class="lucide-eye"></i> View File</div>
           <div class="dropdown-item" onclick="showToast('Edit mode enabled', 'success')"><i class="lucide-edit-3"></i> Edit Row</div>
@@ -597,11 +805,29 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
       dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        // Reset to default right-aligned position before measuring, so
+        // repeated opens don't accumulate a stale left/right override
+        // from a previous viewport size or scroll position.
+        dropdown.style.left = 'auto';
+        dropdown.style.right = '0';
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.left < 12) {
+          dropdown.style.right = 'auto';
+          dropdown.style.left = '0';
+        } else if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
     }
 
     // Close all open dropdowns on background click
     if (!e.target.closest('.dropdown-menu') && !e.target.closest('.icon-btn') && !e.target.closest('.user-profile') && !e.target.closest('.row-menu-trigger')) {
       document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+    }
+    if (!e.target.closest('.custom-select-wrapper')) {
+      document.querySelectorAll('.custom-select-options').forEach(d => d.classList.remove('show'));
     }
   });
 

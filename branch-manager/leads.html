@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script>
       (function() {
         const saved = localStorage.getItem('onkar-theme');
@@ -156,7 +158,8 @@
                     <div class="card">
                         <div class="card-body p-0">
                             <div class="data-table-container">
-                                <table class="data-table" id="leadsTable">
+                                <div class="table-responsive">
+<table class="data-table" id="leadsTable">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -171,6 +174,7 @@
                                         <!-- Will populate dynamically -->
                                     </tbody>
                                 </table>
+</div>
                             </div>
                         </div>
                     </div>

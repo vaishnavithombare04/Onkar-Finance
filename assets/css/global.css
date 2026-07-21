@@ -153,6 +153,7 @@ input, select, textarea, button {
 .align-center { align-items: center; }
 .justify-between { justify-content: space-between; }
 .flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
 .gap-sm { gap: 8px; }
 .gap-md { gap: 16px; }
 .gap-lg { gap: 24px; }
@@ -173,6 +174,52 @@ input, select, textarea, button {
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
 
+/* Responsive Table Wrapper */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+}
+.table-responsive table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+/* Off-canvas Backdrop Overlay for Mobile Navigation */
+.sidebar-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 17, 23, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.sidebar-backdrop.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* NOTE: content-visibility:auto used to live here as a rendering
+   performance optimization, but it implicitly applies CSS containment
+   (contain: layout style paint), which makes every .card its own
+   isolated stacking context and clips/traps anything that visually
+   escapes its box. That's why an open dropdown or custom-select popup
+   sitting inside one .card (e.g. a filter bar) would get visually
+   swallowed by the very next .card below it (e.g. a table) - the later
+   card paints as its own independent layer on top regardless of the
+   popup's z-index, since z-index only resolves ordering within a
+   shared stacking context. Removed so dropdowns always paint above
+   sibling sections as expected. */
+
+/* Responsive Media Queries */
 @media (max-width: 1024px) {
   .grid-4, .grid-3 {
     grid-template-columns: repeat(2, 1fr);
@@ -187,6 +234,28 @@ input, select, textarea, button {
     flex-direction: column;
   }
   .main-content {
-    padding: 16px;
+    padding: 14px;
+    gap: 16px;
+  }
+  .w-full-mobile {
+    width: 100% !important;
+  }
+  .flex-wrap-mobile {
+    flex-wrap: wrap !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 576px) {
+  :root {
+    --fs-h1: 22px;
+    --fs-h2: 18px;
+    --fs-h3: 16px;
+  }
+  .main-content {
+    padding: 10px;
+    gap: 12px;
   }
 }

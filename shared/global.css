@@ -292,6 +292,15 @@ label, .form-label { color: var(--text-primary) !important; }
 
 .app-sidebar #sidebarToggleBtn {
     color: var(--text-sidebar) !important;
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+#sidebarToggleBtn:hover {
+    background: none !important;
+    background-color: transparent !important;
 }
 
 .app-sidebar .sidebar-footer {
@@ -305,28 +314,11 @@ label, .form-label { color: var(--text-primary) !important; }
 }
 
 .sidebar-divider {
-    display: none;
-    height: 1px;
-    background-color: rgba(255, 255, 255, 0.08);
-    margin: 12px 14px;
-}
-
-.app-sidebar.sidebar--expanded .sidebar-divider {
-    display: block;
+    display: none !important;
 }
 
 .sidebar-label {
-    display: none;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 4px 14px;
-    color: #64748b !important;
-    font-weight: 600;
-}
-
-.app-sidebar.sidebar--expanded .sidebar-label {
-    display: block;
+    display: none !important;
 }
 
 /* Sidebar Responsive Styles */
@@ -598,6 +590,7 @@ label, .form-label { color: var(--text-primary) !important; }
     top: calc(100% + 8px);
     right: 0;
     width: 280px;
+    max-width: calc(100vw - 24px);
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
@@ -703,8 +696,8 @@ label, .form-label { color: var(--text-primary) !important; }
     box-shadow: var(--shadow-lg);
     z-index: 2800;
     display: none;
-    max-height: none;
-    overflow-y: visible;
+    max-height: 260px;
+    overflow-y: auto;
 }
 
 .custom-select-options.show {
@@ -871,13 +864,13 @@ label, .form-label { color: var(--text-primary) !important; }
         display: inline !important;
     }
     .app-sidebar .sidebar-label {
-        display: block !important;
+        display: none !important;
     }
     .app-sidebar .sidebar-label-text {
         display: inline !important;
     }
     .app-sidebar .sidebar-divider {
-        display: block !important;
+        display: none !important;
     }
     .app-sidebar .sidebar-item {
         justify-content: flex-start !important;
@@ -1152,7 +1145,56 @@ label, .form-label { color: var(--text-primary) !important; }
 }
 
 /* ==========================================================================
-   Role-Based Accent Theme Overrides
+   Responsive Dropdown & Mobile Menu Enhancements
    ========================================================================== */
+.dropdown-menu {
+    max-width: calc(100vw - 24px) !important;
+    word-break: break-word;
+    box-shadow: var(--shadow-lg) !important;
+    border: 1px solid var(--border-color) !important;
+    background-color: var(--bg-card) !important;
+}
 
+@media (max-width: 576px) {
+    .dropdown-menu {
+        max-width: calc(100vw - 24px) !important;
+        font-size: 13px !important;
+    }
+    
+    .dropdown-menu-end, .dropdown-menu[data-bs-popper] {
+        right: 0 !important;
+        left: auto !important;
+    }
+
+    select, .form-select {
+        min-height: 42px !important;
+        font-size: 14px !important;
+        width: 100% !important;
+    }
+
+    .dropdown-item {
+        padding: 10px 14px !important;
+        font-size: 13px !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .calendar-popover {
+        width: calc(100vw - 32px) !important;
+        max-width: 320px !important;
+        right: -8px !important;
+    }
+
+    .custom-select-options {
+        max-height: 45vh !important;
+    }
+
+    .custom-select-option {
+        padding: 10px 12px !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+}
 
