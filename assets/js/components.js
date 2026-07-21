@@ -822,3 +822,30 @@ window.updateVendorTopbarProfile = function() {
     }
   }
 };
+
+// Auto-apply data-label attributes to table cells for responsive mobile card views
+window.applyTableMobileLabels = function() {
+  document.querySelectorAll('table.data-table').forEach(table => {
+    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+    if (!headers.length) return;
+    
+    table.querySelectorAll('tbody tr').forEach(tr => {
+      const cells = tr.querySelectorAll('td');
+      cells.forEach((td, index) => {
+        if (headers[index] !== undefined && !td.hasAttribute('data-label')) {
+          td.setAttribute('data-label', headers[index]);
+        }
+      });
+    });
+  });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.applyTableMobileLabels();
+  const observer = new MutationObserver(() => {
+    window.applyTableMobileLabels();
+  });
+  if (document.body) {
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+});

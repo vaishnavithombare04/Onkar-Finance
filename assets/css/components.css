@@ -498,6 +498,106 @@
   background-color: var(--color-bg);
 }
 
+/* Responsive Mobile Table Card View */
+@media (max-width: 768px) {
+  /* Remove outer double card container on mobile */
+  .card:has(.table-responsive),
+  .card:has(.data-table) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .table-responsive {
+    overflow-x: visible !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .data-table, 
+  .data-table tbody, 
+  .data-table tr, 
+  .data-table td {
+    display: block;
+    width: 100% !important;
+  }
+
+  .data-table thead {
+    display: none !important;
+  }
+
+  .data-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 0;
+  }
+
+  .data-table tbody tr {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    box-shadow: var(--shadow-card);
+    transition: var(--transition-smooth);
+  }
+
+  .data-table tbody tr:hover {
+    box-shadow: var(--shadow-hover);
+    background-color: var(--color-surface);
+  }
+
+  .data-table td {
+    display: grid !important;
+    grid-template-columns: 120px 1fr !important;
+    align-items: center !important;
+    padding: 8px 0 !important;
+    border-bottom: 1px dashed var(--color-border) !important;
+    font-size: 13px;
+    gap: 12px;
+    text-align: left !important;
+    word-break: break-word;
+  }
+
+  .data-table td:last-child {
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+    margin-top: 4px;
+  }
+
+  .data-table td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-text-muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  /* First checkbox cell formatting */
+  .data-table td:first-child:has(input[type="checkbox"]),
+  .data-table td:first-child[data-label=""] {
+    display: flex !important;
+    align-items: center !important;
+    padding-bottom: 8px !important;
+    border-bottom: 1px solid var(--color-border) !important;
+    margin-bottom: 4px;
+  }
+
+  .data-table td:first-child[data-label=""]::before,
+  .data-table td:first-child:not([data-label])::before {
+    display: none !important;
+  }
+
+  .data-table td:first-child input[type="checkbox"] {
+    margin: 0;
+  }
+}
+
 /* Badge / Status Pill */
 .badge {
   display: inline-flex;
