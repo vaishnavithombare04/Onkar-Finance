@@ -170,7 +170,8 @@ function initializeLucideIcons() {
     if (lucideClass) {
       const iconName = lucideClass.replace('lucide-', '');
       const biIcon = iconMapping[iconName] || iconName;
-      el.className = `bi bi-${biIcon}`;
+      el.classList.remove(lucideClass);
+      el.classList.add('bi', `bi-${biIcon}`);
     }
   });
 }
@@ -216,6 +217,7 @@ function debounce(func, wait) {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initializeLucideIcons();
   
   // Theme toggle button click event delegation
   document.body.addEventListener('click', (e) => {

@@ -42,22 +42,21 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Define default pre-configured users
         const defaultUsers = {
-          'admin@onkarfinance.com': { password: 'password123', role: 'admin', redirect: 'admin/dashboard.html' },
-          'admin@onkar.com': { password: 'password123', role: 'admin', redirect: 'admin/dashboard.html' },
-          'teamleader@onkarfinance.com': { password: 'password123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
-          'teamleader@onkar.com': { password: 'password123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
-          'tl@onkarfinance.com': { password: 'password123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
-          'tl@onkar.com': { password: 'password123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
-          'manager@onkarfinance.com': { password: 'password123', role: 'manager', redirect: 'branch-manager/index.html' },
-          'manager@onkar.com': { password: 'password123', role: 'manager', redirect: 'branch-manager/index.html' },
-          'employee@onkarfinance.com': { password: 'password123', role: 'employee', redirect: 'employee/index.html' },
-          'employee@onkar.com': { password: 'password123', role: 'employee', redirect: 'employee/index.html' },
-          'customer@onkarfinance.com': { password: 'password123', role: 'customer', redirect: 'customer/index.html' },
-          'customer@onkar.com': { password: 'password123', role: 'customer', redirect: 'customer/index.html' },
-          'agent@onkarfinance.com': { password: 'password123', role: 'agent', redirect: 'Agent/dashboard.html' },
-          'agent@onkar.com': { password: 'password123', role: 'agent', redirect: 'Agent/dashboard.html' },
-          'vendor@onkarfinance.com': { password: 'password123', role: 'vendor', redirect: 'Vendor/dashboard.html' },
-          'vendor@onkar.com': { password: 'password123', role: 'vendor', redirect: 'Vendor/dashboard.html' }
+          'admin@onkarfinance.com': { password: 'admin123', role: 'Admin', redirect: 'admin/dashboard.html' },
+          'admin@onkar.com': { password: 'password123', role: 'Admin', redirect: 'admin/dashboard.html' },
+          'teamleader@onkarfinance.com': { password: 'admin123', role: 'TeamLeader', redirect: 'TeamLeader/dashboard.html' },
+          'tl@onkarfinance.com': { password: 'admin123', role: 'TeamLeader', redirect: 'TeamLeader/dashboard.html' },
+          'tl@onkar.com': { password: 'password123', role: 'TeamLeader', redirect: 'TeamLeader/dashboard.html' },
+          'manager@onkarfinance.com': { password: 'admin123', role: 'BranchManager', redirect: 'branch-manager/index.html' },
+          'manager@onkar.com': { password: 'password123', role: 'BranchManager', redirect: 'branch-manager/index.html' },
+          'employee@onkarfinance.com': { password: 'admin123', role: 'Employee', redirect: 'employee/index.html' },
+          'employee@onkar.com': { password: 'password123', role: 'Employee', redirect: 'employee/index.html' },
+          'customer@onkarfinance.com': { password: 'admin123', role: 'Customer', redirect: 'customer/index.html' },
+          'customer@onkar.com': { password: 'password123', role: 'Customer', redirect: 'customer/index.html' },
+          'agent@onkarfinance.com': { password: 'admin123', role: 'Agent', redirect: 'Agent/dashboard.html' },
+          'agent@onkar.com': { password: 'password123', role: 'Agent', redirect: 'Agent/dashboard.html' },
+          'vendor@onkarfinance.com': { password: 'admin123', role: 'Vendor', redirect: 'Vendor/dashboard.html' },
+          'vendor@onkar.com': { password: 'password123', role: 'Vendor', redirect: 'Vendor/dashboard.html' }
         };
 
         let user = defaultUsers[emailLower];
@@ -68,58 +67,33 @@ document.addEventListener('DOMContentLoaded', () => {
           const regUser = registeredUsers.find(u => u.email === emailLower);
           if (regUser) {
             user = {
-              password: regUser.password || 'password123',
-              role: regUser.role || 'admin',
-              redirect: (regUser.role === 'manager') ? 'branch-manager/index.html' : 
-                        (regUser.role === 'employee') ? 'employee/index.html' :
-                        (regUser.role === 'customer') ? 'customer/index.html' :
-                        (regUser.role === 'teamleader') ? 'TeamLeader/dashboard.html' :
-                        (regUser.role === 'agent') ? 'Agent/dashboard.html' :
-                        (regUser.role === 'vendor') ? 'Vendor/dashboard.html' : 'admin/dashboard.html'
+              password: regUser.password,
+              role: regUser.role || 'Admin',
+              redirect: ROLE_PATHS[regUser.role] || 'admin/dashboard.html'
             };
           }
         }
 
-        // Fallback: if user is not in database, authenticate via the dropdown selection
-        if (!user) {
-          const roleMapping = {
-            'Admin': 'admin',
-            'BranchManager': 'manager',
-            'TeamLeader': 'teamleader',
-            'Employee': 'employee',
-            'Agent': 'agent',
-            'Vendor': 'vendor',
-            'Customer': 'customer'
-          };
-          const mappedRole = roleMapping[selectedRole] || 'admin';
-          user = {
-            password: password, // Accept whatever password was typed
-            role: mappedRole,
-            redirect: ROLE_PATHS[selectedRole] || 'admin/dashboard.html'
-          };
-        }
+        // If still no user, or password doesn't match default user but dropdown is used, allow login using dropdown selection as fallback
+        const useFallback = !user || user.password !== password;
+        const finalRole = useFallback ? selectedRole : user.role;
+        const redirectUrl = useFallback ? (ROLE_PATHS[selectedRole] || 'admin/dashboard.html') : user.redirect;
 
-        if (user && (user.password === password || password === 'password123' || password === 'admin123')) {
-          sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: user.role }));
-          
-          // Also set local storage for compatibility
-          localStorage.setItem('onkar_user', JSON.stringify({
-            name: email.split('@')[0] || 'Logged In User',
-            email: email,
-            role: selectedRole,
-            isLoggedIn: true,
-            loginTime: new Date().toISOString()
-          }));
+        const sessionUser = {
+          name: email.split('@')[0] || 'Logged In User',
+          email: email,
+          role: finalRole,
+          isLoggedIn: true,
+          loginTime: new Date().toISOString()
+        };
+        localStorage.setItem('onkar_user', JSON.stringify(sessionUser));
+        sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: finalRole }));
 
-          showToast(`Login successful as ${selectedRole || user.role}! Redirecting...`, 'success');
-          setTimeout(() => {
-            window.location.href = user.redirect;
-          }, 1200);
-        } else {
-          showToast('Invalid username or password!', 'danger');
-          showFieldError('email', 'Invalid credentials');
-          showFieldError('password', 'Invalid credentials');
-        }
+        showToast(`Login successful as ${finalRole}! Redirecting...`, 'success');
+        
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 1200);
       }
     });
   }
@@ -131,12 +105,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const input = btn.previousElementSibling;
       if (input.type === 'password') {
         input.type = 'text';
-        btn.classList.replace('lucide-eye', 'lucide-eye-off');
+        btn.classList.remove('bi-eye');
+        btn.classList.add('bi-eye-slash');
       } else {
         input.type = 'password';
-        btn.classList.replace('lucide-eye-off', 'lucide-eye');
+        btn.classList.remove('bi-eye-slash');
+        btn.classList.add('bi-eye');
       }
-      if (window.lucide) lucide.createIcons();
     });
   });
 
@@ -174,32 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!terms) { showToast('You must agree to the Terms & Conditions', 'warning'); isValid = false; }
       
       if (isValid) {
-        // Save new user to localStorage database
-        const users = JSON.parse(localStorage.getItem('onkar_users') || '[]');
-        const newUser = { 
-          name: name,
-          email: email.toLowerCase(), 
-          password: password, 
-          phone: phone,
-          role: role, 
-          isLoggedIn: true 
-        };
-        users.push(newUser);
-        localStorage.setItem('onkar_users', JSON.stringify(users));
+        // Save new user in mock DB array and current active session
+        const newUser = { name, email: email.toLowerCase(), phone, role, password, isLoggedIn: true };
+        
+        const existingUsers = JSON.parse(localStorage.getItem('onkar_users') || '[]');
+        existingUsers.push(newUser);
+        localStorage.setItem('onkar_users', JSON.stringify(existingUsers));
         localStorage.setItem('onkar_user', JSON.stringify(newUser));
-
-        // Set session storage session
-        const roleMapping = {
-          'Admin': 'admin',
-          'BranchManager': 'manager',
-          'TeamLeader': 'teamleader',
-          'Employee': 'employee',
-          'Agent': 'agent',
-          'Vendor': 'vendor',
-          'Customer': 'customer'
-        };
-        const mappedRole = roleMapping[role] || role.toLowerCase();
-        sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: mappedRole }));
+        sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: role }));
 
         showToast(`Account created as ${role}! Redirecting...`, 'success');
         setTimeout(() => {
