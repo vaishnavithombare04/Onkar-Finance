@@ -85,6 +85,49 @@ body {
   padding: 0;
 }
 
+/* Sleek Minimal / Invisible Scrollbar Across Whole Project */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(120, 130, 160, 0.2) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 130, 160, 0.2);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 130, 160, 0.45);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Scrollbar Utility Classes for complete hiding */
+.no-scrollbar::-webkit-scrollbar,
+.hide-scrollbar::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none !important;
+}
+
+.no-scrollbar,
+.hide-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
 body {
   font-family: var(--font-main);
   background-color: var(--color-bg);
@@ -216,16 +259,114 @@ input, select, textarea, button {
   }
 }
 
-@media (max-width: 768px) {
-  .grid-4, .grid-3, .grid-2 {
-    grid-template-columns: 1fr;
-  }
+@media (max-width: 992px) {
   .admin-layout {
-    flex-direction: column;
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  [data-component="sidebar"] {
+    position: absolute !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: visible !important;
+    pointer-events: none !important;
+  }
+  .sidebar-nav {
+    pointer-events: auto !important;
   }
   .main-content {
-    padding: 14px;
-    gap: 16px;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    padding: 12px !important;
+    gap: 14px !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  #page-content,
+  [id^="view-"],
+  .w-full,
+  .filter-bar,
+  .inbox-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .grid, .grid-2, .grid-3, .grid-4 {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    gap: 14px !important;
+    box-sizing: border-box !important;
+  }
+  .grid > *, .grid-2 > *, .grid-3 > *, .grid-4 > *, [style*="grid-column"] {
+    grid-column: 1 / -1 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .card, .stat-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  .table-responsive {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
+  }
+  .data-table, .data-table tbody, .data-table tbody tr {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  [data-component="topbar"], .topbar {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-layout {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    padding: 10px !important;
+    gap: 12px !important;
+    box-sizing: border-box !important;
+  }
+  .search-bar[style*="width"],
+  .filter-bar select,
+  .filter-bar input,
+  .card-header select,
+  .card-header input {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .w-full-mobile {
     width: 100% !important;
@@ -240,12 +381,28 @@ input, select, textarea, button {
 
 @media (max-width: 576px) {
   :root {
-    --fs-h1: 22px;
+    --fs-h1: 20px;
     --fs-h2: 18px;
     --fs-h3: 16px;
   }
   .main-content {
-    padding: 10px;
-    gap: 12px;
+    padding: 10px !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  .card, .stat-card {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 12px !important;
+    box-sizing: border-box !important;
+  }
+  .flex:has(.btn),
+  .flex:has(button),
+  .flex:has(.search-bar),
+  .card-header {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
   }
 }

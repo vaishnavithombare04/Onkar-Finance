@@ -19,6 +19,38 @@
   <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/components.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @media (max-width: 576px) {
+      #newLeadModal .modal-container {
+        width: 92% !important;
+        max-width: 92vw !important;
+        max-height: 85vh !important;
+        max-height: 85dvh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      #newLeadModal .modal-body {
+        padding: 20px 16px !important;
+        overflow-y: auto !important;
+        max-height: 85vh !important;
+        max-height: 85dvh !important;
+        box-sizing: border-box !important;
+      }
+      #newLeadModal .grid-2 {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+      }
+      #newLeadModal .modal-actions {
+        display: flex !important;
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        margin-top: 16px !important;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -33,12 +65,12 @@
 
       <div id="page-content" class="w-full flex flex-column gap-lg">
         <!-- Header Section -->
-        <div class="flex justify-between align-center">
+        <div class="flex justify-between align-center flex-wrap-mobile gap-sm">
           <div>
             <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">My Leads</h1>
             <p class="text-secondary" style="font-size: 13px;">Refer new customers, upload profiles, and track active cases progress.</p>
           </div>
-          <button class="btn btn-primary" onclick="openModal('newLeadModal')">
+          <button class="btn btn-primary w-full-mobile" onclick="openModal('newLeadModal')">
             <i class="lucide-plus-circle"></i> New Referral
           </button>
         </div>
@@ -100,52 +132,56 @@
   <div class="modal-overlay" id="newLeadModal">
     <div class="modal-container" style="max-width: 560px;">
       <i class="lucide-x modal-close" onclick="closeModal('newLeadModal')"></i>
-      <div class="modal-header">
-        <div>
-          <h3 class="modal-title bold" style="font-size: 18px;">New Customer Referral</h3>
-          <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Enter customer credentials to register a new loan file</p>
+      <div class="modal-body" style="padding-top: 0;">
+        <div class="modal-header">
+          <div>
+            <h3 class="modal-title bold" style="font-size: 18px;">New Customer Referral</h3>
+            <p class="text-secondary" style="font-size: 12px; margin-top: 2px;">Enter customer credentials to register a new loan file</p>
+          </div>
         </div>
-      </div>
-      <div class="grid grid-2" style="margin-top: 16px; gap: var(--space-sm) var(--space-md);">
-        <div class="form-group">
-          <label class="form-label">Full Name <span class="text-danger">*</span></label>
-          <input type="text" id="addName" class="form-control" placeholder="Applicant full name" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
-          <input type="tel" id="addMobile" class="form-control" placeholder="10-digit mobile" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Email Address</label>
-          <input type="email" id="addEmail" class="form-control" placeholder="e.g. customer@example.com" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Loan Product <span class="text-danger">*</span></label>
-          <select id="addProduct" class="form-control" required>
-            <option value="">Select product</option>
-            <option>Personal Loan</option>
-            <option>Home Loan</option>
-            <option>Business Loan</option>
-            <option>Gold Loan</option>
-            <option>Vehicle Loan</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
-          <input type="number" id="addAmount" class="form-control" placeholder="e.g. 500000" min="10000" required />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Estimated Tenure (Months)</label>
-          <input type="number" id="addTenure" class="form-control" placeholder="e.g. 36" />
-        </div>
-      </div>
-      <div class="form-group" style="margin-top: 10px;">
-        <label class="form-label">Customer Address</label>
-        <textarea id="addAddress" class="form-control" placeholder="Residential address details..." style="min-height: 50px;"></textarea>
-      </div>
-      <div class="modal-actions" style="margin-top: 20px;">
-        <button class="btn btn-outline" onclick="closeModal('newLeadModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="submitReferral()"><i class="lucide-plus"></i> Submit Referral</button>
+        <form id="newLeadForm" onsubmit="event.preventDefault(); submitReferral();">
+          <div class="grid grid-2" style="margin-top: 16px; gap: var(--space-sm) var(--space-md);">
+            <div class="form-group">
+              <label class="form-label">Full Name <span class="text-danger">*</span></label>
+              <input type="text" id="addName" class="form-control" placeholder="Applicant full name" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Mobile Number <span class="text-danger">*</span></label>
+              <input type="tel" id="addMobile" class="form-control" placeholder="10-digit mobile" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" id="addEmail" class="form-control" placeholder="e.g. customer@example.com" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Loan Product <span class="text-danger">*</span></label>
+              <select id="addProduct" class="form-control" required>
+                <option value="">Select product</option>
+                <option>Personal Loan</option>
+                <option>Home Loan</option>
+                <option>Business Loan</option>
+                <option>Gold Loan</option>
+                <option>Vehicle Loan</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Loan Amount (Rs.) <span class="text-danger">*</span></label>
+              <input type="number" id="addAmount" class="form-control" placeholder="e.g. 500000" min="10000" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Estimated Tenure (Months)</label>
+              <input type="number" id="addTenure" class="form-control" placeholder="e.g. 36" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label class="form-label">Customer Address</label>
+            <textarea id="addAddress" class="form-control" placeholder="Residential address details..." style="min-height: 50px;"></textarea>
+          </div>
+          <div class="modal-actions flex justify-end gap-sm" style="margin-top: 20px;">
+            <button type="button" class="btn btn-outline" onclick="closeModal('newLeadModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary"><i class="lucide-plus"></i> Submit Referral</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

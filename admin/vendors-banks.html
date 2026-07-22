@@ -18,6 +18,49 @@
   <link rel="stylesheet" href="../assets/css/global.css">
   <link rel="stylesheet" href="../assets/css/components.css">
   <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @media (max-width: 768px) {
+      .data-table tbody tr {
+        display: block !important;
+        background-color: var(--color-surface) !important;
+        border: 1px solid var(--color-border) !important;
+        border-radius: var(--radius-md) !important;
+        padding: 10px 12px !important;
+        margin-bottom: 10px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+      }
+      .data-table thead {
+        display: none !important;
+      }
+      .data-table td {
+        display: grid !important;
+        grid-template-columns: 120px 1fr !important;
+        column-gap: 12px !important;
+        align-items: center !important;
+        padding: 6px 0 !important;
+        border: none !important;
+        border-bottom: 1px dashed var(--color-border) !important;
+        font-size: 12px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+        overflow-wrap: anywhere;
+      }
+      .data-table td:last-child {
+        border-bottom: none !important;
+        padding-top: 8px !important;
+      }
+      .data-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--color-text-secondary);
+        font-size: 11px;
+        line-height: 1.2;
+        word-break: break-word;
+        white-space: normal;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -28,12 +71,12 @@
       <div data-component="topbar"></div>
       
       <div id="page-content" class="w-full flex flex-column gap-lg">
-      <div class="flex justify-between align-center">
+      <div class="flex justify-between align-center flex-wrap-mobile gap-sm">
         <div>
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">Banking Partners &amp; API Integrations</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage associated banks, financial products offered, and track sanction ratios.</p>
         </div>
-        <button class="btn btn-primary" onclick="openModal('addPartnerModal')">
+        <button class="btn btn-primary w-full-mobile" onclick="openModal('addPartnerModal')">
           <i class="lucide-plus"></i> Add Banking Partner
         </button>
       </div>
@@ -68,35 +111,37 @@
   <div id="addPartnerModal" class="modal-overlay">
     <div class="modal-container">
       <i class="lucide-x modal-close" onclick="closeModal('addPartnerModal')"></i>
-      <h3 class="m-b-md">Add New Banking Partner</h3>
-      
-      <form id="addPartnerForm">
-        <div class="form-group">
-          <label class="form-label" for="partnerName">Bank / Partner Name</label>
-          <input type="text" id="partnerName" class="form-control" placeholder="Axis Bank Ltd." required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="partnerProducts">Products Offered (comma separated)</label>
-          <input type="text" id="partnerProducts" class="form-control" placeholder="Personal Loan, Business Loan" required>
-        </div>
-        <div class="grid-2">
+      <div class="modal-body" style="padding-top: 0;">
+        <h3 class="m-b-md">Add New Banking Partner</h3>
+        
+        <form id="addPartnerForm">
           <div class="form-group">
-            <label class="form-label" for="partnerContact">Support Contact Email</label>
-            <input type="email" id="partnerContact" class="form-control" placeholder="axis.support@onkar.com" required>
+            <label class="form-label" for="partnerName">Bank / Partner Name</label>
+            <input type="text" id="partnerName" class="form-control" placeholder="Axis Bank Ltd." required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="partnerStatus">API Status</label>
-            <select id="partnerStatus" class="form-control">
-              <option value="API Connected">API Connected</option>
-              <option value="Manual Routing">Manual Routing</option>
-            </select>
+            <label class="form-label" for="partnerProducts">Products Offered (comma separated)</label>
+            <input type="text" id="partnerProducts" class="form-control" placeholder="Personal Loan, Business Loan" required>
           </div>
-        </div>
-        <div class="flex justify-end gap-sm m-t-md">
-          <button type="button" class="btn btn-outline" onclick="closeModal('addPartnerModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Partner</button>
-        </div>
-      </form>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="partnerContact">Support Contact Email</label>
+              <input type="email" id="partnerContact" class="form-control" placeholder="axis.support@onkar.com" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="partnerStatus">API Status</label>
+              <select id="partnerStatus" class="form-control">
+                <option value="API Connected">API Connected</option>
+                <option value="Manual Routing">Manual Routing</option>
+              </select>
+            </div>
+          </div>
+          <div class="flex justify-end gap-sm m-t-md">
+            <button type="button" class="btn btn-outline" onclick="closeModal('addPartnerModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Partner</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 
@@ -104,46 +149,48 @@
   <div id="configPartnerModal" class="modal-overlay">
     <div class="modal-container">
       <i class="lucide-x modal-close" onclick="closeModal('configPartnerModal')"></i>
-      <h3 class="m-b-md">Configure Banking Partner</h3>
-      
-      <form id="configPartnerForm">
-        <input type="hidden" id="configPartnerIndex" />
-        <div class="form-group">
-          <label class="form-label" for="configPartnerName">Bank / Partner Name</label>
-          <input type="text" id="configPartnerName" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="configPartnerProducts">Products Offered (comma separated)</label>
-          <input type="text" id="configPartnerProducts" class="form-control" required>
-        </div>
-        <div class="grid-2">
+      <div class="modal-body" style="padding-top: 0;">
+        <h3 class="m-b-md">Configure Banking Partner</h3>
+        
+        <form id="configPartnerForm">
+          <input type="hidden" id="configPartnerIndex" />
           <div class="form-group">
-            <label class="form-label" for="configPartnerContact">Support Contact Email</label>
-            <input type="email" id="configPartnerContact" class="form-control" required>
+            <label class="form-label" for="configPartnerName">Bank / Partner Name</label>
+            <input type="text" id="configPartnerName" class="form-control" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="configPartnerStatus">API Status</label>
-            <select id="configPartnerStatus" class="form-control">
-              <option value="API Connected">API Connected</option>
-              <option value="Manual Routing">Manual Routing</option>
-            </select>
+            <label class="form-label" for="configPartnerProducts">Products Offered (comma separated)</label>
+            <input type="text" id="configPartnerProducts" class="form-control" required>
           </div>
-        </div>
-        <div class="grid-2">
-          <div class="form-group">
-            <label class="form-label" for="configPartnerRouted">Applications Routed</label>
-            <input type="number" id="configPartnerRouted" class="form-control" required>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="configPartnerContact">Support Contact Email</label>
+              <input type="email" id="configPartnerContact" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="configPartnerStatus">API Status</label>
+              <select id="configPartnerStatus" class="form-control">
+                <option value="API Connected">API Connected</option>
+                <option value="Manual Routing">Manual Routing</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label class="form-label" for="configPartnerRate">Sanction / Approval Rate (%)</label>
-            <input type="number" id="configPartnerRate" class="form-control" min="0" max="100" required>
+          <div class="grid-2">
+            <div class="form-group">
+              <label class="form-label" for="configPartnerRouted">Applications Routed</label>
+              <input type="number" id="configPartnerRouted" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="configPartnerRate">Sanction / Approval Rate (%)</label>
+              <input type="number" id="configPartnerRate" class="form-control" min="0" max="100" required>
+            </div>
           </div>
-        </div>
-        <div class="flex justify-end gap-sm m-t-md">
-          <button type="button" class="btn btn-outline" onclick="closeModal('configPartnerModal')">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Config</button>
-        </div>
-      </form>
+          <div class="flex justify-end gap-sm m-t-md">
+            <button type="button" class="btn btn-outline" onclick="closeModal('configPartnerModal')">Cancel</button>
+            <button type="submit" class="btn btn-primary">Save Config</button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
  
@@ -165,18 +212,18 @@
         
         tbody.innerHTML += `
           <tr>
-            <td class="bold">${partner.name}</td>
-            <td>${partner.products}</td>
-            <td class="bold">${partner.routed}</td>
-            <td>
+            <td class="bold" data-label="Bank / Vendor">${partner.name}</td>
+            <td data-label="Products">${partner.products}</td>
+            <td class="bold" data-label="Applications">${partner.routed}</td>
+            <td data-label="Approval Rate">
               <span class="bold">${partner.rate}%</span>
               <div class="progress-bar-container" style="height:4px; margin-top:4px;">
                 <div class="progress-bar-fill" style="width: ${partner.rate}%; ${progressColor}"></div>
               </div>
             </td>
-            <td><span class="badge ${badgeClass}">${partner.status}</span></td>
-            <td>${partner.contact}</td>
-            <td>
+            <td data-label="API Status"><span class="badge ${badgeClass}">${partner.status}</span></td>
+            <td data-label="Support Contact">${partner.contact}</td>
+            <td data-label="Actions">
               <button class="btn btn-outline" style="padding: 6px 12px; font-size:12px;" onclick="openConfigPartnerModal(${index})">
                 Configure
               </button>

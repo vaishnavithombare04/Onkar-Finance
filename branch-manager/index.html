@@ -22,10 +22,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     <!-- Shared Global CSS -->
     <link rel="stylesheet" href="../shared/global.css">
+    <style>
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+        width: 100% !important;
+      }
+      .app-container, .main-content {
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .row {
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+      }
+      .col-md-6, .col-lg-3, .col-lg-6 {
+        padding-left: 4px !important;
+        padding-right: 4px !important;
+      }
+
+      @media (max-width: 768px) {
+        .main-content {
+          padding: 12px !important;
+          gap: 16px !important;
+        }
+        .main-content > .d-flex {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 12px !important;
+        }
+        .date-badge {
+          width: 100% !important;
+          text-align: center !important;
+        }
+        .data-table-container, .table-responsive {
+          overflow-x: hidden !important;
+          width: 100% !important;
+        }
+        .data-table {
+          width: 100% !important;
+          display: block !important;
+        }
+        .data-table thead {
+          display: none !important;
+        }
+        .data-table tbody {
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 8px !important;
+          width: 100% !important;
+        }
+        .data-table tbody tr {
+          display: flex !important;
+          flex-direction: column !important;
+          padding: 10px 12px !important;
+          background-color: var(--bg-sidebar-hover);
+          border-radius: 8px !important;
+          border: 1px solid var(--border-color) !important;
+          gap: 4px !important;
+          width: 100% !important;
+          box-sizing: border-box !important;
+        }
+        .data-table tbody td {
+          display: flex !important;
+          align-items: center !important;
+          justify-content: space-between !important;
+          padding: 3px 0 !important;
+          border: none !important;
+          width: 100% !important;
+          font-size: 12px !important;
+          box-sizing: border-box !important;
+          max-width: 100% !important;
+          white-space: normal !important;
+          word-break: break-word !important;
+        }
+        .data-table tbody td:nth-child(1)::before {
+          content: "Timestamp:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        .data-table tbody td:nth-child(2)::before {
+          content: "User:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        .data-table tbody td:nth-child(3)::before {
+          content: "Module:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        .data-table tbody td:nth-child(4)::before {
+          content: "Details:";
+          font-weight: 600;
+          color: var(--text-tertiary);
+          margin-right: 8px;
+        }
+        #dashboardApprovalsQueue .d-flex {
+          flex-wrap: wrap !important;
+          gap: 8px !important;
+        }
+        #dashboardApprovalsQueue .btn {
+          width: 100% !important;
+        }
+      }
+    </style>
 </head>
 <body data-theme="light">
     <!-- App Header -->
-        <!-- App Header -->
     <header class="app-header">
         <div class="header-brand">
             <button class="btn btn-ghost btn-icon-only d-md-none" id="sidebarToggle">

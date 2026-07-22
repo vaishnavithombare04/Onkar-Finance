@@ -50,6 +50,73 @@
       flex-direction: column;
       gap: 20px;
     }
+
+    /* Responsive Layout without Horizontal Scroll (<= 992px) */
+    @media (max-width: 992px) {
+      .settings-layout {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        gap: 16px !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+      }
+      .settings-nav {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .settings-nav-item {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        padding: 10px 8px !important;
+        font-size: 12px !important;
+        text-align: center !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+      }
+      .settings-pane {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        overflow-x: hidden !important;
+      }
+      .settings-pane .grid-2 {
+        display: flex !important;
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+      }
+      .settings-pane .flex.justify-between {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+      }
+      label.flex {
+        align-items: flex-start !important;
+      }
+      label.flex input[type="checkbox"] {
+        margin-top: 3px !important;
+      }
+      .btn-primary.w-full-mobile {
+        width: 100% !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .settings-nav-item {
+        font-size: 11px !important;
+        padding: 8px 4px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -61,7 +128,7 @@
       <div data-component="topbar"></div>
       
       <div id="page-content" class="w-full flex flex-column gap-lg">
-      <div class="flex justify-between align-center">
+      <div class="flex justify-between align-center flex-wrap-mobile gap-sm">
         <div>
           <h1 style="font-size: var(--fs-h1); font-weight: 700; letter-spacing: -0.5px;">System Settings</h1>
           <p class="text-secondary" style="font-size: 13px;">Manage brand configurations, setup third party communication gateways, and security credentials.</p>
@@ -155,7 +222,7 @@
           </div>
 
           <div class="flex justify-end m-t-md">
-            <button class="btn btn-primary" onclick="showToast('Settings saved successfully!', 'success')"><i class="lucide-save"></i> Save Configuration</button>
+            <button class="btn btn-primary w-full-mobile" onclick="showToast('Settings saved successfully!', 'success')"><i class="lucide-save"></i> Save Configuration</button>
           </div>
         </div>
       </div>
