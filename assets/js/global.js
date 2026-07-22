@@ -1,5 +1,58 @@
 // Global Utility Functions & State Management
 
+// Authentication check
+(function() {
+  const currentPath = window.location.pathname;
+  const isRootPublicPage = (
+    (currentPath.endsWith('/index.html') || currentPath.endsWith('/') || currentPath.endsWith('Onkar-Finance') || currentPath.endsWith('Onkar-Finance/')) && 
+    !currentPath.includes('/branch-manager/') && 
+    !currentPath.includes('/employee/') && 
+    !currentPath.includes('/customer/') &&
+    !currentPath.includes('/Agent/') &&
+    !currentPath.includes('/Vendor/') &&
+    !currentPath.includes('/TeamLeader/')
+  ) || currentPath.endsWith('/signup.html') || currentPath.endsWith('/forgot-password.html');
+
+  const session = sessionStorage.getItem('onkar_session');
+
+  if (!session) {
+    if (!isRootPublicPage) {
+      let prefix = '';
+      if (currentPath.includes('/admin/') || currentPath.includes('/TeamLeader/') || currentPath.includes('/branch-manager/') || currentPath.includes('/employee/') || currentPath.includes('/customer/') || currentPath.includes('/Agent/') || currentPath.includes('/Vendor/')) {
+        prefix = '../';
+      }
+      window.location.href = prefix + 'index.html';
+    }
+  } else {
+    if (isRootPublicPage && !currentPath.endsWith('signup.html') && !currentPath.endsWith('forgot-password.html')) {
+      try {
+        const sessionData = JSON.parse(session);
+        let redirectUrl = 'admin/dashboard.html';
+        if (sessionData.role === 'manager') redirectUrl = 'branch-manager/index.html';
+        else if (sessionData.role === 'employee') redirectUrl = 'employee/index.html';
+        else if (sessionData.role === 'customer') redirectUrl = 'customer/index.html';
+        else if (sessionData.role === 'teamleader') redirectUrl = 'TeamLeader/dashboard.html';
+        else if (sessionData.role === 'agent') redirectUrl = 'Agent/dashboard.html';
+        else if (sessionData.role === 'vendor') redirectUrl = 'Vendor/dashboard.html';
+        window.location.href = redirectUrl;
+      } catch (e) {
+        sessionStorage.removeItem('onkar_session');
+      }
+    }
+  }
+  
+  // Clear session if visiting the login or signup page (sign out)
+  if (isRootPublicPage && (
+    currentPath.endsWith('/index.html') || 
+    currentPath.endsWith('/signup.html') || 
+    currentPath.endsWith('/') || 
+    currentPath.endsWith('Onkar-Finance') || 
+    currentPath.endsWith('Onkar-Finance/')
+  )) {
+    sessionStorage.removeItem('onkar_session');
+  }
+})();
+
 // Load Bootstrap Icons stylesheet dynamically
 (function() {
   if (!document.querySelector('link[href*="bootstrap-icons"]')) {

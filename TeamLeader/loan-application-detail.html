@@ -129,6 +129,53 @@
     }
     .action-icon-btn:hover { background: var(--color-primary); border-color: var(--color-primary); color: #fff; }
     .action-icon-btn i { width: 14px; height: 14px; }
+
+    @media (max-width: 768px) {
+      /* Detail page header responsiveness */
+      #page-content > .flex.align-center.gap-sm {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 12px !important;
+      }
+      #page-content > .flex.align-center.gap-sm > .btn {
+        width: 100% !important;
+        justify-content: center !important;
+      }
+
+      /* Stepper responsiveness overrides */
+      .stepper {
+        display: flex !important;
+        justify-content: space-between !important;
+        overflow-x: visible !important;
+        padding-bottom: 0 !important;
+        gap: 4px !important;
+      }
+      .stepper::before {
+        top: 15px !important;
+      }
+      .step {
+        min-width: 0 !important;
+        flex: 1 !important;
+      }
+      .step-circle {
+        width: 30px !important;
+        height: 30px !important;
+        border-width: 2px !important;
+        font-size: 11px !important;
+      }
+      .step-label {
+        font-size: 9px !important;
+        white-space: normal !important;
+        margin-top: 4px !important;
+        line-height: 1.1 !important;
+      }
+
+      /* OCR Document responsiveness */
+      .ocr-preview-box {
+        width: 100% !important;
+        box-sizing: border-box !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -173,7 +220,6 @@
           </div>
           <div class="step">
             <div class="step-circle">5</div>
-            <div class="step-circle-icon"><i class="lucide-check"></i></div>
             <div class="step-label">Disbursed</div>
           </div>
         </div>
@@ -411,36 +457,45 @@
         
         // Adjust stepper and badge color
         const steps = document.querySelectorAll('.step');
-        steps.forEach(step => step.className = 'step');
+        steps.forEach((step, idx) => {
+          step.className = 'step';
+          const circle = step.querySelector('.step-circle');
+          if (circle) {
+            circle.innerHTML = idx + 1;
+          }
+        });
         
+        let activeIndex = -1;
         if (lead.status === 'New Lead') {
-          steps[0].className = 'step active';
+          activeIndex = 0;
           badge.className = 'badge badge-info';
         } else if (lead.status === 'Verification') {
-          steps[0].className = 'step completed';
-          steps[1].className = 'step active';
+          activeIndex = 1;
           badge.className = 'badge badge-warning';
         } else if (lead.status === 'Under Process') {
-          steps[0].className = 'step completed';
-          steps[1].className = 'step completed';
-          steps[2].className = 'step active';
+          activeIndex = 2;
           badge.className = 'badge badge-warning';
         } else if (lead.status === 'Approved') {
-          steps[0].className = 'step completed';
-          steps[1].className = 'step completed';
-          steps[2].className = 'step completed';
-          steps[3].className = 'step active';
+          activeIndex = 3;
           badge.className = 'badge badge-success';
         } else if (lead.status === 'Disbursed') {
-          steps[0].className = 'step completed';
-          steps[1].className = 'step completed';
-          steps[2].className = 'step completed';
-          steps[3].className = 'step completed';
-          steps[4].className = 'step completed';
+          activeIndex = 5;
           badge.className = 'badge badge-success';
         } else if (lead.status === 'Rejected') {
           badge.className = 'badge badge-danger';
         }
+
+        steps.forEach((step, idx) => {
+          const circle = step.querySelector('.step-circle');
+          if (idx < activeIndex) {
+            step.classList.add('completed');
+            if (circle) circle.innerHTML = '<i class="lucide-check" style="width: 14.5px; height: 14.5px;"></i>';
+          } else if (idx === activeIndex) {
+            step.classList.add('active');
+          }
+        });
+
+        if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
       }
     }
 

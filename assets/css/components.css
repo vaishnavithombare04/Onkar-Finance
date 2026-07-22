@@ -63,12 +63,13 @@
 }
 
 .sidebar-menu {
-  padding: 20px 12px;
+  padding: 20px 12px 60px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   flex: 1 1 auto;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .nav-item {
@@ -1055,10 +1056,11 @@ select.form-control {
   
   .sidebar-menu {
     flex-direction: column;
-    padding: 16px 12px;
+    padding: 16px 12px 60px;
     gap: 6px;
     overflow-y: auto;
     flex: 1 1 auto;
+    -webkit-overflow-scrolling: touch;
   }
   
   .nav-item {
@@ -1132,15 +1134,15 @@ select.form-control {
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .topbar {
     padding: 8px 10px;
   }
-  .search-bar {
-    display: none; /* Collapses search on very small phones to prevent overflow */
+  .topbar .search-bar {
+    display: none !important;
   }
-  .user-profile .user-info {
-    display: none;
+  .user-profile .text-secondary {
+    display: none !important;
   }
 }
 
@@ -1182,6 +1184,7 @@ select.form-control {
   align-items: center;
   gap: 8px;
   transition: var(--transition-smooth);
+  text-decoration: none;
 }
 
 .dropdown-item:hover {
@@ -1339,5 +1342,22 @@ select, .form-select {
   .drawer-body .flex.gap-sm {
     flex-wrap: wrap !important;
     gap: 6px !important;
+  }
+}
+
+/* Fixed Sidebar on Desktop Viewports */
+@media (min-width: 993px) {
+  .sidebar-nav {
+    position: fixed !important;
+    left: 0;
+    top: 0;
+    bottom: 0;
+  }
+  .main-content {
+    margin-left: 72px !important;
+    transition: margin-left 200ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  }
+  .admin-layout:has(.sidebar--expanded) .main-content {
+    margin-left: 220px !important;
   }
 }

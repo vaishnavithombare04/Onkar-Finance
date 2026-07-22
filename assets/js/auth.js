@@ -26,19 +26,51 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       if (isValid) {
-        showToast('Login successful! Redirecting...', 'success');
-        setTimeout(() => {
-          const emailLower = email.toLowerCase();
-          if (emailLower.includes('amit.d') || emailLower.includes('manager')) {
-            window.location.href = 'branch-manager/index.html';
-          } else if (emailLower.includes('karan.j') || emailLower.includes('employee') || emailLower.includes('emp')) {
-            window.location.href = 'employee/index.html';
-          } else if (emailLower.includes('customer') || emailLower.includes('cust') || emailLower.includes('client') || emailLower.includes('abhijit.r') || emailLower.includes('milind') || emailLower.includes('sneha')) {
-            window.location.href = 'customer/index.html';
-          } else {
-            window.location.href = 'admin/dashboard.html';
+        const emailLower = email.toLowerCase();
+        
+        // Define default pre-configured users
+        const defaultUsers = {
+          'admin@onkarfinance.com': { password: 'admin123', role: 'admin', redirect: 'admin/dashboard.html' },
+          'teamleader@onkarfinance.com': { password: 'admin123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
+          'tl@onkarfinance.com': { password: 'admin123', role: 'teamleader', redirect: 'TeamLeader/dashboard.html' },
+          'manager@onkarfinance.com': { password: 'admin123', role: 'manager', redirect: 'branch-manager/index.html' },
+          'employee@onkarfinance.com': { password: 'admin123', role: 'employee', redirect: 'employee/index.html' },
+          'customer@onkarfinance.com': { password: 'admin123', role: 'customer', redirect: 'customer/index.html' },
+          'agent@onkarfinance.com': { password: 'admin123', role: 'agent', redirect: 'Agent/dashboard.html' },
+          'vendor@onkarfinance.com': { password: 'admin123', role: 'vendor', redirect: 'Vendor/dashboard.html' }
+        };
+
+        let user = defaultUsers[emailLower];
+        
+        // If not a default user, check localStorage registered users
+        if (!user) {
+          const registeredUsers = JSON.parse(localStorage.getItem('onkar_users') || '[]');
+          const regUser = registeredUsers.find(u => u.email === emailLower);
+          if (regUser) {
+            user = {
+              password: regUser.password,
+              role: regUser.role || 'admin',
+              redirect: (regUser.role === 'manager') ? 'branch-manager/index.html' : 
+                        (regUser.role === 'employee') ? 'employee/index.html' :
+                        (regUser.role === 'customer') ? 'customer/index.html' :
+                        (regUser.role === 'teamleader') ? 'TeamLeader/dashboard.html' :
+                        (regUser.role === 'agent') ? 'Agent/dashboard.html' :
+                        (regUser.role === 'vendor') ? 'Vendor/dashboard.html' : 'admin/dashboard.html'
+            };
           }
-        }, 1500);
+        }
+
+        if (user && user.password === password) {
+          sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: user.role }));
+          showToast('Login successful! Redirecting...', 'success');
+          setTimeout(() => {
+            window.location.href = user.redirect;
+          }, 1500);
+        } else {
+          showToast('Invalid username or password!', 'danger');
+          showFieldError('email', 'Invalid credentials');
+          showFieldError('password', 'Invalid credentials');
+        }
       }
     });
   }
@@ -92,7 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!terms) { showToast('You must agree to the Terms & Conditions', 'warning'); isValid = false; }
       
       if (isValid) {
-        // Redirect directly to dashboard on successful signup for seamless frontend flow
+        // Save new user to localStorage database
+        const users = JSON.parse(localStorage.getItem('onkar_users') || '[]');
+        users.push({ email: email.toLowerCase(), password: password, role: 'admin' });
+        localStorage.setItem('onkar_users', JSON.stringify(users));
+
+        sessionStorage.setItem('onkar_session', JSON.stringify({ username: email, role: 'admin' }));
         showToast('Account created successfully! Redirecting...', 'success');
         setTimeout(() => {
           window.location.href = 'admin/dashboard.html';

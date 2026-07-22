@@ -157,7 +157,8 @@ async function loadComponent(selector, path) {
       });
       const userProfile = element.querySelector('.user-profile');
       if (userProfile) {
-        userProfile.setAttribute('onclick', "location.href='profile.html'");
+        userProfile.removeAttribute('onclick');
+        userProfile.style.cursor = 'pointer';
       }
     }
 
@@ -404,7 +405,7 @@ function fallbackComponentRenderer(selector) {
               <i class="lucide-bell"></i>
               <div class="badge-dot"></div>
             </div>
-            <div class="user-profile" onclick="location.href='${rootPrefix}Agent/profile.html'">
+            <div class="user-profile" style="cursor: pointer;">
               <div class="avatar">RP</div>
               <div class="text-secondary bold" style="font-size: 13px;">Rohit P.</div>
             </div>
@@ -433,7 +434,7 @@ function fallbackComponentRenderer(selector) {
               <i class="lucide-bell"></i>
               <div class="badge-dot"></div>
             </div>
-            <div class="user-profile" onclick="location.href='profile.html'" style="cursor: pointer;">
+            <div class="user-profile" style="cursor: pointer;">
               <div class="avatar">${avatar}</div>
               <div class="text-secondary bold" style="font-size: 13px;">${name}</div>
             </div>
@@ -576,6 +577,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Setup dropdown delegations
   document.body.addEventListener('click', (e) => {
+    // If click is inside dropdown menu, ignore it here to let the browser process item clicks/redirects
+    if (e.target.closest('.dropdown-menu')) {
+      return;
+    }
     // Mobile sidebar toggle control
     const mobileToggle = e.target.closest('#sidebarMobileToggle');
     if (mobileToggle) {
@@ -679,7 +684,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const isInsideTeamLeader = window.location.pathname.includes('/TeamLeader/');
         const isInsideBM = window.location.pathname.includes('/branch-manager/');
         const isInsideAgent = window.location.pathname.includes('/Agent/');
-        const isInside = isInsideAdmin || isInsideTeamLeader || isInsideBM || isInsideAgent;
+        const isInsideVendor = window.location.pathname.includes('/Vendor/');
+        const isInsideEmployee = window.location.pathname.includes('/employee/');
+        const isInsideCustomer = window.location.pathname.includes('/customer/');
+        const isInside = isInsideAdmin || isInsideTeamLeader || isInsideBM || isInsideAgent || isInsideVendor || isInsideEmployee || isInsideCustomer;
         
         let prefix = '';
         if (!isInside) {
@@ -690,18 +698,19 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdown.className = 'dropdown-menu';
         dropdown.style.right = '0';
         
-        if (isInsideTeamLeader || isInsideAgent || isInsideBM) {
+        if (isInsideTeamLeader || isInsideAgent || isInsideBM || isInsideEmployee || isInsideCustomer) {
           const profileLink = 'profile.html';
-          const logoutLink = '../index.html';
+          const logoutLink = (isInsideTeamLeader || isInsideBM || isInsideEmployee || isInsideCustomer) ? '../index.html' : '../signup.html';
           dropdown.innerHTML = `
-            <div class="dropdown-item" onclick="location.href='${profileLink}'"><i class="lucide-user"></i> My Profile</div>
-            <div class="dropdown-item" onclick="location.href='${logoutLink}'"><i class="lucide-log-out"></i> Logout</div>
+            <a href="${profileLink}" class="dropdown-item"><i class="lucide-user"></i> My Profile</a>
+            <a href="${logoutLink}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
           `;
         } else {
+          const logoutLink = isInsideVendor ? '../index.html' : `${isInside ? '../' : './'}signup.html`;
           dropdown.innerHTML = `
-            <div class="dropdown-item" onclick="location.href='${prefix}profile.html'"><i class="lucide-user"></i> My Profile</div>
-            <div class="dropdown-item" onclick="location.href='${prefix}settings.html'"><i class="lucide-settings"></i> Settings</div>
-            <div class="dropdown-item" onclick="location.href='${isInside ? '../' : './'}index.html'"><i class="lucide-log-out"></i> Logout</div>
+            <a href="${prefix}profile.html" class="dropdown-item"><i class="lucide-user"></i> My Profile</a>
+            <a href="${prefix}settings.html" class="dropdown-item"><i class="lucide-settings"></i> Settings</a>
+            <a href="${logoutLink}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
           `;
         }
         profileBtn.appendChild(dropdown);

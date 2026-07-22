@@ -105,9 +105,10 @@
       align-items: center;
     }
     .filter-bar .search-input-wrap {
-      flex: 1 1 220px;
+      flex: 1 1 100%;
+      width: 100%;
       position: relative;
-      min-width: 180px;
+      margin-bottom: 4px;
     }
     .filter-bar .search-input-wrap i {
       position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
@@ -348,12 +349,13 @@
         overflow-x: hidden !important;
         width: 100% !important;
       }
-      .app-table {
+      #appTable {
         width: 100% !important;
+        min-width: 0 !important;
         display: block !important;
       }
-      .app-table thead { display: none !important; }
-      .app-table tbody {
+      #appTable thead { display: none !important; }
+      #appTable tbody {
         display: flex !important;
         flex-direction: column !important;
         gap: 10px !important;
@@ -361,7 +363,7 @@
         padding: 8px !important;
         box-sizing: border-box !important;
       }
-      .app-table tbody tr {
+      #appTable tbody tr {
         display: flex !important;
         flex-direction: column !important;
         padding: 12px !important;
@@ -372,7 +374,7 @@
         width: 100% !important;
         box-sizing: border-box !important;
       }
-      .app-table tbody td {
+      #appTable tbody td {
         display: grid !important;
         grid-template-columns: minmax(90px, max-content) 1fr !important;
         column-gap: 10px !important;
@@ -384,7 +386,7 @@
         box-sizing: border-box !important;
         word-break: break-word !important;
       }
-      .app-table tbody td:first-child {
+      #appTable tbody td:first-child {
         display: flex !important;
         align-items: center !important;
         gap: 8px !important;
@@ -392,7 +394,7 @@
         border-bottom: 1px dashed var(--color-border) !important;
         margin-bottom: 4px !important;
       }
-      .app-table tbody td::before {
+      #appTable tbody td::before {
         content: attr(data-label);
         font-weight: 600;
         color: var(--color-text-secondary);
@@ -401,9 +403,16 @@
         letter-spacing: 0.5px;
         white-space: nowrap;
       }
-      .app-table tbody td:first-child::before {
+      #appTable tbody td:first-child::before {
         content: "";
         display: none;
+      }
+      #appTable tbody td .badge,
+      #appTable tbody td span[class*="badge"],
+      #appTable tbody td .status-pill,
+      #appTable tbody td .assigned-chip {
+        justify-self: start !important;
+        width: max-content !important;
       }
 
       /* Action buttons: row wrap inside card */
@@ -518,7 +527,7 @@
 
       <!-- Pipeline progress bar -->
       <div style="padding:0 2px;">
-        <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--color-text-secondary); margin-bottom:6px;">
+        <div class="pipeline-bar-header" style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--color-text-secondary); margin-bottom:6px;">
           <span>Pipeline Health — 47 Total Applications</span>
           <span>Conversion: <strong>51%</strong> (Approved + Disbursed)</span>
         </div>
@@ -625,6 +634,8 @@
             <i class="lucide-file-search"></i>
             <p>No applications match your filters.</p>
           </div>
+        </div>
+      </div>
       <!-- Stage Update Modal -->
       <div class="modal-overlay" id="stageModal">
         <div class="modal-container">
