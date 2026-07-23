@@ -254,11 +254,16 @@ function fallbackComponentRenderer(selector) {
   const isInsideBM = currentPath.includes('/branch-manager/');
   const isInsideTeamLeader = currentPath.includes('/TeamLeader/');
   const isInsideAgent = currentPath.includes('/Agent/');
+  const isInsideVendor = currentPath.includes('/Vendor/');
 
-  const isInsideSubfolder = isInsideAdmin || isInsideBM || isInsideTeamLeader || isInsideAgent;
+  const isInsideSubfolder = isInsideAdmin || isInsideBM || isInsideTeamLeader || isInsideAgent || isInsideVendor;
   const rootPrefix = isInsideSubfolder ? '../' : './';
-  const adminPrefix = isInsideAdmin ? '' : (isInsideTeamLeader ? '../admin/' : 'admin/');
-  const tlPrefix = isInsideTeamLeader ? '' : (isInsideAdmin ? '../TeamLeader/' : 'TeamLeader/');
+  
+  const adminPrefix = isInsideAdmin ? '' : `${rootPrefix}admin/`;
+  const tlPrefix = isInsideTeamLeader ? '' : `${rootPrefix}TeamLeader/`;
+  const agentPrefix = isInsideAgent ? '' : `${rootPrefix}Agent/`;
+  const vendorPrefix = isInsideVendor ? '' : `${rootPrefix}Vendor/`;
+  const bmPrefix = isInsideBM ? '' : `${rootPrefix}branch-manager/`;
 
   if (selector === '[data-component="sidebar"]') {
     if (isInsideBM) {
@@ -269,16 +274,16 @@ function fallbackComponentRenderer(selector) {
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
-            <li><a href="${rootPrefix}branch-manager/index.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/applications.html" class="nav-item" data-page="applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/application-detail.html" class="nav-item" data-page="detail"><i class="lucide-info"></i><span class="nav-label">App Detail</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/communication.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/reports.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
-            <li><a href="${rootPrefix}branch-manager/profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">Settings</span></a></li>
+            <li><a href="${bmPrefix}index.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${bmPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
+            <li><a href="${bmPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
+            <li><a href="${bmPrefix}applications.html" class="nav-item" data-page="applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${bmPrefix}application-detail.html" class="nav-item" data-page="detail"><i class="lucide-info"></i><span class="nav-label">App Detail</span></a></li>
+            <li><a href="${bmPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
+            <li><a href="${bmPrefix}agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
+            <li><a href="${bmPrefix}communication.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
+            <li><a href="${bmPrefix}reports.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
+            <li><a href="${bmPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">Settings</span></a></li>
           </ul>
           <div class="sidebar-footer">
             <div class="theme-toggle-btn">
@@ -296,13 +301,13 @@ function fallbackComponentRenderer(selector) {
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
-            <li><a href="${rootPrefix}${tlPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">My Team</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
-            <li><a href="${rootPrefix}${tlPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
+            <li><a href="${tlPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${tlPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
+            <li><a href="${tlPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
+            <li><a href="${tlPrefix}loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${tlPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">My Team</span></a></li>
+            <li><a href="${tlPrefix}communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
+            <li><a href="${tlPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
           </ul>
           <div class="sidebar-footer">
             <div class="theme-toggle-btn">
@@ -320,11 +325,32 @@ function fallbackComponentRenderer(selector) {
             <span class="logo-text">Onkar Partner</span>
           </div>
           <ul class="sidebar-menu">
-            <li><a href="${rootPrefix}Agent/dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
-            <li><a href="${rootPrefix}Agent/leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">My Referrals</span></a></li>
-            <li><a href="${rootPrefix}Agent/commission.html" class="nav-item" data-page="commission"><i class="lucide-banknote"></i><span class="nav-label">Commissions</span></a></li>
-            <li><a href="${rootPrefix}Agent/follow-ups.html" class="nav-item" data-page="followups"><i class="lucide-phone-call"></i><span class="nav-label">Follow Ups</span></a></li>
-            <li><a href="${rootPrefix}Agent/profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
+            <li><a href="${agentPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${agentPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">My Referrals</span></a></li>
+            <li><a href="${agentPrefix}commission.html" class="nav-item" data-page="commission"><i class="lucide-banknote"></i><span class="nav-label">Commissions</span></a></li>
+            <li><a href="${agentPrefix}follow-ups.html" class="nav-item" data-page="followups"><i class="lucide-phone-call"></i><span class="nav-label">Follow Ups</span></a></li>
+            <li><a href="${agentPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
+          </ul>
+          <div class="sidebar-footer">
+            <div class="theme-toggle-btn">
+              <i class="lucide-moon"></i>
+              <span class="theme-text">Dark Mode</span>
+            </div>
+          </div>
+        </div>
+      `;
+    } else if (isInsideVendor) {
+      element.innerHTML = `
+        <div class="sidebar-nav">
+          <div class="sidebar-header">
+            <div class="sidebar-toggle" style="cursor: pointer;"><i class="lucide-more-horizontal"></i></div>
+            <span class="logo-text">Onkar Partner</span>
+          </div>
+          <ul class="sidebar-menu">
+            <li><a href="${vendorPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${vendorPrefix}applications.html" class="nav-item" data-page="applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${vendorPrefix}status-updates.html" class="nav-item" data-page="status-updates"><i class="lucide-trending-up"></i><span class="nav-label">Status Updates</span></a></li>
+            <li><a href="${vendorPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
           </ul>
           <div class="sidebar-footer">
             <div class="theme-toggle-btn">
@@ -342,20 +368,20 @@ function fallbackComponentRenderer(selector) {
             <span class="logo-text">Onkar Finance</span>
           </div>
           <ul class="sidebar-menu">
-            <li><a href="${rootPrefix}${adminPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}vendors-banks.html" class="nav-item" data-page="vendors"><i class="lucide-landmark"></i><span class="nav-label">Banks Partners</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}branches.html" class="nav-item" data-page="branches"><i class="lucide-git-branch"></i><span class="nav-label">Branches</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}roles-permissions.html" class="nav-item" data-page="roles"><i class="lucide-key-round"></i><span class="nav-label">Permissions</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}marketing-campaigns.html" class="nav-item" data-page="campaigns"><i class="lucide-megaphone"></i><span class="nav-label">Campaigns</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}reports-analytics.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}settings.html" class="nav-item" data-page="settings"><i class="lucide-settings"></i><span class="nav-label">Settings</span></a></li>
-            <li><a href="${rootPrefix}${adminPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
+            <li><a href="${adminPrefix}dashboard.html" class="nav-item" data-page="dashboard"><i class="lucide-layout-dashboard"></i><span class="nav-label">Dashboard</span></a></li>
+            <li><a href="${adminPrefix}leads.html" class="nav-item" data-page="leads"><i class="lucide-users"></i><span class="nav-label">Leads CRM</span></a></li>
+            <li><a href="${adminPrefix}customers.html" class="nav-item" data-page="customers"><i class="lucide-user-check"></i><span class="nav-label">Customers</span></a></li>
+            <li><a href="${adminPrefix}loan-applications.html" class="nav-item" data-page="loan-applications"><i class="lucide-file-text"></i><span class="nav-label">Applications</span></a></li>
+            <li><a href="${adminPrefix}employees.html" class="nav-item" data-page="employees"><i class="lucide-user-cog"></i><span class="nav-label">Employees</span></a></li>
+            <li><a href="${adminPrefix}agents.html" class="nav-item" data-page="agents"><i class="lucide-shield-user"></i><span class="nav-label">Agents DSAs</span></a></li>
+            <li><a href="${adminPrefix}vendors-banks.html" class="nav-item" data-page="vendors"><i class="lucide-landmark"></i><span class="nav-label">Banks Partners</span></a></li>
+            <li><a href="${adminPrefix}branches.html" class="nav-item" data-page="branches"><i class="lucide-git-branch"></i><span class="nav-label">Branches</span></a></li>
+            <li><a href="${adminPrefix}roles-permissions.html" class="nav-item" data-page="roles"><i class="lucide-key-round"></i><span class="nav-label">Permissions</span></a></li>
+            <li><a href="${adminPrefix}communication-center.html" class="nav-item" data-page="communications"><i class="lucide-message-square"></i><span class="nav-label">Inbox</span></a></li>
+            <li><a href="${adminPrefix}marketing-campaigns.html" class="nav-item" data-page="campaigns"><i class="lucide-megaphone"></i><span class="nav-label">Campaigns</span></a></li>
+            <li><a href="${adminPrefix}reports-analytics.html" class="nav-item" data-page="reports"><i class="lucide-trending-up"></i><span class="nav-label">Reports</span></a></li>
+            <li><a href="${adminPrefix}settings.html" class="nav-item" data-page="settings"><i class="lucide-settings"></i><span class="nav-label">Settings</span></a></li>
+            <li><a href="${adminPrefix}profile.html" class="nav-item" data-page="profile"><i class="lucide-user"></i><span class="nav-label">My Profile</span></a></li>
           </ul>
           <div class="sidebar-footer">
             <div class="theme-toggle-btn">
@@ -425,6 +451,31 @@ function fallbackComponentRenderer(selector) {
           </div>
         </div>
       `;
+    } else if (isInsideVendor) {
+      element.innerHTML = `
+        <div class="topbar">
+          <button class="sidebar-mobile-toggle" id="sidebarMobileToggle" style="display: none; border: none; background: none; cursor: pointer; padding: 8px;">
+            <i class="lucide-menu"></i>
+          </button>
+          <div class="topbar-tabs">
+            <div class="tab-pill active">Partner Portal</div>
+          </div>
+          <div class="topbar-actions">
+            <div class="search-bar">
+              <i class="lucide-search"></i>
+              <input type="text" placeholder="Search applications..." id="globalSearch">
+            </div>
+            <div class="icon-btn">
+              <i class="lucide-bell"></i>
+              <div class="badge-dot"></div>
+            </div>
+            <div class="user-profile" style="cursor: pointer;">
+              <div class="avatar">RS</div>
+              <div class="text-secondary bold" style="font-size: 13px;">Rajesh Saxena</div>
+            </div>
+          </div>
+        </div>
+      `;
     } else {
       const avatar = isInsideBM ? 'BM' : 'AD';
       const name = isInsideBM ? 'Amit D.' : 'Aditya S.';
@@ -463,8 +514,15 @@ function fallbackComponentRenderer(selector) {
       }
     }
  
+    const pills = element.querySelectorAll('.topbar .tab-pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+      });
+    });
+
     const isEmployees = window.location.pathname.includes('employees.html');
-    const isDashboard = window.location.pathname.includes('dashboard.html');
     const tabsContainer = element.querySelector('.topbar-tabs');
     if (tabsContainer && isInsideTeamLeader) {
       const pills = tabsContainer.querySelectorAll('.tab-pill');
