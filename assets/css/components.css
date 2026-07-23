@@ -1302,6 +1302,28 @@ select.form-control {
   color: var(--color-primary);
 }
 
+.dropdown-item.active {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Custom Filter Dropdown styling */
+.filter-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.filter-dropdown button.form-control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  cursor: pointer;
+  background-color: var(--color-bg);
+  font-weight: 500;
+}
+
 /* Form Select Controls - Responsive Mobile Styling */
 select, .form-select {
   max-width: 100%;

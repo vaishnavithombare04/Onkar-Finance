@@ -737,8 +737,56 @@ document.addEventListener('DOMContentLoaded', () => {
       dropdown.classList.toggle('show');
     }
 
+    // Custom filter dropdown toggling
+    const filterBtn = e.target.closest('.filter-dropdown button');
+    if (filterBtn) {
+      e.stopPropagation();
+      const parent = filterBtn.closest('.filter-dropdown');
+      const dropdown = parent.querySelector('.dropdown-menu');
+      document.querySelectorAll('.dropdown-menu').forEach(d => { if (d !== dropdown) d.classList.remove('show'); });
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        const rect = dropdown.getBoundingClientRect();
+        if (rect.right > window.innerWidth - 12) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+      }
+    }
+
+    // Custom filter dropdown item selection
+    const filterItem = e.target.closest('.filter-dropdown .dropdown-item');
+    if (filterItem) {
+      e.stopPropagation();
+      const parent = filterItem.closest('.filter-dropdown');
+      const dropdown = parent.querySelector('.dropdown-menu');
+      const btn = parent.querySelector('button');
+      const hiddenInput = parent.querySelector('input[type="hidden"]');
+      const labelEl = btn.querySelector('.selected-label');
+      
+      const value = filterItem.getAttribute('data-value') || '';
+      const label = filterItem.textContent.trim();
+      
+      // Update hidden input and dispatch change event
+      if (hiddenInput) {
+        hiddenInput.value = value;
+        hiddenInput.dispatchEvent(new Event('change'));
+      }
+      
+      // Update trigger label
+      if (labelEl) {
+        labelEl.textContent = label;
+      }
+      
+      // Update active state class
+      parent.querySelectorAll('.dropdown-item').forEach(item => item.classList.remove('active'));
+      filterItem.classList.add('active');
+      
+      dropdown.classList.remove('show');
+    }
+
     // Close all open dropdowns on background click
-    if (!e.target.closest('.dropdown-menu') && !e.target.closest('.icon-btn') && !e.target.closest('.user-profile') && !e.target.closest('.row-menu-trigger')) {
+    if (!e.target.closest('.dropdown-menu') && !e.target.closest('.icon-btn') && !e.target.closest('.user-profile') && !e.target.closest('.row-menu-trigger') && !e.target.closest('.filter-dropdown button')) {
       document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
     }
   });

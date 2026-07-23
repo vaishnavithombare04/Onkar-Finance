@@ -109,16 +109,23 @@
       </div>
 
       <!-- Search bar -->
-      <div class="card flex align-center justify-between" style="padding: 16px;">
+      <div class="card flex flex-wrap-mobile align-center justify-between gap-md" style="padding: 16px;">
         <div class="search-bar" style="width: 320px; background-color: var(--color-bg);">
           <i class="lucide-search"></i>
           <input type="text" placeholder="Search customers..." id="customerSearch">
         </div>
-        <select class="form-control" style="width: 200px; padding: 8px 12px;" id="kycFilter">
-          <option value="">All KYC Statuses</option>
-          <option value="Completed">Completed</option>
-          <option value="Pending">Pending</option>
-        </select>
+        <div class="dropdown filter-dropdown" style="width: 200px;">
+          <button class="form-control" type="button" style="padding: 8px 12px;">
+            <span class="selected-label">All KYC Statuses</span>
+            <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+          </button>
+          <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+            <div class="dropdown-item active" data-value="">All KYC Statuses</div>
+            <div class="dropdown-item" data-value="Completed">Completed</div>
+            <div class="dropdown-item" data-value="Pending">Pending</div>
+          </div>
+          <input type="hidden" id="kycFilter" value="">
+        </div>
       </div>
 
       <!-- Table list -->

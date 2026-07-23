@@ -82,23 +82,37 @@
             <i class="lucide-search"></i>
             <input type="text" placeholder="Search by customer name or ID..." id="leadSearch">
           </div>
-          <select class="form-control" style="width: 160px; padding: 8px 12px;" id="productFilter">
-            <option value="">All Products</option>
-            <option>Personal Loan</option>
-            <option>Home Loan</option>
-            <option>Business Loan</option>
-            <option>Gold Loan</option>
-            <option>Vehicle Loan</option>
-          </select>
-          <select class="form-control" style="width: 160px; padding: 8px 12px;" id="statusFilter">
-            <option value="">All Statuses</option>
-            <option>New Lead</option>
-            <option>Verification</option>
-            <option>Under Process</option>
-            <option>Approved</option>
-            <option>Disbursed</option>
-            <option>Rejected</option>
-          </select>
+          <div class="dropdown filter-dropdown" style="width: 160px;">
+            <button class="form-control" type="button" style="padding: 8px 12px;">
+              <span class="selected-label">All Products</span>
+              <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+            </button>
+            <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+              <div class="dropdown-item active" data-value="">All Products</div>
+              <div class="dropdown-item" data-value="Personal Loan">Personal Loan</div>
+              <div class="dropdown-item" data-value="Home Loan">Home Loan</div>
+              <div class="dropdown-item" data-value="Business Loan">Business Loan</div>
+              <div class="dropdown-item" data-value="Gold Loan">Gold Loan</div>
+              <div class="dropdown-item" data-value="Vehicle Loan">Vehicle Loan</div>
+            </div>
+            <input type="hidden" id="productFilter" value="">
+          </div>
+          <div class="dropdown filter-dropdown" style="width: 160px;">
+            <button class="form-control" type="button" style="padding: 8px 12px;">
+              <span class="selected-label">All Statuses</span>
+              <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+            </button>
+            <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+              <div class="dropdown-item active" data-value="">All Statuses</div>
+              <div class="dropdown-item" data-value="New Lead">New Lead</div>
+              <div class="dropdown-item" data-value="Verification">Verification</div>
+              <div class="dropdown-item" data-value="Under Process">Under Process</div>
+              <div class="dropdown-item" data-value="Approved">Approved</div>
+              <div class="dropdown-item" data-value="Disbursed">Disbursed</div>
+              <div class="dropdown-item" data-value="Rejected">Rejected</div>
+            </div>
+            <input type="hidden" id="statusFilter" value="">
+          </div>
         </div>
 
         <!-- Leads Table -->

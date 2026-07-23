@@ -49,16 +49,23 @@
               <input type="text" placeholder="Search applicant by name or ID..." id="appSearch">
             </div>
             
-            <select id="statusFilter" class="form-control" style="width: 160px; padding: 8px 12px; border-radius: var(--radius-md); font-size:13px;">
-              <option value="">All Statuses</option>
-              <option value="New Lead">New Lead</option>
-              <option value="Verification">Verification</option>
-              <option value="Under Process">Under Process</option>
-              <option value="Query Raised">Query Raised</option>
-              <option value="Approved">Approved</option>
-              <option value="Rejected">Rejected</option>
-              <option value="Disbursed">Disbursed</option>
-            </select>
+            <div class="dropdown filter-dropdown" style="width: 160px;">
+              <button class="form-control" type="button" style="padding: 8px 12px; border-radius: var(--radius-md); font-size: 13px;">
+                <span class="selected-label">All Statuses</span>
+                <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+              </button>
+              <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+                <div class="dropdown-item active" data-value="">All Statuses</div>
+                <div class="dropdown-item" data-value="New Lead">New Lead</div>
+                <div class="dropdown-item" data-value="Verification">Verification</div>
+                <div class="dropdown-item" data-value="Under Process">Under Process</div>
+                <div class="dropdown-item" data-value="Query Raised">Query Raised</div>
+                <div class="dropdown-item" data-value="Approved">Approved</div>
+                <div class="dropdown-item" data-value="Rejected">Rejected</div>
+                <div class="dropdown-item" data-value="Disbursed">Disbursed</div>
+              </div>
+              <input type="hidden" id="statusFilter" value="">
+            </div>
           </div>
 
           <div style="font-size: 13px; color: var(--color-text-secondary); font-weight: 500;" id="recordsCount">

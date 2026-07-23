@@ -48,29 +48,50 @@
           <i class="lucide-search"></i>
           <input type="text" placeholder="Search by name, ID or product..." id="leadSearchInput">
         </div>
-        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="statusFilter">
-          <option value="">All Statuses</option>
-          <option value="New Lead">New Lead</option>
-          <option value="Verification">Verification</option>
-          <option value="Under Process">Under Process</option>
-          <option value="Approved">Approved</option>
-          <option value="Disbursed">Disbursed</option>
-        </select>
-        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="assigneeFilter">
-          <option value="">All Officers</option>
-          <option value="Rahul Verma">Rahul Verma</option>
-          <option value="Kiran Das">Kiran Das</option>
-          <option value="Sunil Mehta">Sunil Mehta</option>
-          <option value="Priya N.">Priya N. (Self)</option>
-        </select>
-        <select class="form-control" style="width: 150px; padding: 8px 12px;" id="sourceFilter">
-          <option value="">All Sources</option>
-          <option value="Website">Website</option>
-          <option value="Agent">Agent</option>
-          <option value="Google Ads">Google Ads</option>
-          <option value="Referral">Referral</option>
-          <option value="Direct">Direct</option>
-        </select>
+        <div class="dropdown filter-dropdown" style="width: 150px;">
+          <button class="form-control" type="button" style="padding: 8px 12px;">
+            <span class="selected-label">All Statuses</span>
+            <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+          </button>
+          <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+            <div class="dropdown-item active" data-value="">All Statuses</div>
+            <div class="dropdown-item" data-value="New Lead">New Lead</div>
+            <div class="dropdown-item" data-value="Verification">Verification</div>
+            <div class="dropdown-item" data-value="Under Process">Under Process</div>
+            <div class="dropdown-item" data-value="Approved">Approved</div>
+            <div class="dropdown-item" data-value="Disbursed">Disbursed</div>
+          </div>
+          <input type="hidden" id="statusFilter" value="">
+        </div>
+        <div class="dropdown filter-dropdown" style="width: 150px;">
+          <button class="form-control" type="button" style="padding: 8px 12px;">
+            <span class="selected-label">All Officers</span>
+            <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+          </button>
+          <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+            <div class="dropdown-item active" data-value="">All Officers</div>
+            <div class="dropdown-item" data-value="Rahul Verma">Rahul Verma</div>
+            <div class="dropdown-item" data-value="Kiran Das">Kiran Das</div>
+            <div class="dropdown-item" data-value="Sunil Mehta">Sunil Mehta</div>
+            <div class="dropdown-item" data-value="Priya N.">Priya N. (Self)</div>
+          </div>
+          <input type="hidden" id="assigneeFilter" value="">
+        </div>
+        <div class="dropdown filter-dropdown" style="width: 150px;">
+          <button class="form-control" type="button" style="padding: 8px 12px;">
+            <span class="selected-label">All Sources</span>
+            <i class="lucide-chevron-down" style="width: 14px; height: 14px; margin-left: 8px;"></i>
+          </button>
+          <div class="dropdown-menu" style="right: 0; min-width: 100%;">
+            <div class="dropdown-item active" data-value="">All Sources</div>
+            <div class="dropdown-item" data-value="Website">Website</div>
+            <div class="dropdown-item" data-value="Agent">Agent</div>
+            <div class="dropdown-item" data-value="Google Ads">Google Ads</div>
+            <div class="dropdown-item" data-value="Referral">Referral</div>
+            <div class="dropdown-item" data-value="Direct">Direct</div>
+          </div>
+          <input type="hidden" id="sourceFilter" value="">
+        </div>
         <button class="btn btn-outline" onclick="exportLeads()"><i class="lucide-download"></i> Export</button>
       </div>
 
