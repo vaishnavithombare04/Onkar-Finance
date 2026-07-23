@@ -1157,8 +1157,12 @@ label, .form-label { color: var(--text-primary) !important; }
 
 @media (max-width: 576px) {
     .dropdown-menu {
-        max-width: calc(100vw - 24px) !important;
+        max-width: calc(100vw - 32px) !important;
         font-size: 13px !important;
+        width: auto !important;
+        right: 0 !important;
+        left: auto !important;
+        box-sizing: border-box !important;
     }
     
     .dropdown-menu-end, .dropdown-menu[data-bs-popper] {

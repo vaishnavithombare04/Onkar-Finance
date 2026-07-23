@@ -55,9 +55,7 @@ const componentCache = {};
 
 // Mobile Sidebar Drawer Toggle & Overlay Controller
 function initMobileSidebar() {
-  const toggleBtns = document.querySelectorAll('#sidebarMobileToggle, .sidebar-mobile-toggle, .sidebar-toggle');
   const sidebarNav = document.querySelector('.sidebar-nav');
-  
   if (!sidebarNav) return;
   
   let backdrop = document.querySelector('.sidebar-backdrop');
@@ -69,12 +67,18 @@ function initMobileSidebar() {
   
   const closeSidebar = () => {
     sidebarNav.classList.remove('sidebar-mobile-open', 'show');
-    backdrop.classList.remove('active');
+    const activeBackdrop = document.querySelector('.sidebar-backdrop');
+    if (activeBackdrop) {
+      activeBackdrop.classList.remove('active');
+    }
   };
   
   const openSidebar = () => {
     sidebarNav.classList.add('sidebar-mobile-open');
-    backdrop.classList.add('active');
+    const activeBackdrop = document.querySelector('.sidebar-backdrop');
+    if (activeBackdrop) {
+      activeBackdrop.classList.add('active');
+    }
   };
   
   const toggleSidebar = () => {
@@ -86,12 +90,21 @@ function initMobileSidebar() {
     }
   };
   
-  toggleBtns.forEach(toggleBtn => {
-    const newBtn = toggleBtn.cloneNode(true);
-    if (toggleBtn.parentNode) {
-      toggleBtn.parentNode.replaceChild(newBtn, toggleBtn);
-    }
-    newBtn.addEventListener('click', (e) => {
+  // Clean backdrop click listener by cloning or recreating
+  const newBackdrop = backdrop.cloneNode(true);
+  if (backdrop.parentNode) {
+    backdrop.parentNode.replaceChild(newBackdrop, backdrop);
+  }
+  backdrop = newBackdrop;
+  backdrop.addEventListener('click', closeSidebar);
+  
+  // Safe event binding without cloning buttons to avoid breaking layout and other scripts
+  const toggleBtns = document.querySelectorAll('#sidebarMobileToggle, .sidebar-mobile-toggle, .sidebar-toggle');
+  toggleBtns.forEach(btn => {
+    if (btn.getAttribute('data-sidebar-bound') === 'true') return;
+    btn.setAttribute('data-sidebar-bound', 'true');
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
       if (window.innerWidth <= 992) {
         toggleSidebar();
@@ -103,9 +116,9 @@ function initMobileSidebar() {
     });
   });
   
-  backdrop.addEventListener('click', closeSidebar);
-  
   sidebarNav.querySelectorAll('.nav-item').forEach(link => {
+    if (link.getAttribute('data-sidebar-close-bound') === 'true') return;
+    link.setAttribute('data-sidebar-close-bound', 'true');
     link.addEventListener('click', () => {
       if (window.innerWidth <= 992) {
         closeSidebar();
@@ -491,6 +504,9 @@ function fallbackComponentRenderer(selector) {
   if (window.updateVendorTopbarProfile) {
     window.updateVendorTopbarProfile();
   }
+  if (window.initMobileSidebar) {
+    initMobileSidebar();
+  }
 }
 
 function highlightActiveSidebar() {
@@ -611,35 +627,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    // Sidebar toggle control
-    const sidebarToggle = e.target.closest('.sidebar-toggle, #sidebarMobileToggle, .sidebar-mobile-toggle');
-    if (sidebarToggle) {
-      const sidebarEl = document.querySelector('.sidebar-nav');
-      if (sidebarEl) {
-        let backdrop = document.querySelector('.sidebar-backdrop');
-        if (!backdrop) {
-          backdrop = document.createElement('div');
-          backdrop.className = 'sidebar-backdrop';
-          document.body.appendChild(backdrop);
-        }
-        
-        if (window.innerWidth <= 992) {
-          const isOpen = sidebarEl.classList.contains('sidebar-mobile-open') || sidebarEl.classList.contains('show');
-          if (isOpen) {
-            sidebarEl.classList.remove('sidebar-mobile-open', 'show');
-            backdrop.classList.remove('active');
-          } else {
-            sidebarEl.classList.add('sidebar-mobile-open');
-            backdrop.classList.add('active');
-          }
-        } else {
-          const isExpanded = sidebarEl.classList.contains('sidebar--expanded');
-          sidebarEl.classList.toggle('sidebar--expanded', !isExpanded);
-          localStorage.setItem('onkar-sidebar-expanded', !isExpanded ? '1' : '0');
-        }
-      }
-      return;
-    }
+
     // 1. Notification Dropdown Toggle
     const bellBtn = e.target.closest('.topbar .icon-btn');
     if (bellBtn && (bellBtn.querySelector('.lucide-bell') || bellBtn.querySelector('.bi-bell'))) {
