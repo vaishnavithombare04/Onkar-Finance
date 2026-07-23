@@ -938,11 +938,12 @@ select.form-control {
     padding: 16px 16px 0;
   }
   .topbar-actions {
-    width: 100%;
-    justify-content: space-between;
+    width: auto !important;
+    justify-content: flex-end !important;
+    gap: 8px !important;
   }
   .search-bar {
-    width: 100%;
+    display: none !important;
   }
 }
 
@@ -1199,11 +1200,7 @@ select.form-control {
   }
 
   .search-bar {
-    width: 140px;
-    padding: 6px 10px;
-  }
-  .search-bar:focus-within {
-    width: 200px;
+    display: none !important;
   }
 
   .card-header {
