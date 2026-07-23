@@ -231,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Global logout helper function
 window.logout = function() {
   localStorage.removeItem('onkar_user');
+  sessionStorage.removeItem('onkar_session');
   if (window.showToast) {
     showToast('Signed out successfully', 'success');
   }

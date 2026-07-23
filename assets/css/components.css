@@ -1215,6 +1215,33 @@ select.form-control {
   .card-header .form-control {
     width: 100% !important;
   }
+
+  /* Responsive Filters and Dropdowns */
+  .card.flex,
+  .filter-card,
+  .card.flex:has(select),
+  .card.flex:has(.form-control),
+  .card.flex:has(.search-bar) {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+
+  .card.flex .search-bar,
+  .card.flex select,
+  .card.flex .form-control,
+  .card.flex .btn,
+  .card.flex button,
+  .filter-card .search-bar,
+  .filter-card select,
+  .filter-card .form-control,
+  .filter-card .btn,
+  .filter-card button {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
 }
 
 @media (max-width: 768px) {

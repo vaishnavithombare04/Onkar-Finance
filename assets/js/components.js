@@ -686,19 +686,20 @@ document.addEventListener('DOMContentLoaded', () => {
         dropdown.className = 'dropdown-menu';
         dropdown.style.right = '0';
         
+        const logoutUrl = isInside ? '../index.html' : './index.html';
+        const logoutOnClick = `if(window.logout){window.logout();}else{localStorage.removeItem('onkar_user');sessionStorage.removeItem('onkar_session');location.href='${logoutUrl}';}return false;`;
+        
         if (isInsideTeamLeader || isInsideAgent || isInsideBM || isInsideEmployee || isInsideCustomer) {
           const profileLink = 'profile.html';
-          const logoutLink = (isInsideTeamLeader || isInsideBM || isInsideEmployee || isInsideCustomer) ? '../index.html' : '../signup.html';
           dropdown.innerHTML = `
             <a href="${profileLink}" class="dropdown-item"><i class="lucide-user"></i> My Profile</a>
-            <a href="${logoutLink}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
+            <a href="#" onclick="${logoutOnClick}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
           `;
         } else {
-          const logoutLink = isInsideVendor ? '../index.html' : `${isInside ? '../' : './'}signup.html`;
           dropdown.innerHTML = `
             <a href="${prefix}profile.html" class="dropdown-item"><i class="lucide-user"></i> My Profile</a>
             <a href="${prefix}settings.html" class="dropdown-item"><i class="lucide-settings"></i> Settings</a>
-            <a href="${logoutLink}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
+            <a href="#" onclick="${logoutOnClick}" class="dropdown-item"><i class="lucide-log-out"></i> Logout</a>
           `;
         }
         profileBtn.appendChild(dropdown);

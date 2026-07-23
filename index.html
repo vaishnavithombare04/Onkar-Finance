@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -70,27 +71,14 @@
         <form id="loginForm" class="flex flex-column gap-sm">
           <div class="form-group">
             <label class="form-label" for="email">Username or Email</label>
-            <input type="text" id="email" class="form-control" placeholder="admin@onkar.com" autocomplete="username">
+            <input type="text" id="email" class="form-control" placeholder="admin@onkar.com" autocomplete="new-username">
             <span class="form-error">Please enter username</span>
           </div>
-
-          <!-- <div class="form-group">
-            <label class="form-label" for="loginRole">Select Portal Role</label>
-            <select id="loginRole" class="form-control">
-              <option value="Admin">System Administrator</option>
-              <option value="BranchManager">Branch Manager</option>
-              <option value="TeamLeader">Team Leader</option>
-              <option value="Employee">Loan Officer (Employee)</option>
-              <option value="Agent">Agent / DSA Partner</option>
-              <option value="Vendor">Bank Partner (Vendor)</option>
-              <option value="Customer">Customer (Borrower)</option>
-            </select>
-          </div> -->
           
           <div class="form-group">
             <label class="form-label" for="password">Password</label>
             <div class="password-input-wrapper">
-              <input type="password" id="password" class="form-control" placeholder="••••••••" value="password123" autocomplete="current-password">
+              <input type="password" id="password" class="form-control" placeholder="••••••••" autocomplete="new-password">
               <i class="password-toggle-icon lucide-eye"></i>
             </div>
             <span class="form-error">Please enter password</span>
@@ -105,18 +93,6 @@
           
           <button type="submit" class="btn btn-primary w-full">Sign In</button>
         </form>
-<!--         
-        <div style="margin-top: 16px; padding: 12px; background-color: var(--color-bg); border-radius: var(--radius-md); font-size: 11px; border: 1px dashed var(--color-border); text-align: left; line-height: 1.6;">
-          <span class="bold" style="color: var(--color-primary); font-size: 12px;">Demo Login Credentials:</span><br>
-          • <strong>Admin:</strong> <code>admin@onkar.com</code> / <code>password123</code><br>
-          • <strong>Branch Manager:</strong> <code>manager@onkar.com</code> / <code>password123</code><br>
-          • <strong>Team Leader:</strong> <code>tl@onkar.com</code> / <code>password123</code><br>
-          • <strong>Loan Officer (Emp):</strong> <code>employee@onkar.com</code> / <code>password123</code><br>
-          • <strong>Agent / DSA:</strong> <code>agent@onkar.com</code> / <code>password123</code><br>
-          • <strong>Bank Partner (Vendor):</strong> <code>vendor@onkar.com</code> / <code>password123</code><br>
-          • <strong>Customer:</strong> <code>customer@onkar.com</code> / <code>password123</code><br>
-          <em class="text-muted">(Or select any role in the dropdown with any password)</em>
-        </div> -->
         
         <div class="text-center" style="font-size: 13px; color: var(--color-text-secondary); margin-top: 16px;">
           Need user registration? <a href="signup.html" class="bold">Create Account</a>

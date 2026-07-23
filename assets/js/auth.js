@@ -10,6 +10,14 @@ const ROLE_PATHS = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Clear any autofilled credentials to ensure clean login form on load / after logout
+  setTimeout(() => {
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    if (emailInput) emailInput.value = '';
+    if (passwordInput) passwordInput.value = '';
+  }, 100);
+
   // Login Form Handler
   const loginForm = document.getElementById('loginForm');
   if (loginForm) {
@@ -74,10 +82,25 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         }
 
-        // If still no user, or password doesn't match default user but dropdown is used, allow login using dropdown selection as fallback
-        const useFallback = !user || user.password !== password;
-        const finalRole = useFallback ? selectedRole : user.role;
-        const redirectUrl = useFallback ? (ROLE_PATHS[selectedRole] || 'admin/dashboard.html') : user.redirect;
+        // Validate credentials strictly
+        if (!user) {
+          showFieldError('email', 'Invalid username/email');
+          showToast('Username/email not found.', 'error');
+          return;
+        } else {
+          clearFieldError('email');
+        }
+
+        if (user.password !== password) {
+          showFieldError('password', 'Invalid password');
+          showToast('Incorrect password.', 'error');
+          return;
+        } else {
+          clearFieldError('password');
+        }
+
+        const finalRole = user.role;
+        const redirectUrl = user.redirect;
 
         const sessionUser = {
           name: email.split('@')[0] || 'Logged In User',
