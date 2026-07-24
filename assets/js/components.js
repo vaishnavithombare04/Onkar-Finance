@@ -726,13 +726,14 @@ document.addEventListener('DOMContentLoaded', () => {
       e.stopPropagation();
       let dropdown = profileBtn.querySelector('.dropdown-menu');
       if (!dropdown) {
-        const isInsideAdmin = window.location.pathname.includes('/admin/');
-        const isInsideTeamLeader = window.location.pathname.includes('/TeamLeader/');
-        const isInsideBM = window.location.pathname.includes('/branch-manager/');
-        const isInsideAgent = window.location.pathname.includes('/Agent/');
-        const isInsideVendor = window.location.pathname.includes('/Vendor/');
-        const isInsideEmployee = window.location.pathname.includes('/employee/');
-        const isInsideCustomer = window.location.pathname.includes('/customer/');
+        const pathnameLower = window.location.pathname.toLowerCase();
+        const isInsideAdmin = pathnameLower.includes('/admin/');
+        const isInsideTeamLeader = pathnameLower.includes('/teamleader/');
+        const isInsideBM = pathnameLower.includes('/branch-manager/');
+        const isInsideAgent = pathnameLower.includes('/agent/');
+        const isInsideVendor = pathnameLower.includes('/vendor/');
+        const isInsideEmployee = pathnameLower.includes('/employee/');
+        const isInsideCustomer = pathnameLower.includes('/customer/');
         const isInside = isInsideAdmin || isInsideTeamLeader || isInsideBM || isInsideAgent || isInsideVendor || isInsideEmployee || isInsideCustomer;
         
         let prefix = '';

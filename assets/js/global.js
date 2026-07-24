@@ -236,8 +236,14 @@ window.logout = function() {
     showToast('Signed out successfully', 'success');
   }
   setTimeout(() => {
-    const path = window.location.pathname;
-    if (path.includes('/admin/') || path.includes('/branch-manager/') || path.includes('/TeamLeader/') || path.includes('/employee/') || path.includes('/Agent/') || path.includes('/Vendor/') || path.includes('/customer/')) {
+    const path = window.location.pathname.toLowerCase();
+    if (path.includes('/admin/') || 
+        path.includes('/branch-manager/') || 
+        path.includes('/teamleader/') || 
+        path.includes('/employee/') || 
+        path.includes('/agent/') || 
+        path.includes('/vendor/') || 
+        path.includes('/customer/')) {
       window.location.href = '../index.html';
     } else {
       window.location.href = 'index.html';
